@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: nova
+      POSTGRES_PASSWORD: nova_password
+      POSTGRES_DB: nova_kaitori
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://nova:nova_password@db:5432/nova_kaitori
+      - REDIS_URL=redis://redis:6379/0
+      - CORS_ORIGINS=http://43.167.223.87:3000,http://localhost:3000,http://localhost:5173
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - redis
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - VITE_API_URL=https://novakai.net/api
+    # 生产模式
+
+  celery:
+    build: ./backend
+    environment:
+      - DATABASE_URL=postgresql://nova:nova_password@db:5432/nova_kaitori
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - redis
+    command: celery -A app.celery_app worker --loglevel=info
+
+  celery-beat:
+    build: ./backend
+    environment:
+      - DATABASE_URL=postgresql://nova:nova_password@db:5432/nova_kaitori
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - redis
+    command: celery -A app.celery_app beat --loglevel=info
+
+volumes:
+  postgres_data:
