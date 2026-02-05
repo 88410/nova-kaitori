@@ -7,8 +7,8 @@ from app.database import SessionLocal
 from app.models.models import Product, Store, Price, PriceHistory
 import re
 
-# Google Sheets CSV URL
-SHEET_URL = "https://docs.google.com/spreadsheets/d/1-Eq4q3QTTQIXrxZl0bvAnGiOtelj2JOWeEQeKaTA4iE/export?format=csv"
+# Google Sheets CSV URL (using gviz API for public sheets)
+SHEET_URL = "https://docs.google.com/spreadsheets/d/1-Eq4q3QTTQIXrxZl0bvAnGiOtelj2JOWeEQeKaTA4iE/gviz/tq?tqx=out:csv&gid=0"
 
 # 店舗名のマッピング（CSV列名 → DB店舗名）
 STORE_MAPPING = {
