@@ -115,11 +115,11 @@ def parse_iphone_data(csv_text):
         capacity = row[1].strip()
         apple_price = parse_price(row[2])  # Apple公式価格
         
-        # 各店舗の価格を収集（从第7列开始）
+        # 各店舗の価格を収集（AG列=第33列开始）
         store_prices = {}
         seen_stores = set()  # 用于去重
         for i, header in enumerate(headers):
-            if i < 7:  # 跳过前7列（基本情報）
+            if i < 32:  # 跳过前32列（A-AF），从AG列(index 32)开始
                 continue
             if i >= len(row):
                 break

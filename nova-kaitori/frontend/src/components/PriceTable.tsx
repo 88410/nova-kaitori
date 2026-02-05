@@ -309,7 +309,7 @@ function ProductCard({ item }: { item: GroupedProduct }) {
           <h4 className="font-bold text-base md:text-lg text-gray-900">{product.capacity}GB</h4>
           {product.retail_price && (
             <p className="text-xs md:text-sm text-gray-500 mt-0 md:mt-1">
-              公式: <span className="font-medium">¥{(product.retail_price / 10000).toFixed(1)}万</span>
+              公式: <span className="font-medium">¥{product.retail_price.toLocaleString()}</span>
             </p>
           )}
         </div>
@@ -341,11 +341,11 @@ function ProductCard({ item }: { item: GroupedProduct }) {
                     <span className="hidden md:inline">{price.store.name}</span>
                   </p>
                   <p className={`font-bold text-sm md:text-base ${isBest ? 'text-green-600' : 'text-gray-900'}`}>
-                    ¥{(price.price / 10000).toFixed(1)}万
+                    ¥{price.price.toLocaleString()}
                   </p>
                   {price.profit !== null && (
                     <p className={`text-xs mt-0.5 ${price.profit > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                      {price.profit > 0 ? '+' : ''}¥{(price.profit / 10000).toFixed(1)}万
+                      {price.profit > 0 ? '+' : ''}¥{price.profit.toLocaleString()}
                     </p>
                   )}
                 </a>
