@@ -5,7 +5,7 @@ celery_app = Celery(
     "nova_kaitori",
     broker=settings.redis_url,
     backend=settings.redis_url,
-    include=["app.services.scraper"]
+    include=["app.services.sheet_scraper"]
 )
 
 celery_app.conf.update(
@@ -15,9 +15,9 @@ celery_app.conf.update(
     timezone="Asia/Tokyo",
     enable_utc=True,
     beat_schedule={
-        "scrape-all-prices": {
-            "task": "app.services.scraper.scrape_all_prices",
-            "schedule": settings.scraper_interval_minutes * 60,  # seconds
+        "scrape-sheet-hourly": {
+            "task": "app.services.sheet_scraper.scrape_sheet_task",
+            "schedule": 3600.0,  # 1小时 = 3600秒
         },
     },
 )

@@ -193,7 +193,7 @@ def get_price_history(
     )
 
 # Stats
-@router.get("/stats", response_model=PriceStats)
+@router.get("/stats")
 def get_stats(db: Session = Depends(get_db)):
     from datetime import datetime, timedelta
     
@@ -209,12 +209,17 @@ def get_stats(db: Session = Depends(get_db)):
         Price.price_change != 0
     ).scalar()
     
-    return PriceStats(
-        total_products=total_products or 0,
-        total_stores=total_stores or 0,
-        today_updates=today_updates or 0,
-        price_changes_24h=price_changes_24h or 0
-    )
+    # 获取最新更新时间
+    latest_price = db.query(Price).order_by(desc(Price.scraped_at)).first()
+    last_updated = latest_price.scraped_at.isoformat() if latest_price and latest_price.scraped_at else None
+    
+    return {
+        "total_products": total_products or 0,
+        "total_stores": total_stores or 0,
+        "today_updates": today_updates or 0,
+        "price_changes_24h": price_changes_24h or 0,
+        "last_updated": last_updated
+    }
 
 # Search
 @router.get("/search")

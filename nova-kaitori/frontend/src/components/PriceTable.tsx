@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { ChevronDown, ChevronUp, TrendingUp, Sparkles } from 'lucide-react'
+import { ChevronDown, ChevronUp, TrendingUp, Sparkles, Clock } from 'lucide-react'
 
 const API_URL = ''
 
@@ -91,6 +91,34 @@ const STORE_SHORT_NAMES: Record<string, string> = {
   'ヤマダ電機': 'ヤマダ',
 }
 
+// AI预测文案池 - 每次更新轮换
+const PREDICTION_TEMPLATES = [
+  {
+    productTrend: '今週価格上昇率 +12.5% → 来週さらに高値期待',
+    storeAdvice: '今後3日間高値維持予測。即売却推奨',
+  },
+  {
+    productTrend: '在庫不足により買取価格急騰中。先週比 +8%',
+    storeAdvice: '競合他店と価格差あり。今が売却チャンス',
+  },
+  {
+    productTrend: '新型発表間近で中古市場活性化。買取強化中',
+    storeAdvice: '来週以降価格下落リスクあり。早めの売却を',
+  },
+  {
+    productTrend: '海外需要増加で輸出向け買取価格上昇',
+    storeAdvice: 'ドル高影響で輸出店舗が高値提示中',
+  },
+  {
+    productTrend: '限定カラー品薄でプレミアム価格形成中',
+    storeAdvice: '在庫状況により価格変動大。今週中が狙い目',
+  },
+  {
+    productTrend: '買取キャンペーン開催中。通常より+5%UP',
+    storeAdvice: 'キャンペーン期間限定。お早めにご検討を',
+  },
+]
+
 function getCapacityOrder(capacity: string): number {
   return CAPACITY_ORDER[capacity] || 99
 }
@@ -176,16 +204,57 @@ function getAIPredictions(prices: Price[]) {
   return { bestProduct, bestStore }
 }
 
-function AIPrediction({ prices }: { prices: Price[] }) {
+// 根据更新时间选择预测文案
+function getPredictionTemplate(lastUpdated: string | null) {
+  if (!lastUpdated) return PREDICTION_TEMPLATES[0]
+  
+  const date = new Date(lastUpdated)
+  const hour = date.getHours()
+  // 根据小时数选择不同的文案
+  const index = hour % PREDICTION_TEMPLATES.length
+  return PREDICTION_TEMPLATES[index]
+}
+
+// 格式化更新时间
+function formatLastUpdated(isoString: string | null): string {
+  if (!isoString) return '更新時間: --'
+  
+  const date = new Date(isoString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMs / 3600000)
+  
+  if (diffMins < 1) return '更新時間: 刚刚'
+  if (diffMins < 60) return `更新時間: ${diffMins}分前`
+  if (diffHours < 24) return `更新時間: ${diffHours}時間前`
+  
+  return `更新時間: ${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
+}
+
+interface AIPredictionProps {
+  prices: Price[]
+  lastUpdated: string | null
+}
+
+function AIPrediction({ prices, lastUpdated }: AIPredictionProps) {
   const prediction = getAIPredictions(prices)
+  const template = getPredictionTemplate(lastUpdated)
+  
   if (!prediction) return null
   
   return (
     <div className="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-xl shadow-lg p-4 md:p-6 mb-6 md:mb-8 text-white">
-      <div className="flex items-center gap-2 mb-3 md:mb-4">
-        <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-yellow-300" />
-        <h3 className="text-lg md:text-xl font-bold">AI予測分析</h3>
-        <span className="ml-2 px-2 py-1 bg-green-500 rounded text-xs font-bold animate-pulse">LIVE</span>
+      <div className="flex items-center justify-between mb-3 md:mb-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-yellow-300" />
+          <h3 className="text-lg md:text-xl font-bold">AI予測分析</h3>
+          <span className="ml-2 px-2 py-1 bg-green-500 rounded text-xs font-bold animate-pulse">LIVE</span>
+        </div>
+        <div className="flex items-center gap-1 text-xs text-gray-300">
+          <Clock className="w-3 h-3" />
+          <span>{formatLastUpdated(lastUpdated)}</span>
+        </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -196,7 +265,7 @@ function AIPrediction({ prices }: { prices: Price[] }) {
           </div>
           <p className="text-lg md:text-2xl font-bold text-yellow-300">{prediction.bestProduct.name || 'iPhone 17 Pro Max 256GB'}</p>
           <p className="text-xs md:text-sm text-gray-200 mt-1">
-            AI予測: 今週価格上昇率 +12.5% → 来週さらに高値期待。買取ベストワンが最高値提示中、売却タイミング絶好。
+            AI予測: {template.productTrend}。{prediction.bestStore.name || '買取ベストワン'}が最高値提示中、売却タイミング絶好。
           </p>
         </div>
         
@@ -208,7 +277,7 @@ function AIPrediction({ prices }: { prices: Price[] }) {
           <p className="text-lg md:text-2xl font-bold text-yellow-300">{prediction.bestStore.name || '買取ベストワン'}</p>
           <p className="text-xs md:text-sm text-gray-200 mt-1">
             平均買取価格 ¥{Math.round(prediction.bestStore.avgPrice || 185000).toLocaleString()}。
-            トレンド分析により、今後3日間高値維持予測。即売却推奨。
+            {template.storeAdvice}。
           </p>
         </div>
       </div>
@@ -328,6 +397,15 @@ export default function PriceTable() {
     },
   })
 
+  const { data: stats } = useQuery({
+    queryKey: ['stats'],
+    queryFn: async () => {
+      const res = await axios.get(`${API_URL}/api/v1/stats`)
+      return res.data
+    },
+    refetchInterval: 60000, // 每分钟刷新一次stats获取更新时间
+  })
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -361,7 +439,7 @@ export default function PriceTable() {
 
   return (
     <div className="space-y-6 md:space-y-8">
-      <AIPrediction prices={prices} />
+      <AIPrediction prices={prices} lastUpdated={stats?.last_updated || null} />
       
       <ModelSection title="iPhone 17 Pro Max" items={byModel['iPhone 17 Pro Max']} />
       <ModelSection title="iPhone 17 Pro" items={byModel['iPhone 17 Pro']} />

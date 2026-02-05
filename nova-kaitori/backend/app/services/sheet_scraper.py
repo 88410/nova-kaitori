@@ -260,7 +260,7 @@ def scrape_from_sheet():
         update_database(data)
         print("Database updated successfully")
     
-    return data
+    return data, datetime.now()
 
 # Celery task
 try:
@@ -268,7 +268,7 @@ try:
     
     @shared_task
     def scrape_sheet_task():
-        scrape_from_sheet()
+        return scrape_from_sheet()
         
 except ImportError:
     pass
