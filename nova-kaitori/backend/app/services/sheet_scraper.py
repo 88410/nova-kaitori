@@ -117,16 +117,18 @@ def parse_iphone_data(csv_text):
         
         # 各店舗の価格を収集（从第7列开始）
         store_prices = {}
+        seen_stores = set()  # 用于去重
         for i, header in enumerate(headers):
             if i < 7:  # 跳过前7列（基本情報）
                 continue
             if i >= len(row):
                 break
             store_name = STORE_MAPPING.get(header.strip())
-            if store_name:
+            if store_name and store_name not in seen_stores:  # 只保留第一次出现的店铺
                 price = parse_price(row[i])
                 if price:
                     store_prices[store_name] = price
+                    seen_stores.add(store_name)
         
         iphone_data.append({
             'model': model,
