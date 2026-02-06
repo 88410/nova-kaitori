@@ -123,7 +123,9 @@ def parse_iphone_data(csv_text):
                 continue
             if i >= len(row):
                 break
-            store_name = STORE_MAPPING.get(header.strip())
+            # 去掉" リンク"后缀进行匹配
+            header_clean = header.strip().replace(' リンク', '').replace('リンク', '')
+            store_name = STORE_MAPPING.get(header_clean)
             if store_name and store_name not in seen_stores:  # 只保留第一次出现的店铺
                 price = parse_price(row[i])
                 if price:
@@ -218,7 +220,8 @@ def update_database(data):
                     price=price_value,
                     price_change=price_change,
                     price_change_percent=price_change_percent,
-                    url=''
+                    url='',
+                    scraped_at=datetime.now()
                 )
                 db.add(new_price)
                 
