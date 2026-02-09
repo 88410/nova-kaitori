@@ -185,6 +185,11 @@ def parse_iphone_data(csv_text):
         # 推断缺失的容量
         capacity = infer_capacity(model, apple_price, raw_capacity)
         
+        # 【强制过滤】如果 capacity 为空，跳过此行
+        if not capacity or capacity.strip() == '' or capacity.strip() == 'GB':
+            print(f"[SKIP] {model} 容量为空，跳过")
+            continue
+        
         # 各店舗の価格を収集（AG列=第33列开始）
         store_prices = {}
         seen_stores = set()  # 用于去重
@@ -230,6 +235,12 @@ def update_database(data):
         
         # 商品と価格を更新
         for item in data:
+            # 【强制保护】数据库插入前检查 capacity，为空则跳过
+            cap = item.get('capacity', '') or ''
+            if not cap or cap.strip() == '' or cap.strip() == 'GB':
+                print(f"[DB SKIP] {item['model']} 容量为空，不插入数据库")
+                continue
+            
             # モデル名変換
             model_map = {
                 '17 PM': 'iPhone 17 Pro Max',
