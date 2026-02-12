@@ -326,7 +326,7 @@ function ProductCard({ item }: { item: GroupedProduct }) {
       <div className="flex flex-col md:flex-row">
         {/* 左侧产品信息 */}
         <div className="w-full md:w-48 p-3 md:p-4 bg-gray-50 border-b md:border-b-0 md:border-r border-gray-200 flex flex-row md:flex-col justify-between md:justify-center items-center md:items-start">
-          <h4 className="font-bold text-base md:text-lg text-gray-900">{formatCapacity(product.capacity)}</h4>
+          <h4 className="font-bold text-base md:text-lg text-gray-900">{product.capacity}{product.capacity && !product.capacity.includes('TB') && !product.capacity.includes('GB') ? 'GB' : ''}</h4>
           {product.retail_price && (
             <p className="text-xs md:text-sm text-gray-500 mt-0 md:mt-1">
               公式: <span className="font-medium">¥{product.retail_price.toLocaleString()}</span>
