@@ -475,39 +475,26 @@ export default function PriceTable() {
 
   return (
     <div className="space-y-6 md:space-y-8">
-      {/* 主标题 + 汇率 合并头部 */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-4 border-t border-b border-gray-200">
-        {/* 左侧：主标题 */}
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            買取価格一覧
-          </h1>
-          <p className="text-sm md:text-base text-gray-600 mt-1">
-            全国主要買取店の価格をリアルタイムで比較
-          </p>
-        </div>
-        
-        {/* 右侧：汇率 */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-semibold text-gray-500 whitespace-nowrap">
-            為替レート:
-          </span>
-          {Object.entries(FX_RATES).map(([currency, data]) => (
-            <div 
-              key={currency}
-              className="flex items-center gap-1 bg-slate-100 rounded-lg px-2 py-1"
-              title={`1 ${currency} = ${data.rate} JPY`}
-            >
-              <span className="text-sm">{data.flag}</span>
-              <span className="text-sm font-bold text-gray-700">1{currency}</span>
-              <span className="text-xs text-gray-400">=</span>
-              <span className="text-sm font-mono text-cyan-600 font-semibold">{data.rate.toFixed(2)}</span>
-            </div>
-          ))}
-          <div className="flex items-center gap-1 text-xs text-gray-400 ml-1">
-            <RefreshCw className="w-3 h-3" />
-            <span>2026-02-25</span>
+      {/* 汇率 - 最上面 */}
+      <div className="flex flex-wrap items-center gap-2 bg-slate-800 rounded-xl p-3">
+        <span className="text-sm font-semibold text-gray-300 whitespace-nowrap">
+          為替レート:
+        </span>
+        {Object.entries(FX_RATES).map(([currency, data]) => (
+          <div 
+            key={currency}
+            className="flex items-center gap-1 bg-white/10 rounded-lg px-2 py-1"
+            title={`1 ${currency} = ${data.rate} JPY`}
+          >
+            <span className="text-base">{data.flag}</span>
+            <span className="text-sm font-bold text-white">1{currency}</span>
+            <span className="text-xs text-gray-400">=</span>
+            <span className="text-sm font-mono text-cyan-300">{data.rate.toFixed(2)}</span>
           </div>
+        ))}
+        <div className="flex items-center gap-1 text-xs text-gray-400 ml-auto">
+          <RefreshCw className="w-3 h-3" />
+          <span>2026-02-25</span>
         </div>
       </div>
 
