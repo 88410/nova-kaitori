@@ -293,6 +293,14 @@ function AIPrediction({ prices, lastUpdated }: AIPredictionProps) {
   )
 }
 
+// 汇率配置 - 外币为1单位
+const FX_RATES = {
+  USD: { rate: 155.76, symbol: '$' },
+  HKD: { rate: 19.92, symbol: 'HK$' },
+  CNY: { rate: 22.62, symbol: '¥' },
+  EUR: { rate: 183.49, symbol: '€' },
+}
+
 function ProductCard({ item }: { item: GroupedProduct }) {
   const [expanded, setExpanded] = useState(false)
   const { product, prices } = item
@@ -313,16 +321,33 @@ function ProductCard({ item }: { item: GroupedProduct }) {
       {/* 移动端垂直布局，桌面端水平布局 */}
       <div className="flex flex-col md:flex-row">
         {/* 左侧产品信息 */}
-        <div className="w-full md:w-48 p-3 md:p-4 bg-gray-50 border-b md:border-b-0 md:border-r border-gray-200 flex flex-row md:flex-col justify-between md:justify-center items-center md:items-start">
-          <h4 className="font-bold text-base md:text-lg text-gray-900">
-            {product.capacity === '1TB' || product.capacity === '2TB' || product.capacity === '256' || product.capacity === '512' || product.capacity === '128' || product.capacity === '1024' ? 
-              (product.capacity.includes('TB') ? product.capacity : product.capacity + 'GB') 
-              : product.capacity}
-          </h4>
+        <div className="w-full md:w-56 p-3 md:p-4 bg-gradient-to-br from-gray-50 to-gray-100 border-b md:border-b-0 md:border-r border-gray-200 flex flex-row md:flex-col justify-between md:justify-center items-center md:items-start gap-2">
+          <div>
+            <h4 className="font-bold text-base md:text-lg text-gray-900">
+              {product.capacity === '1TB' || product.capacity === '2TB' || product.capacity === '256' || product.capacity === '512' || product.capacity === '128' || product.capacity === '1024' ? 
+                (product.capacity.includes('TB') ? product.capacity : product.capacity + 'GB') 
+                : product.capacity}
+            </h4>
+            {product.retail_price && (
+              <p className="text-xs md:text-sm text-gray-500 mt-1">
+                公式: <span className="font-semibold text-gray-700">¥{product.retail_price.toLocaleString()}</span>
+              </p>
+            )}
+          </div>
+          
+          {/* 外币参考价格 */}
           {product.retail_price && (
-            <p className="text-xs md:text-sm text-gray-500 mt-0 md:mt-1">
-              公式: <span className="font-medium">¥{product.retail_price.toLocaleString()}</span>
-            </p>
+            <div className="flex flex-wrap gap-1.5 mt-0 md:mt-2">
+              {Object.entries(FX_RATES).map(([currency, data]) => (
+                <span 
+                  key={currency}
+                  className="inline-flex items-center px-2 py-0.5 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-200 rounded text-xs font-medium text-gray-700"
+                  title={`参考価格 / Reference: ${currency}`}
+                >
+                  {data.symbol}{(product.retail_price! / data.rate).toFixed(2)}
+                </span>
+              ))}
+            </div>
           )}
         </div>
         
