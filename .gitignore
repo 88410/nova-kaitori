@@ -64,3 +64,4 @@ postgres_data/
 # Logs
 logs/
 *.log
+backend/celerybeat-schedule

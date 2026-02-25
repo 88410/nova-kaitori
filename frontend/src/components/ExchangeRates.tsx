@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { TrendingUp, DollarSign } from 'lucide-react'
 
 interface ExchangeRates {
@@ -34,7 +34,7 @@ const NAMES: Record<string, string> = {
 }
 
 export default function ExchangeRates() {
-  const [rates, setRates] = useState<ExchangeRates>(RATES)
+  const [rates] = useState<ExchangeRates>(RATES)
 
   // Format price in foreign currency
   const formatPrice = (jpyAmount: number, currency: string): string => {
