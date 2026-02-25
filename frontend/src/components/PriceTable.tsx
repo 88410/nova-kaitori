@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { ChevronDown, ChevronUp, TrendingUp, Sparkles, Clock } from 'lucide-react'
+import ExchangeRates from './ExchangeRates'
 
 const API_URL = ''
 
@@ -326,7 +327,11 @@ function ProductCard({ item }: { item: GroupedProduct }) {
       <div className="flex flex-col md:flex-row">
         {/* 左侧产品信息 */}
         <div className="w-full md:w-48 p-3 md:p-4 bg-gray-50 border-b md:border-b-0 md:border-r border-gray-200 flex flex-row md:flex-col justify-between md:justify-center items-center md:items-start">
-          <h4 className="font-bold text-base md:text-lg text-gray-900">{product.capacity}{product.capacity && !product.capacity.includes('TB') && !product.capacity.includes('GB') ? 'GB' : ''}</h4>
+          <h4 className="font-bold text-base md:text-lg text-gray-900">
+            {product.capacity === '1TB' || product.capacity === '2TB' || product.capacity === '256' || product.capacity === '512' || product.capacity === '128' || product.capacity === '1024' ? 
+              (product.capacity.includes('TB') ? product.capacity : product.capacity + 'GB') 
+              : product.capacity}
+          </h4>
           {product.retail_price && (
             <p className="text-xs md:text-sm text-gray-500 mt-0 md:mt-1">
               公式: <span className="font-medium">¥{product.retail_price.toLocaleString()}</span>
@@ -459,6 +464,7 @@ export default function PriceTable() {
 
   return (
     <div className="space-y-6 md:space-y-8">
+      <ExchangeRates />
       <AIPrediction prices={prices} lastUpdated={stats?.last_updated || null} />
       
       <ModelSection title="iPhone 17 Pro Max" items={byModel['iPhone 17 Pro Max']} />
