@@ -303,19 +303,6 @@ function ProductCard({ item }: { item: GroupedProduct }) {
   
   const displayPrices = expanded ? sortedPrices : top4
   
-  // 格式化容量显示
-  const formatCapacity = (capacity: string): string => {
-    if (!capacity || capacity.trim() === '' || capacity === 'GB') {
-      return ''  // 空容量返回空，让调用者决定是否显示
-    }
-    // 如果已经包含 GB 或 TB，直接返回
-    if (capacity.includes('GB') || capacity.includes('TB')) {
-      return capacity
-    }
-    // 否则添加 GB（假设是数字）
-    return `${capacity}GB`
-  }
-  
   // 【强制过滤】如果 capacity 为空，不显示此产品
   if (!product.capacity || product.capacity.trim() === '' || product.capacity === 'GB') {
     return null
