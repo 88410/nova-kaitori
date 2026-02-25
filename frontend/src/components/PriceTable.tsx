@@ -1,10 +1,17 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { ChevronDown, ChevronUp, TrendingUp, Sparkles, Clock } from 'lucide-react'
-import ExchangeRates from './ExchangeRates'
+import { ChevronDown, ChevronUp, TrendingUp, Sparkles, Clock, RefreshCw } from 'lucide-react'
 
 const API_URL = ''
+
+// 汇率配置
+const FX_RATES = {
+  USD: { rate: 155.76, symbol: '$', flag: '🇺🇸' },
+  HKD: { rate: 19.92, symbol: 'HK$', flag: '🇭🇰' },
+  CNY: { rate: 22.62, symbol: '¥', flag: '🇨🇳' },
+  EUR: { rate: 183.49, symbol: '€', flag: '🇪🇺' },
+}
 
 // 容量排序权重
 const CAPACITY_ORDER: Record<string, number> = {
@@ -293,14 +300,6 @@ function AIPrediction({ prices, lastUpdated }: AIPredictionProps) {
   )
 }
 
-// 汇率配置 - 外币为1单位
-const FX_RATES = {
-  USD: { rate: 155.76, symbol: '$' },
-  HKD: { rate: 19.92, symbol: 'HK$' },
-  CNY: { rate: 22.62, symbol: '¥' },
-  EUR: { rate: 183.49, symbol: '€' },
-}
-
 function ProductCard({ item }: { item: GroupedProduct }) {
   const [expanded, setExpanded] = useState(false)
   const { product, prices } = item
@@ -476,18 +475,43 @@ export default function PriceTable() {
 
   return (
     <div className="space-y-6 md:space-y-8">
-      <ExchangeRates />
-      <AIPrediction prices={prices} lastUpdated={stats?.last_updated || null} />
-      
-      {/* 主标题 */}
-      <div className="text-center py-4 border-t border-b border-gray-200">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-          買取価格一覧
-        </h2>
-        <p className="text-sm md:text-base text-gray-600">
-          全国主要買取店の価格をリアルタイムで比較
-        </p>
+      {/* 主标题 + 汇率 合并头部 */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-4 border-t border-b border-gray-200">
+        {/* 左侧：主标题 */}
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            買取価格一覧
+          </h1>
+          <p className="text-sm md:text-base text-gray-600 mt-1">
+            全国主要買取店の価格をリアルタイムで比較
+          </p>
+        </div>
+        
+        {/* 右侧：汇率 */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm font-semibold text-gray-500 whitespace-nowrap">
+            為替レート:
+          </span>
+          {Object.entries(FX_RATES).map(([currency, data]) => (
+            <div 
+              key={currency}
+              className="flex items-center gap-1 bg-slate-100 rounded-lg px-2 py-1"
+              title={`1 ${currency} = ${data.rate} JPY`}
+            >
+              <span className="text-sm">{data.flag}</span>
+              <span className="text-sm font-bold text-gray-700">1{currency}</span>
+              <span className="text-xs text-gray-400">=</span>
+              <span className="text-sm font-mono text-cyan-600 font-semibold">{data.rate.toFixed(2)}</span>
+            </div>
+          ))}
+          <div className="flex items-center gap-1 text-xs text-gray-400 ml-1">
+            <RefreshCw className="w-3 h-3" />
+            <span>2026-02-25</span>
+          </div>
+        </div>
       </div>
+
+      <AIPrediction prices={prices} lastUpdated={stats?.last_updated || null} />
       
       <ModelSection title="iPhone 17 Pro Max" items={byModel['iPhone 17 Pro Max']} />
       <ModelSection title="iPhone 17 Pro" items={byModel['iPhone 17 Pro']} />
