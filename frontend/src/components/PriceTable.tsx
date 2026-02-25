@@ -479,6 +479,16 @@ export default function PriceTable() {
       <ExchangeRates />
       <AIPrediction prices={prices} lastUpdated={stats?.last_updated || null} />
       
+      {/* 主标题 */}
+      <div className="text-center py-4 border-t border-b border-gray-200">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+          買取価格一覧
+        </h2>
+        <p className="text-sm md:text-base text-gray-600">
+          全国主要買取店の価格をリアルタイムで比較
+        </p>
+      </div>
+      
       <ModelSection title="iPhone 17 Pro Max" items={byModel['iPhone 17 Pro Max']} />
       <ModelSection title="iPhone 17 Pro" items={byModel['iPhone 17 Pro']} />
       <ModelSection title="iPhone 17 Air" items={byModel['iPhone 17 Air']} />
