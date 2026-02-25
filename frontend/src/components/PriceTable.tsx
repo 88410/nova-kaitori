@@ -335,7 +335,7 @@ function ProductCard({ item }: { item: GroupedProduct }) {
             )}
           </div>
           
-          {/* 外币参考价格 */}
+          {/* 外币参考价格 - 整数显示 */}
           {product.retail_price && (
             <div className="flex flex-wrap gap-1.5 mt-0 md:mt-2">
               {Object.entries(FX_RATES).map(([currency, data]) => (
@@ -344,7 +344,7 @@ function ProductCard({ item }: { item: GroupedProduct }) {
                   className="inline-flex items-center px-2 py-0.5 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-200 rounded text-xs font-medium text-gray-700"
                   title={`参考価格 / Reference: ${currency}`}
                 >
-                  {data.symbol}{(product.retail_price! / data.rate).toFixed(2)}
+                  {data.symbol}{Math.round(product.retail_price! / data.rate).toLocaleString()}
                 </span>
               ))}
             </div>
