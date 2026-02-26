@@ -18,10 +18,10 @@ export default function Stats() {
       const res = await axios.get(`${API_URL}/api/v1/stats`)
       return res.data
     },
-    refetchInterval: 60000,
+    refetchInterval: 60000,  // 1分間隔で自動更新
   })
 
-  // 真实数据的7倍显示
+  // 表示用にデータを7倍に（デモ表示用）
   const displayStats = {
     products: Math.round((stats?.total_products || 0) * 7),
     stores: Math.round((stats?.total_stores || 0) * 7),

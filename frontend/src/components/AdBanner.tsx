@@ -6,19 +6,23 @@ interface AdBannerProps {
   responsive?: boolean
 }
 
+/**
+ * 広告バナーコンポーネント
+ * Google AdSense等の広告を表示
+ */
 export default function AdBanner({ slot, format = 'auto', responsive = true }: AdBannerProps) {
   useEffect(() => {
-    // Google AdSense などの広告スクリプトをロード
+    // Google AdSense等の広告スクリプトをロード
     if (window.adsbygoogle) {
       (window.adsbygoogle = window.adsbygoogle || []).push({})
     }
   }, [])
 
-  // 広告が無効の場合は何も表示しない
+  // 広告が無効の場合はプレースホルダーを表示
   if (!window.NOVA_AD_CONFIG?.enabled) {
     return (
       <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center text-gray-400">
-        <p>Advertisement Space</p>
+        <p>広告スペース</p>
         <p className="text-sm">{slot}</p>
       </div>
     )

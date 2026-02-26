@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { RefreshCw } from 'lucide-react'
 
-// 实时汇率 (2026-02-25) - 以外币为1单位
+// リアルタイム為替レート (2026-02-25) - 外貨1単位あたり
 const EXCHANGE_RATES = {
   USD: { rate: 155.76, symbol: '$', flag: '🇺🇸' },
   HKD: { rate: 19.92, symbol: 'HK$', flag: '🇭🇰' },
@@ -14,7 +14,7 @@ export default function ExchangeRates() {
 
   return (
     <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl p-4 mb-6 text-white">
-      {/* 标题 + 汇率一行显示 */}
+      {/* タイトル + 為替を1行で表示 */}
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-sm font-semibold text-gray-300 whitespace-nowrap">
           為替レート:
