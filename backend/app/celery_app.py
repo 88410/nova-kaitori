@@ -17,7 +17,7 @@ celery_app.conf.update(
     beat_schedule={
         "scrape-sheet-hourly": {
             "task": "app.services.sheet_scraper.scrape_sheet_task",
-            "schedule": 3600.0,  # 1小时 = 3600秒
+            "schedule": 3600.0,  # 1時間 = 3600秒
         },
     },
 )

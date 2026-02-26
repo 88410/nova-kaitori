@@ -1,26 +1,35 @@
 version: '3.8'
 
+# NOVA買取サイト - 本番環境用Docker Compose設定
+# 使用方法: docker compose -f docker-compose.prod.yml up -d
+
 services:
   db:
     restart: always
+    # PostgreSQL: データ永続化設定
 
   redis:
     restart: always
+    # Redis: Celeryタスクキュー用
 
   backend:
     restart: always
     environment:
       - ENVIRONMENT=production
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    # FastAPIバックエンド: 本番モード
 
   frontend:
     restart: always
     command: npx serve -s dist -l 3000
+    # Reactフロントエンド: 静的ファイル配信
 
   celery:
     restart: always
     command: celery -A app.celery_app worker --loglevel=info --concurrency=2
+    # Celeryワーカー: 並列度2で実行
 
   celery-beat:
     restart: always
     command: celery -A app.celery_app beat --loglevel=info
+    # Celery Beat: 定期タスクスケジューラー
