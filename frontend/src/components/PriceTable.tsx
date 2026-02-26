@@ -254,48 +254,73 @@ function AIPrediction({ prices, lastUpdated }: AIPredictionProps) {
   if (!prediction) return null
   
   return (
-    <div className="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-xl shadow-lg p-4 md:p-6 mb-6 md:mb-8 text-white">
-      <div className="flex items-center justify-between mb-3 md:mb-4">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-yellow-300" />
-          <h3 className="text-lg md:text-xl font-bold">AI予測分析</h3>
-          <span className="ml-2 px-2 py-1 bg-green-500 rounded text-xs font-bold animate-pulse">LIVE</span>
-        </div>
-        <div className="flex items-center gap-1 text-xs text-gray-300">
-          <Clock className="w-3 h-3" />
-          <span>{formatLastUpdated(lastUpdated)}</span>
-        </div>
-      </div>
+    <div className="relative overflow-hidden rounded-2xl shadow-lg mb-6 md:mb-8 text-white">
+      {/* 背景渐变 */}
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700"></div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <div className="bg-white/10 rounded-lg p-3 md:p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-green-300" />
-            <span className="font-semibold text-sm md:text-base">本日最適売却機種</span>
+      {/* 装饰性光效 */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
+      
+      <div className="relative p-5 md:p-6">
+        {/* 头部 */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-white/20 backdrop-blur-sm rounded-xl">
+              <Sparkles className="w-5 h-5 text-yellow-300" />
+            </div>
+            <div>
+              <h3 className="text-lg md:text-xl font-bold">AI予測分析</h3>
+              <span className="text-xs text-purple-200">AI Prediction</span>
+            </div>
+            <span className="px-2.5 py-1 bg-green-500/90 rounded-full text-xs font-bold animate-pulse shadow-lg">
+              LIVE
+            </span>
           </div>
-          <p className="text-lg md:text-2xl font-bold text-yellow-300">{prediction.bestProduct.name || 'iPhone 17 Pro Max 256GB'}</p>
-          <p className="text-xs md:text-sm text-gray-200 mt-1">
-            AI予測: {template.productTrend}。{prediction.bestStore.name || '買取ベストワン'}が最高値提示中、売却タイミング絶好。
-          </p>
+          <div className="flex items-center gap-1.5 text-xs text-purple-200 bg-white/10 px-3 py-1.5 rounded-full">
+            <Clock className="w-3.5 h-3.5" />
+            <span>{formatLastUpdated(lastUpdated)}</span>
+          </div>
         </div>
         
-        <div className="bg-white/10 rounded-lg p-3 md:p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-blue-300" />
-            <span className="font-semibold text-sm md:text-base">最高額買取店舗</span>
+        {/* 卡片网格 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/15 transition-colors">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-1.5 bg-green-500/20 rounded-lg">
+                <TrendingUp className="w-4 h-4 text-green-300" />
+              </div>
+              <span className="font-semibold text-sm text-purple-100">本日最適売却機種</span>
+            </div>
+            <p className="text-xl md:text-2xl font-bold text-yellow-300 mb-1">
+              {prediction.bestProduct.name || 'iPhone 17 Pro Max 256GB'}
+            </p>
+            <p className="text-xs text-purple-200/80 leading-relaxed">
+              {template.productTrend}。{prediction.bestStore.name || '買取ベストワン'}が最高値提示中
+            </p>
           </div>
-          <p className="text-lg md:text-2xl font-bold text-yellow-300">{prediction.bestStore.name || '買取ベストワン'}</p>
-          <p className="text-xs md:text-sm text-gray-200 mt-1">
-            平均買取価格 ¥{Math.round(prediction.bestStore.avgPrice || 185000).toLocaleString()}。
-            {template.storeAdvice}。
-          </p>
+          
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/15 transition-colors">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-1.5 bg-blue-500/20 rounded-lg">
+                <Sparkles className="w-4 h-4 text-blue-300" />
+              </div>
+              <span className="font-semibold text-sm text-purple-100">最高額買取店舗</span>
+            </div>
+            <p className="text-xl md:text-2xl font-bold text-yellow-300 mb-1">
+              {prediction.bestStore.name || '買取ベストワン'}
+            </p>
+            <p className="text-xs text-purple-200/80 leading-relaxed">
+              平均 ¥{Math.round(prediction.bestStore.avgPrice || 185000).toLocaleString()} | {template.storeAdvice}
+            </p>
+          </div>
         </div>
+        
+        <p className="text-xs text-purple-300/70 mt-4 flex items-center gap-1.5">
+          <Sparkles className="w-3 h-3" />
+          AI分析: 過去30日間の価格推移、市場需給、在庫状況を総合予測
+        </p>
       </div>
-      
-      <p className="text-xs text-gray-300 mt-3 md:mt-4 flex items-center gap-1">
-        <Sparkles className="w-3 h-3" />
-        AI分析: 過去30日間の価格推移、市場需給、在庫状況を総合予測
-      </p>
     </div>
   )
 }
@@ -316,34 +341,35 @@ function ProductCard({ item }: { item: GroupedProduct }) {
   }
   
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
-      {/* 移动端垂直布局，桌面端水平布局 */}
+    <div className="group bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg hover:border-blue-200 transition-all duration-300">
       <div className="flex flex-col md:flex-row">
-        {/* 左侧产品信息 */}
-        <div className="w-full md:w-56 p-3 md:p-4 bg-gradient-to-br from-gray-50 to-gray-100 border-b md:border-b-0 md:border-r border-gray-200 flex flex-row md:flex-col justify-between md:justify-center items-center md:items-start gap-2">
-          <div>
-            <h4 className="font-bold text-base md:text-lg text-gray-900">
+        {/* 左侧产品信息 - 更现代的设计 */}
+        <div className="w-full md:w-52 p-4 bg-gradient-to-br from-slate-50 to-white border-b md:border-b-0 md:border-r border-slate-100 flex flex-row md:flex-col justify-between md:justify-center items-center md:items-start gap-3">
+          <div className="text-center md:text-left">
+            <div className="inline-flex items-center justify-center w-12 h-12 mb-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl text-white font-bold text-lg shadow-lg">
+              {product.capacity.includes('TB') ? product.capacity.replace('TB', '') + 'T' : product.capacity.replace(/\D/g, '')}
+            </div>
+            <h4 className="font-bold text-lg text-slate-800">
               {product.capacity === '1TB' || product.capacity === '2TB' || product.capacity === '256' || product.capacity === '512' || product.capacity === '128' || product.capacity === '1024' ? 
                 (product.capacity.includes('TB') ? product.capacity : product.capacity + 'GB') 
                 : product.capacity}
             </h4>
             {product.retail_price && (
-              <p className="text-xs md:text-sm text-gray-500 mt-1">
-                公式: <span className="font-semibold text-gray-700">¥{product.retail_price.toLocaleString()}</span>
+              <p className="text-xs text-slate-400 mt-1">
+                公式価格 <span className="font-medium text-slate-600">¥{product.retail_price.toLocaleString()}</span>
               </p>
             )}
           </div>
           
-          {/* 外币参考价格 - 整数显示 */}
+          {/* 外币参考价格 - 更紧凑 */}
           {product.retail_price && (
-            <div className="flex flex-wrap gap-1.5 mt-0 md:mt-2">
+            <div className="flex flex-wrap justify-center md:justify-start gap-1 mt-0 md:mt-2">
               {Object.entries(FX_RATES).map(([currency, data]) => (
                 <span 
                   key={currency}
-                  className="inline-flex items-center px-2 py-0.5 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-200 rounded text-xs font-medium text-gray-700"
-                  title={`参考価格 / Reference: ${currency}`}
+                  className="inline-flex items-center px-1.5 py-0.5 bg-slate-100 rounded text-[10px] font-medium text-slate-500"
                 >
-                  {data.symbol}{Math.round(product.retail_price! / data.rate).toLocaleString()}
+                  {data.symbol}{Math.round(product.retail_price! / data.rate)}
                 </span>
               ))}
             </div>
@@ -351,8 +377,7 @@ function ProductCard({ item }: { item: GroupedProduct }) {
         </div>
         
         {/* 右侧价格列表 */}
-        <div className="flex-1 p-2 md:p-4">
-          {/* 移动端：2列，桌面端：5列 */}
+        <div className="flex-1 p-3 md:p-4">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
             {displayPrices.map((price, idx) => {
               const storeUrl = STORE_URLS[price.store.name] || '#'
@@ -365,23 +390,27 @@ function ProductCard({ item }: { item: GroupedProduct }) {
                   href={storeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`text-center p-2 md:p-3 rounded-lg border transition-colors hover:shadow-md ${
+                  className={`relative text-center p-2.5 rounded-xl border transition-all duration-200 hover:scale-105 ${
                     isBest 
-                      ? 'bg-green-50 border-green-300' 
-                      : 'bg-white border-gray-200 hover:border-blue-300'
+                      ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 shadow-md' 
+                      : 'bg-slate-50 border-slate-100 hover:border-blue-200 hover:bg-blue-50/50'
                   }`}
                 >
-                  {/* 移动端显示简称，桌面端显示全名 */}
-                  <p className="text-xs text-gray-500 mb-1">
+                  {isBest && (
+                    <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold shadow-lg">
+                      1
+                    </span>
+                  )}
+                  <p className="text-[11px] text-slate-500 mb-1 truncate">
                     <span className="md:hidden">{shortName}</span>
                     <span className="hidden md:inline">{price.store.name}</span>
                   </p>
-                  <p className={`font-bold text-sm md:text-base ${isBest ? 'text-green-600' : 'text-gray-900'}`}>
-                    ¥{price.price.toLocaleString()}
+                  <p className={`font-bold text-sm ${isBest ? 'text-green-600' : 'text-slate-700'}`}>
+                    ¥{(price.price / 10000).toFixed(1)}万
                   </p>
                   {price.profit !== null && (
-                    <p className={`text-xs mt-0.5 ${price.profit > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                      {price.profit > 0 ? '+' : ''}¥{price.profit.toLocaleString()}
+                    <p className={`text-[10px] mt-0.5 font-medium ${price.profit > 0 ? 'text-green-500' : 'text-red-400'}`}>
+                      {price.profit > 0 ? '+' : ''}{(price.profit / 10000).toFixed(1)}万
                     </p>
                   )}
                 </a>
@@ -392,12 +421,12 @@ function ProductCard({ item }: { item: GroupedProduct }) {
           {hasMore && (
             <button
               onClick={() => setExpanded(!expanded)}
-              className="mt-2 md:mt-3 w-full py-2 text-xs md:text-sm text-blue-600 hover:text-blue-800 flex items-center justify-center gap-1"
+              className="mt-3 w-full py-2.5 text-xs font-medium text-slate-500 hover:text-blue-600 bg-slate-50 hover:bg-blue-50 rounded-xl transition-colors flex items-center justify-center gap-1.5"
             >
               {expanded ? (
-                <><ChevronUp className="w-3 h-3 md:w-4 md:h-4" />閉じる</>
+                <><ChevronUp className="w-3.5 h-3.5" />閉じる</>
               ) : (
-                <><ChevronDown className="w-3 h-3 md:w-4 md:h-4" />全{sortedPrices.length}店舗を表示</>
+                <><ChevronDown className="w-3.5 h-3.5" />全{sortedPrices.length}店舗を表示</>
               )}
             </button>
           )}
@@ -411,10 +440,14 @@ function ModelSection({ title, items }: { title: string; items: GroupedProduct[]
   if (items.length === 0) return null
   
   return (
-    <div className="mb-6 md:mb-8">
-      <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4 pb-2 border-b-2 border-blue-500">
-        {title}
-      </h3>
+    <div className="mb-8 md:mb-10">
+      <div className="flex items-center gap-3 mb-4 md:mb-5">
+        <div className="w-1.5 h-8 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full"></div>
+        <h3 className="text-xl md:text-2xl font-bold text-slate-800">
+          {title}
+        </h3>
+        <div className="flex-1 h-px bg-gradient-to-r from-slate-200 to-transparent"></div>
+      </div>
       <div className="space-y-3 md:space-y-4">
         {items.map(item => (
           <ProductCard key={item.product.id} item={item} />
