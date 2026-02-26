@@ -1,42 +1,43 @@
 # NOVA買取サイト
 
-日本のiPhone買取価格比較サイト - AI予測で最適な売却タイミングを提供
+日本のiPhone買取価格をリアルタイムで比較・AI予測で最適な売却タイミングを提供するウェブサービス
 
-## 🌐 网站地址
+## 🌐 サイトURL
 
 **https://novakai.net**
 
-## 📋 项目进度
+## 📋 プロジェクト概要
 
-### ✅ 已完成
+### ✅ 実装済み機能
 
-- [x] **后端**: FastAPI + PostgreSQL + Celery 架构
-- [x] **前端**: React + TypeScript + Tailwind CSS + Vite
-- [x] **数据**: Google Sheets CSV导入 (24产品 × 23店铺 × ~900价格)
-- [x] **部署**: Docker Compose + Nginx 反向代理
-- [x] **SSL**: Let's Encrypt HTTPS证书
-- [x] **域名**: novakai.net 已配置
-- [x] **移动端适配**: 响应式设计，手机端2列布局
-- [x] **AI预测区域**: 显示最佳卖出机型和最高价格店铺
-- [x] **店铺链接**: 所有店铺链接已验证并配置
+- [x] **バックエンド**: FastAPI + PostgreSQL + Celery によるスクレイピング自動化
+- [x] **フロントエンド**: React + TypeScript + Tailwind CSS + Vite
+- [x] **データ収集**: Google Sheets CSV連携 (24製品 × 23店舗 × 約900件の価格データ)
+- [x] **デプロイ**: Docker Compose + Nginx リバースプロキシ
+- [x] **SSL**: Let's Encrypt HTTPS証明書
+- [x] **ドメイン**: novakai.net
+- [x] **モバイル対応**: レスポンシブデザイン、スマートフォン2列レイアウト
+- [x] **AI予測機能**: 本日最適売却機種・最高額買取店舗の自動表示
+- [x] **店舗リンク**: 全店舗の公式サイトリンクを検証済みで設定
+- [x] **為替レート**: 外国為替相場のリアルタイム表示（USD/HKD/CNY/EUR）
 
-### 📊 数据概况
+### 📊 データ概要
 
-| 项目 | 数量 |
+| 項目 | 数量 |
 |------|------|
-| iPhone产品 | 24款 (16/17系列) |
+| iPhone製品 | 24機種 (iPhone 16/17シリーズ) |
 | 買取店舗 | 23店 |
-| 价格数据 | ~900条 |
+| 価格データ | 約900件 |
 
-### 🏗️ 技术栈
+### 🏗️ 技術スタック
 
-**Backend:**
+**バックエンド:**
 - FastAPI (Python)
 - PostgreSQL
-- Celery + Redis (任务队列)
+- Celery + Redis (タスクキュー)
 - SQLAlchemy (ORM)
 
-**Frontend:**
+**フロントエンド:**
 - React 18
 - TypeScript
 - Tailwind CSS
@@ -44,58 +45,66 @@
 - TanStack Query
 - Axios
 
-**Infra:**
+**インフラ:**
 - Docker & Docker Compose
-- Nginx (反向代理 + SSL)
+- Nginx (リバースプロキシ + SSL)
 - Let's Encrypt
 
-### 📁 项目结构
+### 📁 プロジェクト構成
 
 ```
 nova-kaitori/
-├── backend/           # FastAPI后端
+├── backend/           # FastAPIバックエンド
 │   ├── app/
-│   │   ├── api/      # API路由
-│   │   ├── models/   # 数据库模型
-│   │   └── services/ # 业务逻辑
+│   │   ├── api/      # APIルーティング
+│   │   ├── models/   # データベースモデル
+│   │   └── services/ # ビジネスロジック
 │   └── Dockerfile
-├── frontend/          # React前端
+├── frontend/          # Reactフロントエンド
 │   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   └── lib/
+│   │   ├── components/  # UIコンポーネント
+│   │   ├── pages/       # ページ
+│   │   └── lib/         # ユーティリティ
 │   └── Dockerfile
-├── docker-compose.yml # 本地开发配置
-├── docker-compose.prod.yml # 生产配置
+├── docker-compose.yml      # ローカル開発設定
+├── docker-compose.prod.yml # 本番環境設定
 └── README.md
 ```
 
-### 🔧 关键配置
+### 🔧 主要設定
 
-**服务器:**
-- IP: 43.167.223.87
-- Domain: novakai.net
+**サーバー:**
+- IPアドレス: 43.167.223.87
+- ドメイン: novakai.net
 
-**API端点:**
+**APIエンドポイント:**
 - https://novakai.net/api/v1/prices
 - https://novakai.net/api/v1/stats
 
-### 📝 最近更新
+### 📝 更新履歴
 
-- 2026-02-05: 移动端UI优化，价格显示改为"万"单位
-- 2026-02-05: 修复API路径问题，数据正常显示
-- 2026-02-05: 更新版权年份为2026，添加公司名称
+- 2026-02-26: UI全面リニューアル - モダンなグラデーションデザインを採用
+- 2026-02-25: 為替レート表示機能を追加（USD/HKD/CNY/EUR対応）
+- 2026-02-25: 価格表示を「万円」単位に変更し視認性を向上
+- 2026-02-05: モバイルUI最適化
+- 2026-02-05: APIパス修正、データ表示正常化
+- 2026-02-05: 著作権表示年を2026年に更新、会社名を追加
 
-## 🚀 启动命令
+## 🚀 起動方法
 
 ```bash
-# 生产环境
+# 本番環境
 docker compose -f docker-compose.prod.yml up -d
 
-# 本地开发
+# ローカル開発環境
 docker compose up -d
 ```
 
-## 📄 License
+## 📄 ライセンス
 
-MIT
+MIT License
+
+---
+
+**運営**: ノーヴァテック株式会社  
+**問い合わせ**: AI予測でiPhone売却を最適化

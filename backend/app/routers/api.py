@@ -19,9 +19,9 @@ import json
 
 router = APIRouter(prefix="/api/v1")
 
-# Helper function to add profit to price response
+# 利益情報を含む価格レスポンス用のヘルパー関数
 def price_to_dict(price: Price) -> dict:
-    """Convert price model to dict with profit info"""
+    """価格モデルを辞書に変換（利益情報付き）"""
     return {
         "id": price.id,
         "product_id": price.product_id,
@@ -209,7 +209,7 @@ def get_stats(db: Session = Depends(get_db)):
         Price.price_change != 0
     ).scalar()
     
-    # 获取最新更新时间
+    # 最新の更新時刻を取得
     latest_price = db.query(Price).order_by(desc(Price.scraped_at)).first()
     last_updated = latest_price.scraped_at.isoformat() if latest_price and latest_price.scraped_at else None
     

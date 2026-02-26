@@ -1,200 +1,200 @@
-# NOVA買取サイト - 项目存档
+# NOVA買取サイト - プロジェクトアーカイブ
 
-## 📅 存档日期
+## 📅 アーカイブ日
 2026-02-06 09:22 GMT+8
 
-## 🌐 网站信息
-- **网址**: https://novakai.net
-- **服务器IP**: 43.167.223.87
-- **状态**: ✅ 正常运行
+## 🌐 サイト情報
+- **URL**: https://novakai.net
+- **サーバーIP**: 43.167.223.87
+- **ステータス**: ✅ 正常稼働中
 
-## 📊 当前数据状态
+## 📊 現在のデータ状況
 
-### 数据库统计
+### データベース統計
 ```
-总产品数: 27
-店铺数: 23
-今日更新: 293
-24小时变动: 113
-最后更新: 2026-02-06T01:02:39 (北京时间 09:02)
+総製品数: 27
+店舗数: 23
+本日更新: 293
+24時間変動: 113
+最終更新: 2026-02-06T01:02:39 (北京時間 09:02)
 ```
 
-### 数据来源
+### データソース
 - **Google Sheets**: https://docs.google.com/spreadsheets/d/1-Eq4q3QTTQIXrxZl0bvAnGiOtelj2JOWeEQeKaTA4iE
-- **更新频率**: 每小时自动抓取
-- **抓取方式**: gviz API (公开表格)
+- **更新頻度**: 毎時自動取得
+- **取得方式**: gviz API (公開スプレッドシート)
 
-## 🏗️ 技术架构
+## 🏗️ 技術アーキテクチャ
 
-### 后端 (Backend)
-- **框架**: FastAPI (Python 3.11)
-- **数据库**: PostgreSQL 15
-- **任务队列**: Celery + Redis
-- **自动更新**: Celery Beat (每小时)
+### バックエンド (Backend)
+- **フレームワーク**: FastAPI (Python 3.11)
+- **データベース**: PostgreSQL 15
+- **タスクキュー**: Celery + Redis
+- **自動更新**: Celery Beat (毎時)
 
-### 前端 (Frontend)
-- **框架**: React 18 + TypeScript
-- **样式**: Tailwind CSS
-- **构建**: Vite
-- **数据获取**: TanStack Query + Axios
+### フロントエンド (Frontend)
+- **フレームワーク**: React 18 + TypeScript
+- **スタイル**: Tailwind CSS
+- **ビルド**: Vite
+- **データ取得**: TanStack Query + Axios
 
-### 部署
-- **容器**: Docker + Docker Compose
-- **反向代理**: Nginx
+### デプロイ
+- **コンテナ**: Docker + Docker Compose
+- **リバースプロキシ**: Nginx
 - **SSL**: Let's Encrypt
-- **域名**: novakai.net
+- **ドメイン**: novakai.net
 
-## 📁 项目结构
+## 📁 プロジェクト構成
 
 ```
 nova-kaitori/
 ├── backend/
 │   ├── app/
-│   │   ├── api/          # API路由
-│   │   ├── models/       # 数据库模型
-│   │   ├── services/     # 业务逻辑
-│   │   │   └── sheet_scraper.py  # Google Sheets抓取
-│   │   └── celery_app.py # Celery配置
+│   │   ├── api/          # APIルーティング
+│   │   ├── models/       # データベースモデル
+│   │   ├── services/     # ビジネスロジック
+│   │   │   └── sheet_scraper.py  # Google Sheets取得処理
+│   │   └── celery_app.py # Celery設定
 │   └── Dockerfile
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── PriceTable.tsx    # 价格表格
-│   │   │   ├── Stats.tsx         # 统计卡片
-│   │   │   └── Header.tsx        # 头部导航
+│   │   │   ├── PriceTable.tsx    # 価格テーブル
+│   │   │   ├── Stats.tsx         # 統計カード
+│   │   │   └── Header.tsx        # ヘッダーナビゲーション
 │   │   └── App.tsx
 │   └── Dockerfile
 ├── docker-compose.yml
 └── README.md
 ```
 
-## ✅ 已实现功能
+## ✅ 実装済み機能
 
-### 核心功能
-- [x] iPhone 16/17系列价格展示
-- [x] 23家買取店舗价格比较
-- [x] AI予測分析区域
-- [x] 每小时自动更新
-- [x] 移动端适配 (2列布局)
-- [x] 更新时间显示
+### コア機能
+- [x] iPhone 16/17シリーズの価格表示
+- [x] 23店舗の買取価格比較
+- [x] AI予測分析エリア
+- [x] 毎時自動更新
+- [x] モバイル対応 (2列レイアウト)
+- [x] 更新時刻表示
 
-### 数据功能
-- [x] Google Sheets自动抓取
-- [x] 价格历史记录
-- [x] 最高价格标记
-- [x] 利润计算 (買取価格 - 公式価格)
-- [x] 店铺链接跳转
+### データ機能
+- [x] Google Sheets自動取得
+- [x] 価格履歴管理
+- [x] 最高価格マーキング
+- [x] 利益計算 (買取価格 - 公式価格)
+- [x] 店舗リンク遷移
 
-### UI功能
-- [x] 响应式设计
-- [x] 展开/收起全部店铺
-- [x] 价格完整显示 (¥208,000)
-- [x] AI预测文案轮换 (6种模板)
+### UI機能
+- [x] レスポンシブデザイン
+- [x] 全店舗の展開/折りたたみ
+- [x] 価格の完全表示 (¥208,000)
+- [x] AI予測文言ローテーション (6テンプレート)
 
-## 🔧 常用命令
+## 🔧 よく使うコマンド
 
-### 查看服务状态
+### サービス状態の確認
 ```bash
 cd /home/ubuntu/.openclaw/workspace/nova-kaitori
 sudo docker compose ps
 ```
 
-### 手动更新数据
+### データ手動更新
 ```bash
 sudo docker compose exec backend python -c "from app.services.sheet_scraper import scrape_from_sheet; scrape_from_sheet()"
 ```
 
-### 查看日志
+### ログ確認
 ```bash
-# Celery调度日志
+# Celeryスケジューラーログ
 sudo docker compose logs celery-beat --tail 20
 
-# Celery任务日志
+# Celeryタスクログ
 sudo docker compose logs celery --tail 20
 
-# 后端API日志
+# バックエンドAPIログ
 sudo docker compose logs backend --tail 20
 ```
 
-### 重启服务
+### サービス再起動
 ```bash
 sudo docker compose restart backend celery celery-beat
 ```
 
-### 数据库查询
+### データベース照会
 ```bash
 sudo docker compose exec db psql -U nova -d nova_kaitori -c "SELECT MAX(scraped_at) FROM prices;"
 ```
 
-## 📦 GitHub 仓库
+## 📦 GitHub リポジトリ
 
-- **地址**: https://github.com/88410/nova-kaitori
-- **类型**: 私有仓库
-- **分支**: main
-- **最新提交**: fix: Google Sheets column matching and timestamp
+- **URL**: https://github.com/88410/nova-kaitori
+- **種別**: 非公開リポジトリ
+- **ブランチ**: main
+- **最新コミット**: fix: Google Sheets column matching and timestamp
 
-### 推送更新到GitHub
+### GitHubへの更新反映
 ```bash
 cd /home/ubuntu/.openclaw/workspace/nova-kaitori
 git add -A
-git commit -m "描述更新内容"
+git commit -m "更新内容を記載"
 git push origin main
-# 输入用户名: 88410
-# 输入密码: [Personal Access Token]
+# ユーザー名を入力: 88410
+# パスワードを入力: [Personal Access Token]
 ```
 
-## 🚀 快速恢复指南
+## 🚀 クイック復旧ガイド
 
-如果从存档恢复，执行以下步骤：
+アーカイブから復元する場合は、以下を実行してください。
 
-### 1. 克隆仓库
+### 1. リポジトリをクローン
 ```bash
 git clone https://github.com/88410/nova-kaitori.git
 cd nova-kaitori
 ```
 
-### 2. 启动服务
+### 2. サービスを起動
 ```bash
 sudo docker compose -f docker-compose.prod.yml up -d
 ```
 
-### 3. 验证运行
+### 3. 稼働確認
 ```bash
 curl https://novakai.net/api/v1/stats
 ```
 
-## 📋 待办事项 / 未来改进
+## 📋 TODO / 今後の改善
 
-### 已知问题
-- [ ] 价格数据列可能随Google Sheets结构变化
-- [ ] 需要监控自动更新是否正常
+### 既知課題
+- [ ] 価格データ列が Google Sheets の構成変更に追従できない可能性
+- [ ] 自動更新の正常性を継続監視する必要あり
 
-### 建议改进
-- [ ] 添加价格变动通知
-- [ ] 添加更多iPhone型号
-- [ ] 添加图表展示价格趋势
-- [ ] 添加用户收藏功能
-- [ ] 添加邮件订阅价格提醒
+### 改善提案
+- [ ] 価格変動通知の追加
+- [ ] iPhone対応モデルの拡張
+- [ ] 価格トレンドのグラフ表示追加
+- [ ] ユーザーお気に入り機能の追加
+- [ ] 価格アラートのメール購読機能追加
 
-## 🔐 重要凭证
+## 🔐 重要認証情報
 
 ### GitHub Token
-- **用途**: 推送代码到GitHub
+- **用途**: GitHubへのコード反映
 - **Token**: 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
-- **注意**: 此Token可能需要定期更换
+- **注意**: 本Tokenは定期的な更新が必要な場合があります
 
-### 服务器访问
-- **用户**: ubuntu
-- **项目路径**: /home/ubuntu/.openclaw/workspace/nova-kaitori
-- **需要sudo权限**: 是
+### サーバーアクセス
+- **ユーザー**: ubuntu
+- **プロジェクトパス**: /home/ubuntu/.openclaw/workspace/nova-kaitori
+- **sudo権限要否**: 要
 
-## 📞 联系信息
+## 📞 連絡先情報
 
-- **管理员**: しょうし (@eth410)
+- **管理者**: しょうし (@eth410)
 - **Telegram ID**: 5092242435
 
 ---
 
-**最后更新**: 2026-02-06 09:22 GMT+8
-**版本**: v1.0.1
-**状态**: ✅ 生产环境运行中
+**最終更新**: 2026-02-06 09:22 GMT+8
+**バージョン**: v1.0.1
+**ステータス**: ✅ 本番環境で稼働中

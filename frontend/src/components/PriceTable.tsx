@@ -5,7 +5,7 @@ import { ChevronDown, ChevronUp, TrendingUp, Sparkles, Clock } from 'lucide-reac
 
 const API_URL = ''
 
-// 汇率配置
+// 為替レート設定
 const FX_RATES = {
   USD: { rate: 155.76, symbol: '$', flag: '🇺🇸' },
   HKD: { rate: 19.92, symbol: 'HK$', flag: '🇭🇰' },
@@ -13,7 +13,7 @@ const FX_RATES = {
   EUR: { rate: 183.49, symbol: '€', flag: '🇪🇺' },
 }
 
-// 容量排序权重
+// 容量ソート用の重み付け
 const CAPACITY_ORDER: Record<string, number> = {
   '128GB': 1, '128': 1,
   '256GB': 2, '256': 2,
@@ -48,7 +48,7 @@ interface GroupedProduct {
   prices: Price[]
 }
 
-// 店铺官网链接映射（正确的URL）
+// 店舗公式サイトURLマッピング
 const STORE_URLS: Record<string, string> = {
   '森森買取': 'https://www.morimori-kaitori.jp',
   '買取商店': 'https://www.kaitorishouten-co.jp',
@@ -73,7 +73,7 @@ const STORE_URLS: Record<string, string> = {
   '買取ソムリエ': 'https://somurie-kaitori.com',
 }
 
-// 店铺简称映射（移动端显示）
+// 店舗略称マッピング（モバイル表示用）
 const STORE_SHORT_NAMES: Record<string, string> = {
   '森森買取': '森森',
   '買取商店': '商店',
@@ -99,7 +99,7 @@ const STORE_SHORT_NAMES: Record<string, string> = {
   'ヤマダ電機': 'ヤマダ',
 }
 
-// AI预测文案池 - 每次更新轮换
+// AI予測メッセージパターン - 更新時にローテーション
 const PREDICTION_TEMPLATES = [
   {
     productTrend: '今週価格上昇率 +12.5% → 来週さらに高値期待',
@@ -128,7 +128,7 @@ const PREDICTION_TEMPLATES = [
 ]
 
 function getCapacityOrder(capacity: string): number {
-  // 标准化容量值
+  // 容量値を正規化
   const normalized = capacity?.toUpperCase().replace(/\s/g, '') || ''
   return CAPACITY_ORDER[normalized] || CAPACITY_ORDER[capacity] || 99
 }
@@ -176,11 +176,11 @@ function groupByModel(products: GroupedProduct[]) {
   return groups
 }
 
-// 计算最佳盈利商品和店铺
+// 最高利益商品と店舗を計算
 function getAIPredictions(prices: Price[]) {
   if (!prices || prices.length === 0) return null
   
-  // 找出最高利润的商品
+  // 最高利益の商品を検索
   const byProduct = prices.reduce((acc, p) => {
     const key = p.product.name
     if (!acc[key]) acc[key] = []
@@ -196,7 +196,7 @@ function getAIPredictions(prices: Price[]) {
     }
   })
   
-  // 找出平均价格最高的店铺
+  // 平均価格が最高の店舗を検索
   const byStore = prices.reduce((acc, p) => {
     if (!acc[p.store.name]) acc[p.store.name] = []
     acc[p.store.name].push(p.price)
@@ -214,18 +214,18 @@ function getAIPredictions(prices: Price[]) {
   return { bestProduct, bestStore }
 }
 
-// 根据更新时间选择预测文案
+// 更新時間に基づいて予測メッセージを選択
 function getPredictionTemplate(lastUpdated: string | null) {
   if (!lastUpdated) return PREDICTION_TEMPLATES[0]
   
   const date = new Date(lastUpdated)
   const hour = date.getHours()
-  // 根据小时数选择不同的文案
+  // 時間帯で異なるメッセージを表示
   const index = hour % PREDICTION_TEMPLATES.length
   return PREDICTION_TEMPLATES[index]
 }
 
-// 格式化更新时间
+// 更新時間をフォーマット
 function formatLastUpdated(isoString: string | null): string {
   if (!isoString) return '更新時間: --'
   
@@ -255,15 +255,15 @@ function AIPrediction({ prices, lastUpdated }: AIPredictionProps) {
   
   return (
     <div className="relative overflow-hidden rounded-2xl shadow-lg mb-6 md:mb-8 text-white">
-      {/* 背景渐变 */}
+      {/* 背景グラデーション */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700"></div>
       
-      {/* 装饰性光效 */}
+      {/* 装飾用ライトエフェクト */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
       
       <div className="relative p-5 md:p-6">
-        {/* 头部 */}
+        {/* ヘッダー */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-white/20 backdrop-blur-sm rounded-xl">
@@ -283,7 +283,7 @@ function AIPrediction({ prices, lastUpdated }: AIPredictionProps) {
           </div>
         </div>
         
-        {/* 卡片网格 */}
+        {/* カードグリッド */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/15 transition-colors">
             <div className="flex items-center gap-2 mb-3">
@@ -335,7 +335,7 @@ function ProductCard({ item }: { item: GroupedProduct }) {
   
   const displayPrices = expanded ? sortedPrices : top4
   
-  // 【强制过滤】如果 capacity 为空，不显示此产品
+  // 【強制フィルター】容量が空の場合は非表示
   if (!product.capacity || product.capacity.trim() === '' || product.capacity === 'GB') {
     return null
   }
@@ -343,7 +343,7 @@ function ProductCard({ item }: { item: GroupedProduct }) {
   return (
     <div className="group bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg hover:border-blue-200 transition-all duration-300">
       <div className="flex flex-col md:flex-row">
-        {/* 左侧产品信息 - 更现代的设计 */}
+        {/* 左側：製品情報 */}
         <div className="w-full md:w-52 p-4 bg-gradient-to-br from-slate-50 to-white border-b md:border-b-0 md:border-r border-slate-100 flex flex-row md:flex-col justify-between md:justify-center items-center md:items-start gap-3">
           <div className="text-center md:text-left">
             <div className="inline-flex items-center justify-center w-12 h-12 mb-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl text-white font-bold text-lg shadow-lg">
@@ -361,7 +361,7 @@ function ProductCard({ item }: { item: GroupedProduct }) {
             )}
           </div>
           
-          {/* 外币参考价格 - 更紧凑 */}
+          {/* 外貨参考価格 - コンパクト表示 */}
           {product.retail_price && (
             <div className="flex flex-wrap justify-center md:justify-start gap-1 mt-0 md:mt-2">
               {Object.entries(FX_RATES).map(([currency, data]) => (
@@ -376,7 +376,7 @@ function ProductCard({ item }: { item: GroupedProduct }) {
           )}
         </div>
         
-        {/* 右侧价格列表 */}
+        {/* 右側：価格リスト */}
         <div className="flex-1 p-3 md:p-4">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
             {displayPrices.map((price, idx) => {
@@ -472,7 +472,7 @@ export default function PriceTable() {
       const res = await axios.get(`${API_URL}/api/v1/stats`)
       return res.data
     },
-    refetchInterval: 60000, // 每分钟刷新一次stats获取更新时间
+    refetchInterval: 60000, // 1分ごとにstatsを再取得して更新時刻を反映
   })
 
   if (isLoading) {

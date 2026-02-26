@@ -7,7 +7,7 @@ from app.database import SessionLocal
 from app.models.models import Product, Store, Price, PriceHistory
 import re
 
-# Google Sheets CSV URL (using gviz API for public sheets)
+# Google Sheets CSV URL（gviz APIを使用して公開スプレッドシートから取得）
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1-Eq4q3QTTQIXrxZl0bvAnGiOtelj2JOWeEQeKaTA4iE/gviz/tq?tqx=out:csv&gid=0"
 
 # 店舗名のマッピング（CSV列名 → DB店舗名）
@@ -55,20 +55,20 @@ def parse_price(value):
     if not value or value in ['', '問い合わせ', '要問い合わせ', '#N/A', '-']:
         return None
     
-    # 转换为字符串并清理
+    # 文字列に変換してクリーンアップ
     str_value = str(value)
     
-    # 如果包含多个数字（如"￥226500 オレンジ -2000"），提取第一个数字
-    # 查找格式为 "￥数字" 或纯数字
+    # 「￥226500 オレンジ -2000」など複数の数字が含まれる場合、最初の数字を抽出
+    # 「￥数字」形式または純粋な数字を検索
     import re
     
-    # 先尝试找到 ¥xxx 格式
+    # まず「￥xxx」形式を検索
     match = re.search(r'[¥￥]\s*(\d{1,3}(?:,\d{3})+|\d+)', str_value)
     if match:
         cleaned = match.group(1).replace(',', '')
         return int(cleaned)
     
-    # 否则提取第一个纯数字
+    # それでも見つからない場合は最初の純粋な数字を抽出
     numbers = re.findall(r'\d{1,3}(?:,\d{3})+|\d+', str_value)
     if numbers:
         cleaned = numbers[0].replace(',', '')
@@ -83,20 +83,20 @@ def fetch_sheet_data():
         response.raise_for_status()
         return response.text
     except Exception as e:
-        print(f"Error fetching sheet: {e}")
+        print(f"シート取得エラー: {e}")
         return None
 
 def infer_capacity(model, apple_price, raw_capacity):
-    """根据 Apple 公式価格推断容量"""
-    # 如果 capacity 已经有值，直接返回
+    """Apple公式価格から容量を推定"""
+    # 容量が既に設定されている場合はそのまま返す
     if raw_capacity and raw_capacity.strip():
         return raw_capacity.strip()
     
-    # 根据价格推断容量
+    # 価格から容量を推定
     if not apple_price:
         return ""
     
-    # iPhone 17 Pro Max / 16 Pro Max 价格区间
+    # iPhone 17 Pro Max / 16 Pro Max の価格帯
     if model in ['17 PM', '16PM']:
         if 190000 <= apple_price <= 200000:
             return "256"
@@ -169,7 +169,7 @@ def parse_iphone_data(csv_text):
     
     # iPhoneデータの行を抽出（1行目以降、ヘッダー行の次から）
     iphone_data = []
-    for row in rows[1:]:  # 从第1行开始（跳过ヘッダー行rows[0]）
+    for row in rows[1:]:  # 1行目から開始（ヘッダー行 rows[0] をスキップ）
         if len(row) < 3:
             continue
         
@@ -182,26 +182,26 @@ def parse_iphone_data(csv_text):
         raw_capacity = row[1].strip()
         apple_price = parse_price(row[2])  # Apple公式価格
         
-        # 推断缺失的容量
+        # 欠損している容量を推定
         capacity = infer_capacity(model, apple_price, raw_capacity)
         
-        # 【强制过滤】如果 capacity 为空，跳过此行
+        # 【強制フィルタ】capacity が空の場合はこの行をスキップ
         if not capacity or capacity.strip() == '' or capacity.strip() == 'GB':
-            print(f"[SKIP] {model} 容量为空，跳过")
+            print(f"[SKIP] {model} 容量が空のためスキップ")
             continue
         
-        # 各店舗の価格を収集（AG列=第33列开始）
+        # 各店舗の価格を収集（AG列=33列目から開始）
         store_prices = {}
-        seen_stores = set()  # 用于去重
+        seen_stores = set()  # 重複排除用
         for i, header in enumerate(headers):
-            if i < 32:  # 跳过前32列（A-AF），从AG列(index 32)开始
+            if i < 32:  # 先頭32列（A-AF）をスキップし、AG列(index 32)から開始
                 continue
             if i >= len(row):
                 break
-            # 去掉" リンク"后缀进行匹配
+            # " リンク" 接尾辞を除去して照合
             header_clean = header.strip().replace(' リンク', '').replace('リンク', '')
             store_name = STORE_MAPPING.get(header_clean)
-            if store_name and store_name not in seen_stores:  # 只保留第一次出现的店铺
+            if store_name and store_name not in seen_stores:  # 最初に出現した店舗のみ採用
                 price = parse_price(row[i])
                 if price:
                     store_prices[store_name] = price
@@ -235,10 +235,10 @@ def update_database(data):
         
         # 商品と価格を更新
         for item in data:
-            # 【强制保护】数据库插入前检查 capacity，为空则跳过
+            # 【強制保護】DB挿入前に capacity を確認し、空の場合はスキップ
             cap = item.get('capacity', '') or ''
             if not cap or cap.strip() == '' or cap.strip() == 'GB':
-                print(f"[DB SKIP] {item['model']} 容量为空，不插入数据库")
+                print(f"[DB SKIP] {item['model']} 容量が空のためDBに挿入しません")
                 continue
             
             # モデル名変換

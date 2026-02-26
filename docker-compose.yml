@@ -1,8 +1,11 @@
 version: '3.8'
 
+# NOVA買取サイト - ローカル開発環境用Docker Compose設定
+
 services:
   db:
     image: postgres:15-alpine
+    container_name: nova-db
     environment:
       POSTGRES_USER: nova
       POSTGRES_PASSWORD: nova_password
@@ -14,11 +17,13 @@ services:
 
   redis:
     image: redis:7-alpine
+    container_name: nova-redis
     ports:
       - "6379:6379"
 
   backend:
     build: ./backend
+    container_name: nova-backend
     ports:
       - "8000:8000"
     environment:
@@ -34,14 +39,16 @@ services:
 
   frontend:
     build: ./frontend
+    container_name: nova-frontend
     ports:
       - "127.0.0.1:3000:3000"
     environment:
       - VITE_API_URL=https://novakai.net/api
-    # 生产模式
+    # 本番モードで動作
 
   celery:
     build: ./backend
+    container_name: nova-celery-worker
     environment:
       - DATABASE_URL=postgresql://nova:nova_password@db:5432/nova_kaitori
       - REDIS_URL=redis://redis:6379/0
@@ -54,6 +61,7 @@ services:
 
   celery-beat:
     build: ./backend
+    container_name: nova-celery-beat
     environment:
       - DATABASE_URL=postgresql://nova:nova_password@db:5432/nova_kaitori
       - REDIS_URL=redis://redis:6379/0
@@ -66,3 +74,4 @@ services:
 
 volumes:
   postgres_data:
+    name: nova_postgres_data

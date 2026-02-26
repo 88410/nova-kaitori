@@ -8,7 +8,7 @@ from app.models.models import Product, Store, Price, PriceHistory
 import random
 import time
 
-# 買取店リスト
+# 買取店舗データ
 STORES_DATA = [
     {"name": "森森買取", "name_kana": "シンシンカイトリ", "priority": 100, 
      "url": "https://www.shin-shin.co.jp", "search_url": "https://www.shin-shin.co.jp/kaitori/iphone/"},
@@ -36,7 +36,7 @@ STORES_DATA = [
      "url": "https://aboutech.jp", "search_url": "https://aboutech.jp/iphone/"},
 ]
 
-# iPhone 数据（包含原价信息）
+# iPhone製品データ（公式価格情報付き）
 IPHONE_MODELS = [
     # iPhone 15 Pro Max
     {"model": "iPhone 15 Pro Max", "capacity": "256GB", "retail_price": 189800, "image": "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-max-naturaltitanium-select?wid=470&hei=556&fmt=png-alpha&.v=1692895703318"},
@@ -98,26 +98,26 @@ STORE_PRICE_MULTIPLIERS = {
 }
 
 def init_stores(db: Session):
-    """買取店を初期化"""
+    """買取店舗をデータベースに初期化"""
     for store_data in STORES_DATA:
         existing = db.query(Store).filter(Store.name == store_data["name"]).first()
         if not existing:
-            # Only use fields that exist in the Store model
+            # Storeモデルに存在するフィールドのみ使用
             store_fields = {k: v for k, v in store_data.items() 
                           if k in ['name', 'name_kana', 'logo_url', 'website_url', 'is_active', 'priority']}
             store = Store(**store_fields)
             db.add(store)
     db.commit()
-    print(f"Initialized {len(STORES_DATA)} stores")
+    print(f"{len(STORES_DATA)}店舗を初期化しました")
 
 def init_products(db: Session):
-    """iPhone製品を初期化"""
+    """iPhone製品をデータベースに初期化"""
     colors = ["ブラック", "ホワイト", "ブルー", "パープル", "ゴールド", "シルバー", "グリーン", "レッド"]
     carriers = ["SIMフリー"]
     
     count = 0
     for iphone in IPHONE_MODELS:
-        for color in colors[:4]:  # 主要な色のみ
+        for color in colors[:4]:  # 主要な色のみ使用
             for carrier in carriers:
                 name = f"{iphone['model']} {iphone['capacity']} {color} {carrier}"
                 existing = db.query(Product).filter(Product.name == name).first()
@@ -135,12 +135,12 @@ def init_products(db: Session):
                     db.add(product)
                     count += 1
     db.commit()
-    print(f"Initialized {count} products")
+    print(f"{count}製品を初期化しました")
 
 def scrape_store_price(store: Store, product: Product) -> int:
     """
     実際のスクレイピングロジック
-    現在はデモデータとして、原价の一定割合で価格を生成
+    現在はデモデータとして、公式価格の一定割合で価格を生成
     """
     if not product.retail_price:
         return 0
@@ -159,7 +159,7 @@ def scrape_all_prices():
         stores = db.query(Store).filter(Store.is_active == 1).all()
         products = db.query(Product).all()
         
-        print(f"Scraping prices for {len(products)} products across {len(stores)} stores...")
+        print(f"{len(products)}製品 × {len(stores)}店舗の価格をスクレイピング中...")
         
         for product in products:
             best_price = 0
@@ -199,7 +199,7 @@ def scrape_all_prices():
                 db.add(new_price)
                 prices_for_product.append(new_price)
                 
-                # 履歴にも保存
+                # 価格履歴にも保存
                 history = PriceHistory(
                     product_id=product.id,
                     store_id=store.id,
@@ -221,12 +221,12 @@ def scrape_all_prices():
                 
                 db.commit()
         
-        print(f"Scraped {len(products) * len(stores)} price entries")
+        print(f"{len(products) * len(stores)}件の価格データを取得しました")
         
     finally:
         db.close()
 
-# Celery task wrapper
+# Celeryタスクラッパー
 try:
     from celery import shared_task
     

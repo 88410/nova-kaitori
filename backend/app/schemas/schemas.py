@@ -32,7 +32,7 @@ class ProductBase(BaseModel):
     carrier: Optional[str] = None
     condition: str = "新品"
     image_url: Optional[str] = None
-    retail_price: Optional[int] = None  # 原价
+    retail_price: Optional[int] = None  # 定価
 
 class ProductCreate(ProductBase):
     pass
