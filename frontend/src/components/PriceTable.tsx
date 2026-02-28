@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { X } from 'lucide-react'
 import { apiGet } from '../lib/api'
 import { FX_RATES } from '../lib/fx'
 
@@ -20,6 +20,8 @@ interface Product {
 interface Price {
   id: number
   price: number
+  price_change: number
+  price_change_percent: number
   store: Store
   product: Product
   profit: number | null
@@ -78,6 +80,12 @@ function formatSignedPrice(price: number): string {
   return `${sign}¥${Math.abs(price).toLocaleString()}`
 }
 
+function formatChange(priceChange: number, percentChange: number): string {
+  if (priceChange === 0) return '-'
+  const sign = priceChange > 0 ? '+' : '-'
+  return `${sign}¥${Math.abs(priceChange).toLocaleString()} (${Math.abs(percentChange)}%)`
+}
+
 function formatFxPrice(price: number, rate: number, symbol: string): string {
   return `${symbol}${(price / rate).toLocaleString('en-US', {
     minimumFractionDigits: 0,
@@ -124,8 +132,13 @@ function groupByModel(products: GroupedProduct[]) {
   return groups
 }
 
-function ProductAccordion({ item }: { item: GroupedProduct }) {
-  const [expanded, setExpanded] = useState(false)
+function ProductRow({
+  item,
+  onSelect,
+}: {
+  item: GroupedProduct
+  onSelect: (item: GroupedProduct) => void
+}) {
   const sortedPrices = [...item.prices].sort((a, b) => b.price - a.price)
   const bestPrice = sortedPrices[0]
   const retailPrice = item.product.retail_price
@@ -143,7 +156,7 @@ function ProductAccordion({ item }: { item: GroupedProduct }) {
     <div className="border-b border-slate-200 last:border-b-0">
       <button
         type="button"
-        onClick={() => setExpanded((current) => !current)}
+        onClick={() => onSelect(item)}
         className="flex w-full items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-slate-50 sm:grid sm:grid-cols-[120px_minmax(0,1fr)_180px_24px] sm:gap-4"
       >
         <div className="min-w-0">
@@ -170,33 +183,131 @@ function ProductAccordion({ item }: { item: GroupedProduct }) {
         <div className="min-w-0">
           <p className="text-sm text-slate-600">{bestPrice.store.name}</p>
         </div>
-        <div className="ml-auto text-slate-400">
-          {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-        </div>
+        <div className="ml-auto text-xs font-medium uppercase tracking-wide text-slate-400">詳細</div>
       </button>
-
-      {expanded && (
-        <div className="border-t border-slate-200 bg-slate-50 px-4 py-3">
-          <div className="grid gap-2">
-            {sortedPrices.map((price) => (
-              <div
-                key={price.id}
-                className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-md border border-slate-200 bg-white px-3 py-2"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-sm text-slate-700">{price.store.name}</p>
-                </div>
-                <p className="text-sm font-medium text-slate-900">{formatPrice(price.price)}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
 
-function ModelSection({ title, items }: { title: string; items: GroupedProduct[] }) {
+function ProductPriceModal({
+  item,
+  onClose,
+}: {
+  item: GroupedProduct | null
+  onClose: () => void
+}) {
+  useEffect(() => {
+    if (!item) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [item, onClose])
+
+  if (!item) return null
+
+  const sortedPrices = [...item.prices].sort((a, b) => b.price - a.price)
+  const retailPrice = item.product.retail_price
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4"
+      onClick={onClose}
+      role="presentation"
+    >
+      <div
+        className="max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="price-modal-title"
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-4 py-4 sm:px-6">
+          <div className="min-w-0">
+            <h3 id="price-modal-title" className="text-lg font-semibold text-slate-900 sm:text-xl">
+              {item.product.model} {formatCapacity(item.product.capacity)}
+            </h3>
+            <p className="mt-1 text-sm text-slate-500">全店舗の最新買取価格</p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+            aria-label="閉じる"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="max-h-[calc(90vh-88px)] overflow-y-auto">
+          <div className="overflow-x-auto px-4 py-4 sm:px-6">
+            <table className="min-w-full table-auto text-left">
+              <thead className="sticky top-0 bg-white">
+                <tr className="border-b border-slate-200 text-xs font-medium uppercase tracking-wide text-slate-500">
+                  <th className="px-3 py-3">店舗名</th>
+                  <th className="px-3 py-3">買取価格</th>
+                  <th className="px-3 py-3">定価</th>
+                  <th className="px-3 py-3">利益</th>
+                  <th className="px-3 py-3">変動</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedPrices.map((price) => {
+                  const profit = price.profit ?? getProfit(price.price, retailPrice)
+                  const changeClass =
+                    price.price_change > 0
+                      ? 'text-emerald-600'
+                      : price.price_change < 0
+                        ? 'text-red-600'
+                        : 'text-slate-500'
+
+                  return (
+                    <tr key={price.id} className="border-b border-slate-100 text-sm text-slate-700 last:border-b-0">
+                      <td className="px-3 py-3 font-medium text-slate-900">{price.store.name}</td>
+                      <td className="px-3 py-3 font-semibold text-slate-900">{formatPrice(price.price)}</td>
+                      <td className="px-3 py-3">{retailPrice !== null ? formatPrice(retailPrice) : '-'}</td>
+                      <td
+                        className={`px-3 py-3 font-medium ${
+                          profit === null ? 'text-slate-500' : profit >= 0 ? 'text-emerald-600' : 'text-red-600'
+                        }`}
+                      >
+                        {profit === null ? '-' : formatSignedPrice(profit)}
+                      </td>
+                      <td className={`px-3 py-3 font-medium ${changeClass}`}>
+                        {formatChange(price.price_change, price.price_change_percent)}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ModelSection({
+  title,
+  items,
+  onSelect,
+}: {
+  title: string
+  items: GroupedProduct[]
+  onSelect: (item: GroupedProduct) => void
+}) {
   if (items.length === 0) return null
 
   return (
@@ -212,7 +323,7 @@ function ModelSection({ title, items }: { title: string; items: GroupedProduct[]
       </div>
       <div>
         {items.map((item) => (
-          <ProductAccordion key={item.product.id} item={item} />
+          <ProductRow key={item.product.id} item={item} onSelect={onSelect} />
         ))}
       </div>
     </section>
@@ -220,6 +331,8 @@ function ModelSection({ title, items }: { title: string; items: GroupedProduct[]
 }
 
 export default function PriceTable() {
+  const [selectedProduct, setSelectedProduct] = useState<GroupedProduct | null>(null)
+
   const { data: prices, isLoading } = useQuery<Price[]>({
     queryKey: ['prices'],
     queryFn: async () => {
@@ -263,10 +376,13 @@ export default function PriceTable() {
   const byModel = groupByModel(Object.values(grouped))
 
   return (
-    <div className="space-y-4">
-      {MODEL_ORDER.map((model) => (
-        <ModelSection key={model} title={model} items={byModel[model]} />
-      ))}
-    </div>
+    <>
+      <div className="space-y-4">
+        {MODEL_ORDER.map((model) => (
+          <ModelSection key={model} title={model} items={byModel[model]} onSelect={setSelectedProduct} />
+        ))}
+      </div>
+      <ProductPriceModal item={selectedProduct} onClose={() => setSelectedProduct(null)} />
+    </>
   )
 }
