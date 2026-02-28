@@ -2,23 +2,23 @@ import { Link } from 'react-router-dom'
 
 export default function Header() {
   return (
-    <nav className="bg-white shadow-sm">
-      <div className="container mx-auto px-3 md:px-4 py-3 md:py-4 flex items-center justify-between">
+    <nav className="border-b border-slate-200 bg-white">
+      <div className="container mx-auto flex items-center justify-between px-4 py-4">
         <Link to="/" className="flex items-center space-x-1.5 md:space-x-2">
-          <div className="bg-blue-600 text-white font-bold text-base md:text-xl px-2 md:px-3 py-0.5 md:py-1 rounded-lg">
+          <div className="rounded border border-slate-900 px-2 py-0.5 text-base font-semibold text-slate-900 md:text-lg">
             NOVA
           </div>
-          <span className="text-gray-700 font-medium text-sm md:text-base">買取サイト</span>
+          <span className="text-sm font-medium text-slate-700 md:text-base">買取サイト</span>
         </Link>
-        
-        <div className="hidden md:flex items-center space-x-6 text-sm text-gray-600">
-          <Link to="/" className="hover:text-blue-600 transition-colors">
+
+        <div className="hidden items-center space-x-6 text-sm text-slate-600 md:flex">
+          <Link to="/" className="transition-colors hover:text-slate-900">
             トップ
           </Link>
-          <a href="#" className="hover:text-blue-600 transition-colors">
+          <a href="#" className="transition-colors hover:text-slate-900">
             ランキング
           </a>
-          <a href="#" className="hover:text-blue-600 transition-colors">
+          <a href="#" className="transition-colors hover:text-slate-900">
             価格推移
           </a>
         </div>
