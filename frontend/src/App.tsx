@@ -6,14 +6,7 @@ import PriceTable from './components/PriceTable'
 import ProductDetail from './pages/ProductDetail'
 import Stats from './components/Stats'
 import { RefreshCw } from 'lucide-react'
-
-// 為替レート設定
-const FX_RATES = {
-  USD: { rate: 155.76, symbol: '$', flag: '🇺🇸' },
-  HKD: { rate: 19.92, symbol: 'HK$', flag: '🇭🇰' },
-  CNY: { rate: 22.62, symbol: '¥', flag: '🇨🇳' },
-  EUR: { rate: 183.49, symbol: '€', flag: '🇪🇺' },
-}
+import { FX_RATES } from './lib/fx'
 
 function Home() {
   const [, setSearchQuery] = useState('')
@@ -78,7 +71,6 @@ function Home() {
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm font-medium text-slate-900">ノーヴァテック株式会社</p>
           <p className="mt-1 text-xs text-slate-500">© 2026 NOVA買取サイト All rights reserved.</p>
-          <p className="mt-1 text-xs text-slate-500">lzq / toda</p>
         </div>
       </footer>
     </div>
