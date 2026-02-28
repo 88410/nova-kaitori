@@ -6,13 +6,13 @@ interface SearchBarProps {
 
 export default function SearchBar({ onSearch }: SearchBarProps) {
   return (
-    <div className="max-w-2xl mx-auto relative px-2 md:px-0">
+    <div className="relative max-w-2xl">
       <div className="relative">
-        <Search className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 md:w-5 md:h-5" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 md:left-4 md:h-5 md:w-5" />
         <input
           type="text"
           placeholder="機種名・容量で検索 (例: iPhone 17 Pro Max)"
-          className="w-full pl-9 md:pl-12 pr-3 md:pr-4 py-2.5 md:py-4 rounded-lg md:rounded-xl text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-lg"
+          className="w-full rounded-md border border-slate-300 px-3 py-3 pl-10 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none md:pl-12 md:text-base"
           onChange={(e) => onSearch(e.target.value)}
         />
       </div>

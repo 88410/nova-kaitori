@@ -41,16 +41,16 @@ export default function Stats() {
       {items.map((item) => (
         <div
           key={item.label}
-          className="bg-white rounded-xl shadow-md p-3 md:p-6 flex items-center space-x-2 md:space-x-4"
+          className="flex items-center space-x-2 rounded-lg border border-slate-200 bg-white p-3 md:space-x-4 md:p-5"
         >
-          <div className="bg-blue-100 p-2 md:p-3 rounded-lg">
-            <item.icon className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+          <div className="rounded-md bg-slate-100 p-2 md:p-3">
+            <item.icon className="h-5 w-5 text-slate-700 md:h-6 md:w-6" />
           </div>
           <div>
-            <p className="text-xs md:text-sm text-gray-500">{item.label}</p>
-            <p className="text-lg md:text-2xl font-bold text-gray-800">
+            <p className="text-xs text-slate-500 md:text-sm">{item.label}</p>
+            <p className="text-lg font-semibold text-slate-900 md:text-2xl">
               {item.value.toLocaleString()}
-              <span className="text-xs md:text-sm font-normal text-gray-500 ml-1">{item.suffix}</span>
+              <span className="ml-1 text-xs font-normal text-slate-500 md:text-sm">{item.suffix}</span>
             </p>
           </div>
         </div>
