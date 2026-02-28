@@ -1,6 +1,5 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import {
   LineChart,
   Line,
@@ -12,8 +11,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { ArrowLeft, TrendingUp, ArrowUp, ArrowDown } from 'lucide-react'
-
-const API_URL = ''
+import { apiGet } from '../lib/api'
 
 interface Product {
   id: number
@@ -62,8 +60,7 @@ export default function ProductDetail() {
   const { data: prices } = useQuery<PriceWithStore[]>({
     queryKey: ['product-prices', productId],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/api/v1/prices/latest/${productId}`)
-      return res.data
+      return apiGet<PriceWithStore[]>(`/api/v1/prices/latest/${productId}`)
     },
   })
 
@@ -178,8 +175,9 @@ function PriceHistoryChart({ storeId, productId }: { storeId: number; productId:
   const { data: history } = useQuery<PriceHistory>({
     queryKey: ['price-history', productId, storeId],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/api/v1/history/${productId}/${storeId}?days=30`)
-      return res.data
+      return apiGet<PriceHistory>(`/api/v1/history/${productId}/${storeId}`, {
+        params: { days: 30 },
+      })
     },
   })
 

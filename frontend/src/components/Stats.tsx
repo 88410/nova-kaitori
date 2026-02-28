@@ -1,8 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import { TrendingUp, Store, Smartphone, Activity } from 'lucide-react'
-
-const API_URL = ''
+import { apiGet } from '../lib/api'
 
 interface StatsData {
   total_products: number
@@ -15,8 +13,7 @@ export default function Stats() {
   const { data: stats } = useQuery<StatsData>({
     queryKey: ['stats'],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}/api/v1/stats`)
-      return res.data
+      return apiGet<StatsData>('/api/v1/stats')
     },
     refetchInterval: 60000,  // 1分間隔で自動更新
   })
