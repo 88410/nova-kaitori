@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { X } from 'lucide-react'
 import { apiGet } from '../lib/api'
 import { FX_RATES } from '../lib/fx'
+import MiniKLine from './MiniKLine'
 
 interface Store {
   id: number
@@ -157,18 +158,26 @@ function ProductRow({
       <button
         type="button"
         onClick={() => onSelect(item)}
-        className="flex w-full items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-slate-50 sm:grid sm:grid-cols-[120px_minmax(0,1fr)_180px_24px] sm:gap-4"
+        className="flex w-full items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-slate-50 sm:grid sm:grid-cols-[100px_minmax(0,1fr)_100px_120px_60px] sm:gap-4"
       >
         <div className="min-w-0">
           <p className="text-sm font-medium text-slate-900">{formatCapacity(item.product.capacity)}</p>
         </div>
         <div className="min-w-0 flex-1 sm:flex-none">
-          <p className="text-lg font-semibold text-slate-900">{formatPrice(bestPrice.price)}</p>
-          {profit !== null && (
-            <p className={`text-xs font-medium ${profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-              利益 {formatSignedPrice(profit)}
-            </p>
-          )}
+          <div className="flex items-center gap-3">
+            <div>
+              <p className="text-lg font-semibold text-slate-900">{formatPrice(bestPrice.price)}</p>
+              {profit !== null && (
+                <p className={`text-xs font-medium ${profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                  利益 {formatSignedPrice(profit)}
+                </p>
+              )}
+            </div>
+            {/* 7天K线 */}
+            <div className="hidden sm:block">
+              <MiniKLine productId={item.product.id} days={7} width={70} height={28} />
+            </div>
+          </div>
           {retailPrice !== null && (
             <div className="mt-1 space-y-1">
               <p className="text-xs text-slate-500">定価 {formatPrice(retailPrice)}</p>
@@ -180,8 +189,11 @@ function ProductRow({
             </div>
           )}
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 text-center">
           <p className="text-sm text-slate-600">{bestPrice.store.name}</p>
+        </div>
+        <div className="min-w-0 flex justify-center">
+          <MiniKLine productId={item.product.id} days={7} width={50} height={24} />
         </div>
         <div className="ml-auto text-xs font-medium uppercase tracking-wide text-slate-400">詳細</div>
       </button>

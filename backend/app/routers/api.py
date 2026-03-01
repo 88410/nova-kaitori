@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
 from typing import List, Optional
 from app.database import get_db
-from app.models.models import Product, Store, Price, PriceHistory
+from app.models.models import Product, Store, Price, PriceHistory, DailyHighPrice
 from app.schemas.schemas import (
     Product as ProductSchema,
     ProductCreate,
@@ -205,6 +205,133 @@ def get_price_history(
         store=store,
         history=[PriceHistoryEntry(price=h.price, recorded_at=h.recorded_at) for h in history]
     )
+
+# K-line (candlestick) data for product price history
+@router.get("/prices/kline/{product_id}")
+def get_kline_data(
+    product_id: int,
+    days: int = Query(7, ge=1, le=90),
+    db: Session = Depends(get_db)
+):
+    """获取产品的K线数据（每日最高价格）"""
+    from datetime import datetime, timedelta
+    from sqlalchemy import func
+    
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    since = datetime.now() - timedelta(days=days)
+    
+    # 从DailyHighPrice表获取K线数据
+    daily_data = db.query(DailyHighPrice).filter(
+        DailyHighPrice.product_id == product_id,
+        DailyHighPrice.date >= since
+    ).order_by(DailyHighPrice.date).all()
+    
+    # 如果没有DailyHighPrice数据，从Price表实时计算
+    if not daily_data:
+        # 获取历史最高价格数据
+        subquery = db.query(
+            func.date(Price.scraped_at).label('date'),
+            func.max(Price.price).label('high_price'),
+            func.min(Price.price).label('low_price')
+        ).filter(
+            Price.product_id == product_id,
+            Price.scraped_at >= since
+        ).group_by(func.date(Price.scraped_at)).subquery()
+        
+        # 获取每天最早和最晚的价格作为开盘和收盘价
+        daily_stats = db.query(subquery).order_by(subquery.c.date).all()
+        
+        kline_data = []
+        for stat in daily_stats:
+            # 获取当天的第一个价格（开盘）
+            open_price = db.query(Price).filter(
+                Price.product_id == product_id,
+                func.date(Price.scraped_at) == stat.date
+            ).order_by(Price.scraped_at.asc()).first()
+            
+            # 获取当天的最后一个价格（收盘）
+            close_price = db.query(Price).filter(
+                Price.product_id == product_id,
+                func.date(Price.scraped_at) == stat.date
+            ).order_by(Price.scraped_at.desc()).first()
+            
+            # 获取当天最高价的店铺
+            best_store = db.query(Price, Store).join(Store).filter(
+                Price.product_id == product_id,
+                func.date(Price.scraped_at) == stat.date,
+                Price.price == stat.high_price
+            ).order_by(Price.scraped_at.desc()).first()
+            
+            kline_data.append({
+                "date": stat.date.isoformat(),
+                "open": open_price.price if open_price else stat.high_price,
+                "high": stat.high_price,
+                "low": stat.low_price,
+                "close": close_price.price if close_price else stat.high_price,
+                "best_store": best_store.Store.name if best_store else None
+            })
+        
+        return kline_data
+    
+    # 使用DailyHighPrice表的数据
+    return [{
+        "date": d.date.isoformat(),
+        "open": d.open_price,
+        "high": d.high_price,
+        "low": d.low_price,
+        "close": d.close_price,
+        "best_store": d.best_store_name
+    } for d in daily_data]
+
+# Batch K-line data for multiple products
+@router.get("/prices/kline-batch")
+def get_batch_kline_data(
+    product_ids: str = Query(..., description="Comma-separated product IDs"),
+    days: int = Query(7, ge=1, le=30),
+    db: Session = Depends(get_db)
+):
+    """批量获取多个产品的K线数据"""
+    from datetime import datetime, timedelta
+    from sqlalchemy import func
+    
+    ids = [int(x.strip()) for x in product_ids.split(",") if x.strip().isdigit()]
+    since = datetime.now() - timedelta(days=days)
+    
+    result = {}
+    for product_id in ids:
+        # 获取每天最高价格
+        daily_highs = db.query(
+            func.date(Price.scraped_at).label('date'),
+            func.max(Price.price).label('high_price')
+        ).filter(
+            Price.product_id == product_id,
+            Price.scraped_at >= since
+        ).group_by(func.date(Price.scraped_at)).order_by('date').all()
+        
+        kline = []
+        for dh in daily_highs:
+            # 获取当天所有价格
+            day_prices = db.query(Price).filter(
+                Price.product_id == product_id,
+                func.date(Price.scraped_at) == dh.date
+            ).order_by(Price.scraped_at).all()
+            
+            if day_prices:
+                prices = [p.price for p in day_prices]
+                kline.append({
+                    "date": dh.date.isoformat(),
+                    "open": prices[0],
+                    "high": max(prices),
+                    "low": min(prices),
+                    "close": prices[-1]
+                })
+        
+        result[product_id] = kline
+    
+    return result
 
 # Stats
 @router.get("/stats")
