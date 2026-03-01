@@ -109,15 +109,29 @@ def get_prices(
     db: Session = Depends(get_db),
     product_id: Optional[int] = None,
     store_id: Optional[int] = None,
-    skip: int = 0,
-    limit: int = 200
+    limit: int = 1000
 ):
-    query = db.query(Price).join(Store).join(Product)
+    # サブクエリ: 各 product_id + store_id の最新 scraped_at を取得
+    subquery = db.query(
+        Price.product_id,
+        Price.store_id,
+        func.max(Price.scraped_at).label('max_scraped_at')
+    ).group_by(Price.product_id, Price.store_id).subquery()
+    
+    # メインクエリ: 最新の価格のみを取得
+    query = db.query(Price).join(
+        subquery,
+        (Price.product_id == subquery.c.product_id) &
+        (Price.store_id == subquery.c.store_id) &
+        (Price.scraped_at == subquery.c.max_scraped_at)
+    ).join(Store).join(Product)
+    
     if product_id:
         query = query.filter(Price.product_id == product_id)
     if store_id:
         query = query.filter(Price.store_id == store_id)
-    prices = query.order_by(desc(Price.scraped_at)).offset(skip).limit(limit).all()
+    
+    prices = query.order_by(desc(Price.price)).limit(limit).all()
     return [price_to_dict(p) for p in prices]
 
 @router.get("/prices/latest/{product_id}")
