@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { X } from 'lucide-react'
 import { apiGet } from '../lib/api'
 import { FX_RATES } from '../lib/fx'
-import MiniKLine from './MiniKLine'
+// import MiniKLine from './MiniKLine'
 
 interface Store {
   id: number
@@ -158,44 +158,43 @@ function ProductRow({
       <button
         type="button"
         onClick={() => onSelect(item)}
-        className="flex w-full items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-slate-50 sm:grid sm:grid-cols-[100px_minmax(0,1fr)_100px_120px_60px] sm:gap-4"
+        className="flex w-full items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-slate-50 sm:grid sm:grid-cols-[100px_1fr_100px_80px] sm:gap-4"
       >
+        {/* 第1列：容量 + 定価 */}
         <div className="min-w-0">
           <p className="text-sm font-medium text-slate-900">{formatCapacity(item.product.capacity)}</p>
-        </div>
-        <div className="min-w-0 flex-1 sm:flex-none">
-          <div className="flex items-center gap-3">
-            <div>
-              <p className="text-lg font-semibold text-slate-900">{formatPrice(bestPrice.price)}</p>
-              {profit !== null && (
-                <p className={`text-xs font-medium ${profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                  利益 {formatSignedPrice(profit)}
-                </p>
-              )}
-            </div>
-            {/* 7天K线 */}
-            <div className="hidden sm:block">
-              <MiniKLine productId={item.product.id} days={7} width={70} height={28} />
-            </div>
-          </div>
           {retailPrice !== null && (
-            <div className="mt-1 space-y-1">
-              <p className="text-xs text-slate-500">定価 {formatPrice(retailPrice)}</p>
-              <p className="text-xs text-slate-500">
-                {Object.entries(FX_RATES)
-                  .map(([currency, data]) => `${currency} ${formatFxPrice(retailPrice, data.rate, data.symbol)}`)
-                  .join(' / ')}
-              </p>
-            </div>
+            <p className="text-xs text-slate-500 mt-0.5">定価 {formatPrice(retailPrice)}</p>
           )}
         </div>
+        
+        {/* 第2列：最高价格 + 利润 + 外汇 */}
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="text-lg font-semibold text-slate-900">{formatPrice(bestPrice.price)}</p>
+            {profit !== null && (
+              <p className={`text-xs font-medium ${profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                ({formatSignedPrice(profit)})
+              </p>
+            )}
+          </div>
+          {/* 外汇价格 - 基于最高价格计算 */}
+          <p className="text-xs text-slate-500 mt-0.5">
+            {Object.entries(FX_RATES)
+              .map(([currency, data]) => `${currency} ${formatFxPrice(bestPrice.price, data.rate, data.symbol)}`)
+              .join(' / ')}
+          </p>
+        </div>
+        
+        {/* 第3列：店铺名 */}
         <div className="min-w-0 text-center">
           <p className="text-sm text-slate-600">{bestPrice.store.name}</p>
         </div>
-        <div className="min-w-0 flex justify-center">
-          <MiniKLine productId={item.product.id} days={7} width={50} height={24} />
+        
+        {/* 第4列：詳細按钮 */}
+        <div className="min-w-0 text-right">
+          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">詳細</span>
         </div>
-        <div className="ml-auto text-xs font-medium uppercase tracking-wide text-slate-400">詳細</div>
       </button>
     </div>
   )
