@@ -10,16 +10,16 @@
 
 ### ✅ 実装済み機能
 
-- [x] **バックエンド**: FastAPI + PostgreSQL + Celery によるスクレイピング自動化
-- [x] **フロントエンド**: React + TypeScript + Tailwind CSS + Vite
-- [x] **データ収集**: Google Sheets CSV連携 (24製品 × 23店舗 × 約900件の価格データ)
-- [x] **デプロイ**: Docker Compose + Nginx リバースプロキシ
-- [x] **SSL**: Let's Encrypt HTTPS証明書
-- [x] **ドメイン**: novakai.net
-- [x] **モバイル対応**: レスポンシブデザイン、スマートフォン2列レイアウト
-- [x] **AI予測機能**: 本日最適売却機種・最高額買取店舗の自動表示
-- [x] **店舗リンク**: 全店舗の公式サイトリンクを検証済みで設定
-- [x] **為替レート**: 外国為替相場のリアルタイム表示（USD/HKD/CNY/EUR）
+- [x] **バックエンド**: FastAPI + PostgreSQL + SQLAlchemy + Celery による価格データ集約とAPI提供
+- [x] **フロントエンド**: React + TypeScript + Vite によるSPA構成
+- [x] **価格比較**: iPhone買取価格の店舗別比較、差額表示、機種詳細表示
+- [x] **履歴表示**: 日次高価買取履歴とKラインチャート表示
+- [x] **AI機能**: NOVA GPTチャット、売却タイミング案内、注目機種の自動表示
+- [x] **多言語対応**: 日本語 / English / 中文 のUI切り替え
+- [x] **為替レート**: 外国為替相場の表示とバックエンドJSONキャッシュ連携（USD/HKD/CNY/EUR）
+- [x] **店舗情報**: 店舗メタデータ管理、公式サイトリンク表示、買取店詳細強化
+- [x] **法務ページ**: 利用規約・プライバシーポリシー・特商法ページを実装
+- [x] **デプロイ**: Docker Compose + Nginx リバースプロキシ + HTTPS運用
 
 ### 📊 データ概要
 
@@ -31,24 +31,34 @@
 
 ### 🏗️ 技術スタック
 
-**バックエンド:**
-- FastAPI (Python)
+**バックエンド**
+- Python 3 + FastAPI
 - PostgreSQL
-- Celery + Redis (タスクキュー)
-- SQLAlchemy (ORM)
+- SQLAlchemy + Pydantic
+- Celery + Redis
+- HTTPX / BeautifulSoup / lxml（外部データ取得）
 
-**フロントエンド:**
-- React 18
-- TypeScript
-- Tailwind CSS
+**フロントエンド**
+- React 18 + TypeScript
 - Vite
+- React Router
 - TanStack Query
 - Axios
+- Recharts
+- Tailwind CSS
 
-**インフラ:**
-- Docker & Docker Compose
-- Nginx (リバースプロキシ + SSL)
-- Let's Encrypt
+**インフラ / 運用**
+- Docker / Docker Compose
+- Nginx（リバースプロキシ）
+- Let's Encrypt（HTTPS）
+- novakai.net 本番運用
+
+**ページ構成**
+- Home: トップページ、AIハイライト、為替表示
+- Prices: 一覧価格比較ページ
+- Product Detail: 機種別詳細、店舗別価格、履歴チャート
+- AI: NOVA GPTチャットページ
+- Legal: 利用規約、プライバシーポリシー、特商法表記
 
 ### 📁 プロジェクト構成
 
@@ -82,12 +92,17 @@ nova-kaitori/
 
 ### 📝 更新履歴
 
-- 2026-02-26: UI全面リニューアル - モダンなグラデーションデザインを採用
+- 2026-03-31: README更新。最新の技術構成、ページ構成、主要機能を反映
+- 2026-03-31: 日本語 / English / 中文 の多言語UI切り替えを追加
+- 2026-03-31: 利用規約、プライバシーポリシー、特商法ページを追加
+- 2026-03-31: 店舗メタデータ整備、店舗情報表示、公式リンク周りを強化
+- 2026-03-31: 外為レート取得処理を整理し、バックエンドキャッシュ連携を追加
+- 2026-03-31: NOVA GPT AIチャット機能を追加
+- 2026-03-28: 日次高価買取履歴とKラインチャート表示を追加
+- 2026-02-26: UI全面リニューアル。モダンなグラデーションデザインを採用
 - 2026-02-25: 為替レート表示機能を追加（USD/HKD/CNY/EUR対応）
 - 2026-02-25: 価格表示を「万円」単位に変更し視認性を向上
-- 2026-02-05: モバイルUI最適化
-- 2026-02-05: APIパス修正、データ表示正常化
-- 2026-02-05: 著作権表示年を2026年に更新、会社名を追加
+- 2026-02-05: モバイルUI最適化、APIパス修正、データ表示正常化
 
 ## 🚀 起動方法
 
