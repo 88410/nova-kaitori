@@ -12,6 +12,7 @@ import {
 } from 'recharts'
 import { ArrowLeft, TrendingUp, ArrowUp, ArrowDown } from 'lucide-react'
 import { apiGet } from '../lib/api'
+import { useI18n } from '../i18n'
 
 interface Product {
   id: number
@@ -54,6 +55,7 @@ interface PriceHistory {
 }
 
 export default function ProductDetail() {
+  const { language, t } = useI18n()
   const { id } = useParams<{ id: string }>()
   const productId = Number(id)
 
@@ -76,7 +78,7 @@ export default function ProductDetail() {
             className="inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors"
           >
             <ArrowLeft className="w-5 h-5 mr-1" />
-            戻る
+            {t('back')}
           </Link>
         </div>
       </div>
@@ -95,20 +97,28 @@ export default function ProductDetail() {
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900">{product.model}</h1>
                     <p className="text-lg text-gray-600 mt-1">
-                      {product.capacity} · {product.color} · {product.carrier}
+                      {product.capacity}
+                      {t('conditionSeparator')}
+                      {product.color}
+                      {t('conditionSeparator')}
+                      {product.carrier}
                     </p>
                     {product.retail_price && (
-                      <p className="text-gray-500 mt-2">新品時価格: ¥{product.retail_price.toLocaleString()}</p>
+                      <p className="text-gray-500 mt-2">
+                        {t('newRetailPrice')}: ¥{product.retail_price.toLocaleString()}
+                      </p>
                     )}
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <p className="text-sm text-gray-500">最高買取価格</p>
+                  <p className="text-sm text-gray-500">{t('bestBuybackPrice')}</p>
                   <p className="text-4xl font-bold text-green-600">¥{bestPrice.price.toLocaleString()}</p>
                   <p className="text-sm text-gray-500 mt-1">{bestPrice.store.name}</p>
                   {bestPrice.profit !== null && bestPrice.profit > 0 && (
-                    <p className="text-green-600 mt-1">利益 ¥{bestPrice.profit.toLocaleString()}</p>
+                    <p className="text-green-600 mt-1">
+                      {t('profit')} ¥{bestPrice.profit.toLocaleString()}
+                    </p>
                   )}
                 </div>
               </div>
@@ -116,7 +126,7 @@ export default function ProductDetail() {
 
             <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-800">店舗別買取価格</h2>
+                <h2 className="text-xl font-semibold text-gray-800">{t('byStorePrices')}</h2>
               </div>
 
               <div className="divide-y divide-gray-200">
@@ -129,7 +139,7 @@ export default function ProductDetail() {
                       <span className="font-medium text-gray-900">{price.store.name}</span>
                       {price.is_best_price === 1 && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">
-                          最高値!
+                          {t('bestPriceBadge')}
                         </span>
                       )}
                     </div>
@@ -145,7 +155,7 @@ export default function ProductDetail() {
                       )}
                       {price.profit !== null && (
                         <span className={`text-sm ${price.profit > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          利益 {price.profit > 0 ? '+' : ''}¥{price.profit.toLocaleString()}
+                          {t('profit')} {price.profit > 0 ? '+' : ''}¥{price.profit.toLocaleString()}
                         </span>
                       )}
                       <span className="text-2xl font-bold text-gray-900">¥{price.price.toLocaleString()}</span>
@@ -157,11 +167,11 @@ export default function ProductDetail() {
 
             {prices && prices.length > 0 && (
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <div className="flex items-center space-x-2 mb-6">
-                  <TrendingUp className="w-6 h-6 text-blue-600" />
-                  <h2 className="text-xl font-semibold text-gray-800">価格推移</h2>
-                </div>
-                <PriceHistoryChart storeId={bestPrice.store.id} productId={productId} />
+              <div className="flex items-center space-x-2 mb-6">
+                <TrendingUp className="w-6 h-6 text-blue-600" />
+                <h2 className="text-xl font-semibold text-gray-800">{t('priceTrend')}</h2>
+              </div>
+              <PriceHistoryChart storeId={bestPrice.store.id} productId={productId} language={language} />
               </div>
             )}
           </>
@@ -171,7 +181,16 @@ export default function ProductDetail() {
   )
 }
 
-function PriceHistoryChart({ storeId, productId }: { storeId: number; productId: number }) {
+function PriceHistoryChart({
+  storeId,
+  productId,
+  language,
+}: {
+  storeId: number
+  productId: number
+  language: 'en' | 'zh' | 'ja'
+}) {
+  const { t } = useI18n()
   const { data: history } = useQuery<PriceHistory>({
     queryKey: ['price-history', productId, storeId],
     queryFn: async () => {
@@ -184,13 +203,16 @@ function PriceHistoryChart({ storeId, productId }: { storeId: number; productId:
   if (!history?.history?.length) {
     return (
       <div className="h-64 flex items-center justify-center text-gray-500">
-        履歴データがありません
+        {t('noHistory')}
       </div>
     )
   }
 
   const chartData = history.history.map((h) => ({
-    date: new Date(h.recorded_at).toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' }),
+    date: new Date(h.recorded_at).toLocaleDateString(
+      language === 'zh' ? 'zh-CN' : language === 'ja' ? 'ja-JP' : 'en-US',
+      { month: 'short', day: 'numeric' },
+    ),
     price: h.price,
   }))
 
@@ -206,11 +228,18 @@ function PriceHistoryChart({ storeId, productId }: { storeId: number; productId:
             domain={['dataMin - 5000', 'dataMax + 5000']}
           />
           <Tooltip
-            formatter={(value: number) => [`¥${value.toLocaleString()}`, '価格']}
+            formatter={(value: number) => [`¥${value.toLocaleString()}`, t('chartPrice')]}
             contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
           />
           <Legend />
-          <Line type="monotone" dataKey="price" name="買取価格" stroke="#0ea5e9" strokeWidth={2} dot={{ fill: '#0ea5e9' }} />
+          <Line
+            type="monotone"
+            dataKey="price"
+            name={t('buybackPrice')}
+            stroke="#0ea5e9"
+            strokeWidth={2}
+            dot={{ fill: '#0ea5e9' }}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>
