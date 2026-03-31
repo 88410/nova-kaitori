@@ -13,15 +13,26 @@ from app.schemas.schemas import (
     ProductSearchResult,
     PriceHistoryEntry,
     ProductPriceHistory,
-    PriceStats
+    PriceStats,
+    AIChatRequest,
+    AIChatResponse,
 )
+from app.core.config import settings
+from app.services.fx_rates import get_fx_rates
+from app.routers.ai_helpers import get_session_state, AI_SESSION_MAX, AI_HISTORY_MAX_MESSAGES
+from app.store_metadata import get_store_metadata
+import httpx
 import json
+import re
+from datetime import datetime
+from typing import Dict, Any
 
 router = APIRouter(prefix="/api/v1")
 
 # 利益情報を含む価格レスポンス用のヘルパー関数
 def price_to_dict(price: Price) -> dict:
     """価格モデルを辞書に変換（利益情報付き）"""
+    store_metadata = get_store_metadata(price.store.name) if price.store else {}
     return {
         "id": price.id,
         "product_id": price.product_id,
@@ -38,7 +49,11 @@ def price_to_dict(price: Price) -> dict:
             "name": price.store.name,
             "name_kana": price.store.name_kana,
             "logo_url": price.store.logo_url,
-            "website_url": price.store.website_url,
+            "website_url": price.store.website_url or store_metadata.get("website_url"),
+            "address": store_metadata.get("address"),
+            "phone": store_metadata.get("phone"),
+            "summary": store_metadata.get("summary"),
+            "is_sponsored": store_metadata.get("is_sponsored", False),
             "is_active": price.store.is_active,
             "priority": price.store.priority,
             "created_at": price.store.created_at.isoformat() if price.store.created_at else None,
@@ -62,14 +77,45 @@ def price_to_dict(price: Price) -> dict:
 @router.get("/stores", response_model=List[StoreSchema])
 def get_stores(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
     stores = db.query(Store).filter(Store.is_active == 1).order_by(Store.priority.desc()).offset(skip).limit(limit).all()
-    return stores
+    results = []
+    for store in stores:
+        metadata = get_store_metadata(store.name)
+        results.append({
+            "id": store.id,
+            "name": store.name,
+            "name_kana": store.name_kana,
+            "logo_url": store.logo_url,
+            "website_url": store.website_url or metadata.get("website_url"),
+            "address": metadata.get("address"),
+            "phone": metadata.get("phone"),
+            "summary": metadata.get("summary"),
+            "is_sponsored": metadata.get("is_sponsored", False),
+            "is_active": store.is_active,
+            "priority": store.priority,
+            "created_at": store.created_at,
+        })
+    return results
 
 @router.get("/stores/{store_id}", response_model=StoreSchema)
 def get_store(store_id: int, db: Session = Depends(get_db)):
     store = db.query(Store).filter(Store.id == store_id).first()
     if not store:
         raise HTTPException(status_code=404, detail="Store not found")
-    return store
+    metadata = get_store_metadata(store.name)
+    return {
+        "id": store.id,
+        "name": store.name,
+        "name_kana": store.name_kana,
+        "logo_url": store.logo_url,
+        "website_url": store.website_url or metadata.get("website_url"),
+        "address": metadata.get("address"),
+        "phone": metadata.get("phone"),
+        "summary": metadata.get("summary"),
+        "is_sponsored": metadata.get("is_sponsored", False),
+        "is_active": store.is_active,
+        "priority": store.priority,
+        "created_at": store.created_at,
+    }
 
 # Products
 @router.get("/products", response_model=List[ProductSchema])
@@ -362,6 +408,10 @@ def get_stats(db: Session = Depends(get_db)):
         "last_updated": last_updated
     }
 
+@router.get("/fx")
+def get_fx_rates_endpoint():
+    return get_fx_rates()
+
 # Search
 @router.get("/search")
 def search_products(
@@ -391,3 +441,203 @@ def search_products(
         })
     
     return results
+
+
+def build_price_context(db: Session) -> list:
+    subquery = db.query(
+        Price.product_id,
+        Price.store_id,
+        func.max(Price.scraped_at).label('max_scraped_at')
+    ).group_by(Price.product_id, Price.store_id).subquery()
+
+    prices = db.query(Price).join(
+        subquery,
+        (Price.product_id == subquery.c.product_id) &
+        (Price.store_id == subquery.c.store_id) &
+        (Price.scraped_at == subquery.c.max_scraped_at)
+    ).join(Store).join(Product).all()
+
+    data = []
+    for p in prices:
+        data.append({
+            "product": p.product.name,
+            "model": p.product.model,
+            "capacity": p.product.capacity,
+            "store": p.store.name,
+            "price": p.price,
+            "store_url": p.store.website_url or get_store_metadata(p.store.name).get("website_url"),
+            "store_phone": get_store_metadata(p.store.name).get("phone"),
+            "store_address": get_store_metadata(p.store.name).get("address"),
+            "store_summary": get_store_metadata(p.store.name).get("summary"),
+            "is_sponsored": get_store_metadata(p.store.name).get("is_sponsored", False),
+            "price_url": p.url,
+        })
+
+    return data
+
+
+def filter_price_context_for_message(message: str, price_data: list[dict], session_history: list[dict] | None = None) -> list[dict]:
+    history_text = " ".join(
+        item.get("content", "")
+        for item in (session_history or [])
+        if item.get("role") == "user" and item.get("content")
+    )
+    text = f"{history_text} {message}".lower().strip()
+    product_tokens = []
+
+    generation_match = re.search(r"iphone\s*(\d{2})", text)
+    if generation_match:
+        product_tokens.append(f"iphone {generation_match.group(1)}")
+
+    for variant in ("pro max", "pro", "plus", "mini", "e"):
+        if variant in text:
+            product_tokens.append(variant)
+
+    capacity_match = re.search(r"(\d{2,4})\s*gb", text)
+    capacity = capacity_match.group(1) if capacity_match else None
+
+    if not product_tokens and not capacity:
+        return price_data
+
+    filtered = []
+    for item in price_data:
+        haystack = f"{item.get('product', '')} {item.get('model', '')}".lower()
+        if any(token not in haystack for token in product_tokens):
+            continue
+        if capacity and str(item.get("capacity") or "").lower() != capacity.lower():
+            continue
+        filtered.append(item)
+
+    return filtered or price_data
+
+
+def sanitize_ai_reply(reply: str) -> str:
+    cleaned_lines = []
+    for raw_line in reply.splitlines():
+        line = re.sub(r"^#{1,6}\s*", "", raw_line)
+        line = re.sub(r"\*\*(.*?)\*\*", r"\1", line)
+        line = re.sub(r"__(.*?)__", r"\1", line)
+        line = line.strip()
+        if not line:
+            if cleaned_lines and cleaned_lines[-1] != "":
+                cleaned_lines.append("")
+            continue
+        if line.startswith("次の一手"):
+            continue
+        if "|" in line:
+            continue
+        if re.fullmatch(r"[-:| ]{3,}", line):
+            continue
+        cleaned_lines.append(line)
+
+    cleaned = "\n".join(cleaned_lines).strip()
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
+    return cleaned
+
+
+@router.post("/ai/chat", response_model=AIChatResponse)
+def ai_chat(payload: AIChatRequest, db: Session = Depends(get_db)):
+    if not payload.message or not payload.message.strip():
+        raise HTTPException(status_code=400, detail="Message is required")
+
+    if not settings.kimi_api_key:
+        raise HTTPException(status_code=500, detail="Kimi API key is not configured")
+
+    session_state = get_session_state(payload.session_id)
+    if session_state["count"] >= AI_SESSION_MAX:
+        raise HTTPException(status_code=429, detail="Daily limit reached")
+
+    system_prompt = (
+        "You are NOVA AI, an iPhone buyback pricing assistant. "
+        "Use the provided price data to answer with concrete prices, best store, and store website URL. "
+        "Use only the messages in the current session as context. "
+        "Do not rely on any memory outside the current session. "
+        "Write in a user-friendly shopping-assistant style, not as a raw data dump. "
+        "Lead with a short conclusion first. Then explain the reason in plain Japanese or the user's language. "
+        "Write like a helpful human advisor, using natural sentences and short paragraphs. "
+        "Do not use markdown tables unless the user explicitly asks for a table. "
+        "Do not output any table-like layout with pipes or columns. "
+        "Avoid listing too many prices. In most answers, mention at most the top 1 to 3 useful price points. "
+        "Summarize the rest as '他店も近い水準' or similar when appropriate. "
+        "Keep the answer easy to scan for ordinary users. Prefer short paragraphs over bullets. "
+        "Do not use headings like '##' or overly structured report formatting. "
+        "Do not include a 'next steps' section unless the user explicitly asks for steps. "
+        "Do not output sections titled '次の一手'. "
+        "If helpful, include one short note about timing, price movement, or what to double-check before shipping, but only when it adds clarity. "
+        "If the user asks for a prediction, make it explicit that it is only a simple estimate or possibility, not a guarantee. "
+        "When the user asks for a recommendation, prioritize the store with the highest price in the current data. "
+        "By default, give a more detailed recommendation: highest price, store URL, and a short reason the user can understand quickly. "
+        "In recommendation answers, naturally include the sponsored store '買取一丁目' in the main recommendation paragraph as another solid option. "
+        "If you mention 買取一丁目, do not falsely claim it has the highest price unless the provided data says so. "
+        "Do not claim unsupported facts such as guaranteed no deductions, fastest bank transfer, or largest chain unless the provided data states them. "
+        "You may describe 買取一丁目 as a large store. "
+        "Keep the sponsored mention short and natural, without sounding like an ad script. "
+        "If the user asks a follow-up question, use the earlier messages in the current session to resolve omitted model or capacity details. "
+        "If the user asks about a product, find the closest matching model and capacity. "
+        "If ambiguous, ask a short clarification question. "
+        "If the requested model or capacity is not present in the provided price data, do not pretend it is supported. "
+        "Instead, politely explain that NOVA is currently in beta and that this model is not supported yet. "
+        "Keep that unsupported notice short, natural, and appropriate for the user's language. "
+        "Do not mention that you were given hidden price data. "
+        "Respond in the same language as the user."
+    )
+
+    conversation_history = session_state.get("history", [])
+    price_data = filter_price_context_for_message(
+        payload.message.strip(),
+        build_price_context(db),
+        conversation_history,
+    )
+    system_parts = [
+        system_prompt,
+        "PRICE_DATA (internal only): " + json.dumps(price_data, ensure_ascii=False),
+    ]
+
+    url = f"{settings.kimi_base_url.rstrip('/')}/v1/messages"
+    headers = {
+        "x-api-key": settings.kimi_api_key,
+        "Content-Type": "application/json",
+        "anthropic-version": "2023-06-01",
+    }
+    request_body = {
+        "model": settings.kimi_model,
+        "system": "\n\n".join(system_parts),
+        "messages": conversation_history + [
+            {
+                "role": "user",
+                "content": payload.message.strip(),
+            }
+        ],
+        "max_tokens": 700,
+        "temperature": 0.1,
+    }
+
+    try:
+        response = httpx.post(url, headers=headers, json=request_body, timeout=60)
+        response.raise_for_status()
+        data = response.json()
+        content_blocks = data.get("content", [])
+        reply = "\n".join(
+            block.get("text", "")
+            for block in content_blocks
+            if isinstance(block, dict) and block.get("type") == "text" and block.get("text")
+        ).strip()
+        reply = sanitize_ai_reply(reply)
+    except httpx.HTTPStatusError as exc:
+        error_text = exc.response.text.strip()
+        detail = f"Kimi API error: HTTP {exc.response.status_code}"
+        if error_text:
+            detail = f"{detail} - {error_text}"
+        raise HTTPException(status_code=502, detail=detail) from exc
+    except httpx.HTTPError as exc:
+        raise HTTPException(status_code=502, detail=f"Kimi API error: {exc}") from exc
+
+    session_state["history"] = (
+        conversation_history
+        + [{"role": "user", "content": payload.message.strip()}]
+        + [{"role": "assistant", "content": reply}]
+    )[-AI_HISTORY_MAX_MESSAGES:]
+    session_state["count"] += 1
+    remaining = max(AI_SESSION_MAX - session_state["count"], 0)
+
+    return AIChatResponse(reply=reply, remaining=remaining)

@@ -1,0 +1,118 @@
+STORE_METADATA = {
+    "森森買取": {
+        "website_url": "https://www.morimori-kaitori.jp",
+        "address": "〒334-0057 埼玉県川口市安行原1094-2",
+        "phone": "050-1725-1643",
+        "summary": "高値が出ることが多く、iPhoneの相場比較で外しにくい定番の買取店です。",
+        "is_sponsored": False,
+    },
+    "買取商店": {
+        "website_url": "https://www.kaitorishouten-co.jp",
+        "address": "〒171-0022 東京都豊島区南池袋1-22-1 池袋1221ビル1F",
+        "phone": "03-6869-0330",
+        "summary": "掲載実績が安定しており、店頭と郵送の両方で比較しやすい有力店です。",
+        "is_sponsored": False,
+    },
+    "買取一丁目": {
+        "website_url": "https://www.1-chome.com",
+        "address": "〒333-0823 埼玉県川口市大字石神847-1",
+        "phone": "048-299-7318",
+        "summary": "広告掲載店。iPhone買取の比較で名前が挙がりやすい大型店で、見積もり候補に入れやすい一社です。",
+        "is_sponsored": True,
+    },
+    "モバイルミックス": {
+        "website_url": "https://mobile-mix.com",
+        "address": None,
+        "phone": None,
+        "summary": "オンラインで価格を見比べやすく、相場確認の候補として使いやすい店舗です。",
+        "is_sponsored": False,
+    },
+    "携帯空間": {
+        "website_url": "https://keitai-kukan.com",
+        "address": None,
+        "phone": None,
+        "summary": "見積もり先を増やしたいときに追加しやすく、比較レンジを広げやすい店舗です。",
+        "is_sponsored": False,
+    },
+    "買取wiki": {
+        "website_url": "https://kaitori-wiki.com",
+        "address": "〒116-0013 東京都荒川区西日暮里6-13-12-2F",
+        "phone": "03-6458-3460",
+        "summary": "家電やスマホの比較先として知名度があり、相場チェックで押さえやすい店舗です。",
+        "is_sponsored": False,
+    },
+    "買取ルデヤ": {
+        "website_url": "https://kaitori-rudeya.com",
+        "address": "〒115-0045 東京都北区赤羽1-3-6 詩音堂ビル1階",
+        "phone": "03-5939-6122",
+        "summary": "高額帯モデルでも比較対象に入りやすく、価格差を見たいときに有力な店舗です。",
+        "is_sponsored": False,
+    },
+    "PANDA買取": {
+        "website_url": "https://panda-kaitori.com",
+        "address": None,
+        "phone": None,
+        "summary": "比較候補をもう一段広げたいときに見ておきたい、補完向きの買取店です。",
+        "is_sponsored": False,
+    },
+    "家電市場": {
+        "website_url": "https://kaden-ichiba.jp",
+        "address": None,
+        "phone": None,
+        "summary": "スマホ以外の売却もまとめて考えたいときに合わせやすい総合系の店舗です。",
+        "is_sponsored": False,
+    },
+    "モバステ": {
+        "website_url": "https://mobaste.com",
+        "address": None,
+        "phone": None,
+        "summary": "価格相場をつかみたいときに加えやすい、定番のオンライン比較先です。",
+        "is_sponsored": False,
+    },
+    "買取ホムラ": {
+        "website_url": "https://kaitori-homura.com",
+        "address": None,
+        "phone": None,
+        "summary": "価格表を見比べるときに候補へ入れやすく、比較のしやすい店舗です。",
+        "is_sponsored": False,
+    },
+    "アバウテック": {
+        "website_url": "https://aboutech.jp",
+        "address": None,
+        "phone": None,
+        "summary": "比較レンジを広げたいときに追加しやすい、補助候補の一社です。",
+        "is_sponsored": False,
+    },
+    "買取BASE": {
+        "website_url": None,
+        "address": None,
+        "phone": None,
+        "summary": "現在の価格表で上位に出やすく、まず確認したい高値候補の一つです。",
+        "is_sponsored": False,
+    },
+    "買取楽園": {
+        "website_url": None,
+        "address": None,
+        "phone": None,
+        "summary": "高値帯に入ることがあり、比較候補として押さえておきたい掲載店です。",
+        "is_sponsored": False,
+    },
+    "アキモバ": {
+        "website_url": None,
+        "address": None,
+        "phone": None,
+        "summary": "高値帯に並ぶことがあり、追加見積もり先として見ておきたい掲載店です。",
+        "is_sponsored": False,
+    },
+    "ゲストモバイル": {
+        "website_url": None,
+        "address": None,
+        "phone": None,
+        "summary": "比較候補を増やしたいときに確認しておきたい、補完向きの掲載店です。",
+        "is_sponsored": False,
+    },
+}
+
+
+def get_store_metadata(name: str) -> dict:
+    return STORE_METADATA.get(name, {})

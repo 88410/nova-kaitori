@@ -2,12 +2,17 @@ import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { X } from 'lucide-react'
 import { apiGet } from '../lib/api'
-import { FX_RATES } from '../lib/fx'
+import { useI18n } from '../i18n'
 // import MiniKLine from './MiniKLine'
 
 interface Store {
   id: number
   name: string
+  website_url?: string | null
+  address?: string | null
+  phone?: string | null
+  summary?: string | null
+  is_sponsored?: boolean
 }
 
 interface Product {
@@ -23,6 +28,7 @@ interface Price {
   price: number
   price_change: number
   price_change_percent: number
+  scraped_at: string | null
   store: Store
   product: Product
   profit: number | null
@@ -31,6 +37,21 @@ interface Price {
 interface GroupedProduct {
   product: Product
   prices: Price[]
+}
+
+interface ModelSectionGroup {
+  title: string
+  family: string
+  items: GroupedProduct[]
+}
+
+interface FxResponse {
+  rates: typeof DEFAULT_FX_RATES
+  last_updated?: string | null
+}
+
+interface StatsResponse {
+  last_updated?: string | null
 }
 
 const CAPACITY_ORDER: Record<string, number> = {
@@ -50,16 +71,14 @@ const CAPACITY_ORDER: Record<string, number> = {
   '2048GB': 5,
 }
 
-const MODEL_ORDER = [
-  'iPhone 17 Pro Max',
-  'iPhone 17 Pro',
-  'iPhone 17 Air',
-  'iPhone 17',
-  'iPhone 16 Pro Max',
-  'iPhone 16 Plus',
-  'iPhone 16',
-  'iPhone 16e',
-] as const
+const DEFAULT_FX_RATES = {
+  USD: { rate: 155.76, symbol: '$', flag: '🇺🇸' },
+  HKD: { rate: 19.92, symbol: 'HK$', flag: '🇭🇰' },
+  CNY: { rate: 22.62, symbol: '¥', flag: '🇨🇳' },
+  EUR: { rate: 183.49, symbol: '€', flag: '🇪🇺' },
+} as const
+
+const MODEL_VARIANT_PRIORITY = ['Pro Max', 'Pro', 'Plus', 'Air', 'mini', 'e'] as const
 
 function getCapacityOrder(capacity: string): number {
   const normalized = capacity?.toUpperCase().replace(/\s/g, '') || ''
@@ -99,47 +118,82 @@ function getProfit(price: number, retailPrice: number | null): number | null {
   return price - retailPrice
 }
 
-function groupByModel(products: GroupedProduct[]) {
-  const groups: Record<string, GroupedProduct[]> = Object.fromEntries(
-    MODEL_ORDER.map((model) => [model, [] as GroupedProduct[]])
-  )
+function getModelFamily(model: string): string {
+  const match = model.match(/iPhone\s*(\d+)/i)
+  return match ? `iPhone ${match[1]}` : 'Other'
+}
+
+function getFamilyNumber(family: string): number {
+  const match = family.match(/(\d+)/)
+  return match ? Number(match[1]) : 0
+}
+
+function getModelPriority(model: string): number {
+  const normalized = model.toLowerCase()
+
+  for (const [index, variant] of MODEL_VARIANT_PRIORITY.entries()) {
+    if (normalized.includes(variant.toLowerCase())) {
+      return index
+    }
+  }
+
+  return MODEL_VARIANT_PRIORITY.length
+}
+
+function sortModelTitles(a: string, b: string): number {
+  const familyDiff = getFamilyNumber(b) - getFamilyNumber(a)
+  if (familyDiff !== 0) return familyDiff
+
+  const variantDiff = getModelPriority(a) - getModelPriority(b)
+  if (variantDiff !== 0) return variantDiff
+
+  return a.localeCompare(b, 'en')
+}
+
+function buildModelSections(products: GroupedProduct[]): ModelSectionGroup[] {
+  const groups = new Map<string, GroupedProduct[]>()
 
   products.forEach((item) => {
     const model = item.product.model
-
-    if (model.includes('17 Pro Max')) {
-      groups['iPhone 17 Pro Max'].push(item)
-    } else if (model.includes('17 Pro')) {
-      groups['iPhone 17 Pro'].push(item)
-    } else if (model.includes('17 Air')) {
-      groups['iPhone 17 Air'].push(item)
-    } else if (model === 'iPhone 17') {
-      groups['iPhone 17'].push(item)
-    } else if (model.includes('16 Pro Max')) {
-      groups['iPhone 16 Pro Max'].push(item)
-    } else if (model.includes('16 Plus')) {
-      groups['iPhone 16 Plus'].push(item)
-    } else if (model === 'iPhone 16') {
-      groups['iPhone 16'].push(item)
-    } else if (model.includes('16e')) {
-      groups['iPhone 16e'].push(item)
-    }
+    const existing = groups.get(model) ?? []
+    existing.push(item)
+    groups.set(model, existing)
   })
 
-  Object.keys(groups).forEach((key) => {
-    groups[key].sort((a, b) => getCapacityOrder(a.product.capacity) - getCapacityOrder(b.product.capacity))
-  })
+  return Array.from(groups.entries())
+    .map(([title, items]) => ({
+      title,
+      family: getModelFamily(title),
+      items: [...items].sort((a, b) => getCapacityOrder(a.product.capacity) - getCapacityOrder(b.product.capacity)),
+    }))
+    .sort((a, b) => sortModelTitles(a.title, b.title))
+}
 
-  return groups
+function formatUpdatedAt(value: string, language: 'en' | 'zh' | 'ja'): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+
+  const locale = language === 'zh' ? 'zh-CN' : language === 'ja' ? 'ja-JP' : 'en-US'
+  return new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(date)
 }
 
 function ProductRow({
   item,
   onSelect,
+  fxRates,
 }: {
   item: GroupedProduct
   onSelect: (item: GroupedProduct) => void
+  fxRates: typeof DEFAULT_FX_RATES
 }) {
+  const { t } = useI18n()
   const sortedPrices = [...item.prices].sort((a, b) => b.price - a.price)
   const bestPrice = sortedPrices[0]
   const retailPrice = item.product.retail_price
@@ -160,15 +214,14 @@ function ProductRow({
         onClick={() => onSelect(item)}
         className="flex w-full items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-slate-50 sm:grid sm:grid-cols-[100px_1fr_100px_80px] sm:gap-4"
       >
-        {/* 第1列：容量 + 定価 */}
         <div className="min-w-0">
           <p className="text-sm font-medium text-slate-900">{formatCapacity(item.product.capacity)}</p>
           {retailPrice !== null && (
-            <p className="text-xs text-slate-500 mt-0.5">定価 {formatPrice(retailPrice)}</p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {t('retailLabel')} {formatPrice(retailPrice)}
+            </p>
           )}
         </div>
-        
-        {/* 第2列：最高价格 + 利润 + 外汇 */}
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <p className="text-lg font-semibold text-slate-900">{formatPrice(bestPrice.price)}</p>
@@ -178,22 +231,17 @@ function ProductRow({
               </p>
             )}
           </div>
-          {/* 外汇价格 - 基于最高价格计算 */}
           <p className="text-xs text-slate-500 mt-0.5">
-            {Object.entries(FX_RATES)
+            {Object.entries(fxRates)
               .map(([currency, data]) => `${currency} ${formatFxPrice(bestPrice.price, data.rate, data.symbol)}`)
               .join(' / ')}
           </p>
         </div>
-        
-        {/* 第3列：店铺名 */}
         <div className="min-w-0 text-center">
           <p className="text-sm text-slate-600">{bestPrice.store.name}</p>
         </div>
-        
-        {/* 第4列：詳細按钮 */}
         <div className="min-w-0 text-right">
-          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">詳細</span>
+          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">{t('details')}</span>
         </div>
       </button>
     </div>
@@ -207,6 +255,7 @@ function ProductPriceModal({
   item: GroupedProduct | null
   onClose: () => void
 }) {
+  const { t } = useI18n()
   useEffect(() => {
     if (!item) return
 
@@ -249,13 +298,13 @@ function ProductPriceModal({
             <h3 id="price-modal-title" className="text-lg font-semibold text-slate-900 sm:text-xl">
               {item.product.model} {formatCapacity(item.product.capacity)}
             </h3>
-            <p className="mt-1 text-sm text-slate-500">全店舗の最新買取価格</p>
+            <p className="mt-1 text-sm text-slate-500">{t('allStoresLatestPrices')}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
             className="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
-            aria-label="閉じる"
+            aria-label={t('close')}
           >
             <X className="h-5 w-5" />
           </button>
@@ -266,11 +315,11 @@ function ProductPriceModal({
             <table className="min-w-full table-auto text-left">
               <thead className="sticky top-0 bg-white">
                 <tr className="border-b border-slate-200 text-xs font-medium uppercase tracking-wide text-slate-500">
-                  <th className="px-3 py-3">店舗名</th>
-                  <th className="px-3 py-3">買取価格</th>
-                  <th className="px-3 py-3">定価</th>
-                  <th className="px-3 py-3">利益</th>
-                  <th className="px-3 py-3">変動</th>
+                  <th className="px-3 py-3">{t('store')}</th>
+                  <th className="px-3 py-3">{t('buybackPrice')}</th>
+                  <th className="px-3 py-3">{t('retailPrice')}</th>
+                  <th className="px-3 py-3">{t('profit')}</th>
+                  <th className="px-3 py-3">{t('change')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -285,7 +334,18 @@ function ProductPriceModal({
 
                   return (
                     <tr key={price.id} className="border-b border-slate-100 text-sm text-slate-700 last:border-b-0">
-                      <td className="px-3 py-3 font-medium text-slate-900">{price.store.name}</td>
+                      <td className="px-3 py-3">
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-medium text-slate-900">{price.store.name}</span>
+                            {price.store.is_sponsored && (
+                              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+                                Sponsor
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
                       <td className="px-3 py-3 font-semibold text-slate-900">{formatPrice(price.price)}</td>
                       <td className="px-3 py-3">{retailPrice !== null ? formatPrice(retailPrice) : '-'}</td>
                       <td
@@ -314,11 +374,14 @@ function ModelSection({
   title,
   items,
   onSelect,
+  fxRates,
 }: {
   title: string
   items: GroupedProduct[]
   onSelect: (item: GroupedProduct) => void
+  fxRates: typeof DEFAULT_FX_RATES
 }) {
+  const { t } = useI18n()
   if (items.length === 0) return null
 
   return (
@@ -327,14 +390,14 @@ function ModelSection({
         <h3 className="text-base font-semibold text-slate-900">{title}</h3>
       </div>
       <div className="hidden border-b border-slate-200 bg-slate-50 px-4 py-2 text-xs font-medium uppercase tracking-wide text-slate-500 sm:grid sm:grid-cols-[120px_minmax(0,1fr)_180px_24px] sm:gap-4">
-        <span>容量</span>
-        <span>最高買取価格 / 定価 / 利益</span>
-        <span>店舗名</span>
+        <span>{t('capacity')}</span>
+        <span>{t('topPriceRetailProfit')}</span>
+        <span>{t('store')}</span>
         <span />
       </div>
       <div>
         {items.map((item) => (
-          <ProductRow key={item.product.id} item={item} onSelect={onSelect} />
+          <ProductRow key={item.product.id} item={item} onSelect={onSelect} fxRates={fxRates} />
         ))}
       </div>
     </section>
@@ -342,7 +405,20 @@ function ModelSection({
 }
 
 export default function PriceTable() {
+  const { language, t } = useI18n()
   const [selectedProduct, setSelectedProduct] = useState<GroupedProduct | null>(null)
+  const [selectedFamily, setSelectedFamily] = useState<string>('all')
+
+  const { data: fxData } = useQuery<FxResponse>({
+    queryKey: ['fx'],
+    queryFn: async () => {
+      return apiGet<FxResponse>('/api/v1/fx')
+    },
+    staleTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+  })
+
+  const fxRates = fxData?.rates ?? DEFAULT_FX_RATES
 
   const { data: prices, isLoading } = useQuery<Price[]>({
     queryKey: ['prices'],
@@ -352,6 +428,15 @@ export default function PriceTable() {
       })
     },
     staleTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
+  })
+  const { data: stats } = useQuery<StatsResponse>({
+    queryKey: ['stats'],
+    queryFn: async () => {
+      return apiGet<StatsResponse>('/api/v1/stats')
+    },
+    staleTime: 1000 * 60,
     refetchOnMount: 'always',
     refetchOnWindowFocus: true,
   })
@@ -367,7 +452,7 @@ export default function PriceTable() {
   if (!prices || prices.length === 0) {
     return (
       <div className="rounded-lg border border-slate-200 bg-white px-4 py-12 text-center">
-        <p className="text-sm text-slate-500">データがありません</p>
+        <p className="text-sm text-slate-500">{t('noData')}</p>
       </div>
     )
   }
@@ -384,13 +469,67 @@ export default function PriceTable() {
     return acc
   }, {} as Record<number, GroupedProduct>)
 
-  const byModel = groupByModel(Object.values(grouped))
+  const sections = buildModelSections(Object.values(grouped))
+  const families = Array.from(new Set(sections.map((section) => section.family))).sort(
+    (a, b) => getFamilyNumber(b) - getFamilyNumber(a),
+  )
+  const visibleSections =
+    selectedFamily === 'all'
+      ? sections
+      : sections.filter((section) => section.family === selectedFamily)
+  const latestUpdatedAt = stats?.last_updated ?? null
+  const isUpdateStale =
+    latestUpdatedAt !== null && Date.now() - new Date(latestUpdatedAt).getTime() > 1000 * 60 * 90
 
   return (
     <>
+      <div className="mb-4 rounded-lg border border-slate-200 bg-white px-4 py-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium text-slate-900">{t('priceLastUpdated')}</p>
+            <p className="mt-1 text-sm text-slate-500">
+              {latestUpdatedAt ? formatUpdatedAt(latestUpdatedAt, language) : t('noData')}
+            </p>
+            {isUpdateStale && <p className="mt-1 text-xs text-amber-700">{t('priceUpdateStale')}</p>}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setSelectedFamily('all')}
+              className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                selectedFamily === 'all'
+                  ? 'border-slate-900 bg-slate-900 text-white'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900'
+              }`}
+            >
+              {t('filterAll')}
+            </button>
+            {families.map((family) => (
+              <button
+                key={family}
+                type="button"
+                onClick={() => setSelectedFamily(family)}
+                className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                  selectedFamily === family
+                    ? 'border-slate-900 bg-slate-900 text-white'
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900'
+                }`}
+              >
+                {family}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
       <div className="space-y-4">
-        {MODEL_ORDER.map((model) => (
-          <ModelSection key={model} title={model} items={byModel[model]} onSelect={setSelectedProduct} />
+        {visibleSections.map((section) => (
+          <ModelSection
+            key={section.title}
+            title={section.title}
+            items={section.items}
+            onSelect={setSelectedProduct}
+            fxRates={fxRates}
+          />
         ))}
       </div>
       <ProductPriceModal item={selectedProduct} onClose={() => setSelectedProduct(null)} />

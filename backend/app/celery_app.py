@@ -5,7 +5,7 @@ celery_app = Celery(
     "nova_kaitori",
     broker=settings.redis_url,
     backend=settings.redis_url,
-    include=["app.services.sheet_scraper"]
+    include=["app.services.sheet_scraper", "app.services.fx_rates"]
 )
 
 celery_app.conf.update(
@@ -18,6 +18,10 @@ celery_app.conf.update(
         "scrape-sheet-hourly": {
             "task": "app.services.sheet_scraper.scrape_sheet_task",
             "schedule": 3600.0,  # 1時間 = 3600秒
+        },
+        "update-fx-hourly": {
+            "task": "app.services.fx_rates.update_fx_rates_task",
+            "schedule": 3600.0,
         },
     },
 )

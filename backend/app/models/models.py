@@ -41,6 +41,30 @@ class Store(Base):
     # リレーションシップ
     prices = relationship("Price", back_populates="store")
 
+    @property
+    def address(self):
+        from app.store_metadata import get_store_metadata
+
+        return get_store_metadata(self.name).get("address")
+
+    @property
+    def phone(self):
+        from app.store_metadata import get_store_metadata
+
+        return get_store_metadata(self.name).get("phone")
+
+    @property
+    def summary(self):
+        from app.store_metadata import get_store_metadata
+
+        return get_store_metadata(self.name).get("summary")
+
+    @property
+    def is_sponsored(self):
+        from app.store_metadata import get_store_metadata
+
+        return get_store_metadata(self.name).get("is_sponsored", False)
+
 class Price(Base):
     """買取価格モデル"""
     __tablename__ = "prices"

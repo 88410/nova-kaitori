@@ -21,3 +21,15 @@ export async function apiGet<T>(path: string, config: AxiosRequestConfig = {}) {
 
   return response.data
 }
+
+export async function apiPost<T>(path: string, data?: unknown, config: AxiosRequestConfig = {}) {
+  const response = await axios.post<T>(`${API_URL}${path}`, data, {
+    ...config,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(config.headers ?? {}),
+    },
+  })
+
+  return response.data
+}

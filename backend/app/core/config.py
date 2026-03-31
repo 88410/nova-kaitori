@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     ad_provider: str = "none"
     ad_client_id: str = ""
     ad_slot_id: str = ""
+    kimi_api_key: str = ""
+    kimi_model: str = "k2p5"
+    kimi_base_url: str = "https://api.kimi.com/coding"
+    fx_rates_url: str = "https://open.er-api.com/v6/latest/JPY"
     
     @property
     def cors_origins_list(self) -> List[str]:

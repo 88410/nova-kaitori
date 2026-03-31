@@ -26,6 +26,8 @@ services:
     container_name: nova-backend
     ports:
       - "8000:8000"
+    env_file:
+      - ./backend/.env
     environment:
       - DATABASE_URL=postgresql://app_user:change_me@db:5432/nova_kaitori
       - REDIS_URL=redis://redis:6379/0

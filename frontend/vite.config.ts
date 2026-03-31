@@ -13,4 +13,9 @@ export default defineConfig({
     port: 3000,
     host: true,
   },
+  preview: {
+    host: '127.0.0.1',
+    port: 3001,
+    allowedHosts: ['novakai.net', 'www.novakai.net'],
+  },
 })

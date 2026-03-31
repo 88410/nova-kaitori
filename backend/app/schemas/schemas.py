@@ -8,6 +8,10 @@ class StoreBase(BaseModel):
     name_kana: Optional[str] = None
     logo_url: Optional[str] = None
     website_url: Optional[str] = None
+    address: Optional[str] = None
+    phone: Optional[str] = None
+    summary: Optional[str] = None
+    is_sponsored: bool = False
     is_active: int = 1
     priority: int = 0
 
@@ -116,3 +120,12 @@ class PriceStats(BaseModel):
     total_stores: int
     today_updates: int
     price_changes_24h: int
+
+# AI Chat
+class AIChatRequest(BaseModel):
+    session_id: str
+    message: str
+
+class AIChatResponse(BaseModel):
+    reply: str
+    remaining: int
