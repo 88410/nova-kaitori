@@ -2,6 +2,7 @@
 
 # Environment variables
 .env
+backend/.env
 .env.local
 .env.*.local
 
@@ -65,3 +66,6 @@ postgres_data/
 logs/
 *.log
 backend/celerybeat-schedule
+
+# Local project notes / operational archives
+PROJECT_STATE.md

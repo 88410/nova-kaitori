@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://app_user:change_me@localhost:5432/nova_kaitori"
     redis_url: str = "redis://localhost:6379/0"
     cors_origins: str = "http://localhost:3000,http://localhost:5173"
+    sheet_url: str = ""
     scraper_interval_minutes: int = 30
     scraper_timeout_seconds: int = 60
     ad_enabled: bool = False

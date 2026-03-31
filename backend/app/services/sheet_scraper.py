@@ -5,10 +5,12 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models.models import Product, Store, Price, PriceHistory
+from app.core.config import settings
 import re
 
-# Google Sheets CSV URL（gviz APIを使用して公開スプレッドシートから取得）
-SHEET_URL = "https://example.com/public-data-source"
+# Public price source URL is loaded from environment variables to avoid
+# exposing operational data source details in the repository.
+SHEET_URL = settings.sheet_url
 
 # 店舗名のマッピング（CSV列名 → DB店舗名）
 STORE_MAPPING = {
@@ -78,6 +80,9 @@ def parse_price(value):
 
 def fetch_sheet_data():
     """Google SheetsからCSVデータを取得"""
+    if not SHEET_URL:
+        print("シート取得エラー: SHEET_URL is not configured")
+        return None
     try:
         response = httpx.get(SHEET_URL, timeout=30, follow_redirects=True)
         response.raise_for_status()
