@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-# データベース接続URL（環境変数から取得、デフォルト値あり）
+# データベース接続URL（環境変数から取得、未設定時は占位値）
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://app_user:change_me@localhost:5432/nova_kaitori")
 
 # データベースエンジン作成

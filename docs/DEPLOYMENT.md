@@ -1,5 +1,8 @@
 # NOVA買取サイト - 環境構築ガイド
 
+この文書は公開リポジトリ向けの一般的なセットアップ手順のみを記載しています。
+実運用の認証情報、内部URL、データソースURL、運用連絡先はリポジトリに含めないでください。
+
 ## ローカル開発環境
 
 ### 前提条件
@@ -15,16 +18,16 @@ git clone https://github.com/yourusername/nova-kaitori.git
 cd nova-kaitori
 
 # 環境変数のコピー
-cp .env.example .env
+cp .env.example backend/.env
 
 # コンテナ起動
-docker-compose up -d
+docker compose up -d
 
 # データベース初期化
-docker-compose exec backend python scripts/seed_data.py
+docker compose exec backend python scripts/seed_data.py
 
 # スクレイピング実行（初回データ）
-docker-compose exec backend python -c "from app.services.scraper import scrape_all_prices; scrape_all_prices()"
+docker compose exec backend python -c "from app.services.scraper import scrape_all_prices; scrape_all_prices()"
 ```
 
 アクセス:
@@ -46,7 +49,7 @@ pip install -r requirements.txt
 
 # データベース起動（Docker）
 docker run -d --name nova-postgres \
-  -e POSTGRES_USER=nova \
+  -e POSTGRES_USER=app_user \
   -e POSTGRES_PASSWORD=change_me \
   -e POSTGRES_DB=nova_kaitori \
   -p 5432:5432 postgres:15-alpine
@@ -84,14 +87,14 @@ cd nova-kaitori
 
 # 3. 本番用環境変数設定
 nano .env
-# DATABASE_URL=postgresql://user:pass@localhost:5432/nova_kaitori
+# DATABASE_URL=postgresql://app_user:change_me@localhost:5432/nova_kaitori
 # REDIS_URL=redis://localhost:6379/0
 
 # 4. Docker Composeで起動
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 # 5. データベース初期化
-docker-compose exec backend python scripts/seed_data.py
+docker compose exec backend python scripts/seed_data.py
 ```
 
 ### クラウドサービス
@@ -111,9 +114,8 @@ railway up
 
 ## スクレイピングのカスタマイズ
 
-各買取店のスクレイピングロジックは `backend/app/services/scraper.py` に実装。
-
-実際の店舗サイトに合わせて `scrape_store_price()` 関数を修正してください。
+外部データ取得ロジックは `backend/app/services/` 以下に実装されています。
+公開リポジトリでは、運用中データソースの実URLや認証情報をコード・文書へ直接記載しないでください。
 
 ```python
 def scrape_store_price(store: Store, product: Product) -> int:
@@ -139,20 +141,20 @@ AD_SLOT_ID=xxxxxx
 ### データベース接続エラー
 ```bash
 # PostgreSQLコンテナの確認
-docker-compose ps
-docker-compose logs db
+docker compose ps
+docker compose logs db
 
 # データベースリセット（注意: データが消えます）
-docker-compose down -v
-docker-compose up -d db
-docker-compose exec backend python scripts/seed_data.py
+docker compose down -v
+docker compose up -d db
+docker compose exec backend python scripts/seed_data.py
 ```
 
 ### スクレイピングエラー
 ```bash
 # Celeryワーカーのログ確認
-docker-compose logs celery
+docker compose logs celery
 
 # 手動実行
-docker-compose exec backend python -c "from app.services.scraper import scrape_all_prices; scrape_all_prices()"
+docker compose exec backend python -c "from app.services.scraper import scrape_all_prices; scrape_all_prices()"
 ```

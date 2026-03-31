@@ -7,9 +7,9 @@ services:
     image: postgres:15-alpine
     container_name: nova-db
     environment:
-      POSTGRES_USER: nova
-      POSTGRES_PASSWORD: change_me
-      POSTGRES_DB: nova_kaitori
+      POSTGRES_USER: ${POSTGRES_USER:-app_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
+      POSTGRES_DB: ${POSTGRES_DB:-nova_kaitori}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -29,7 +29,7 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      - DATABASE_URL=postgresql://app_user:change_me@db:5432/nova_kaitori
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-app_user}:${POSTGRES_PASSWORD:-change_me}@db:5432/${POSTGRES_DB:-nova_kaitori}
       - REDIS_URL=redis://redis:6379/0
       - CORS_ORIGINS=http://localhost:3000,http://localhost:5173
     volumes:
@@ -52,7 +52,7 @@ services:
     build: ./backend
     container_name: nova-celery-worker
     environment:
-      - DATABASE_URL=postgresql://app_user:change_me@db:5432/nova_kaitori
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-app_user}:${POSTGRES_PASSWORD:-change_me}@db:5432/${POSTGRES_DB:-nova_kaitori}
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./backend:/app
@@ -65,7 +65,7 @@ services:
     build: ./backend
     container_name: nova-celery-beat
     environment:
-      - DATABASE_URL=postgresql://app_user:change_me@db:5432/nova_kaitori
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-app_user}:${POSTGRES_PASSWORD:-change_me}@db:5432/${POSTGRES_DB:-nova_kaitori}
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./backend:/app
