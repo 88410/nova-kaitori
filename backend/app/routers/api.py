@@ -29,6 +29,20 @@ from typing import Dict, Any
 
 router = APIRouter(prefix="/api/v1")
 
+def latest_prices_query(db: Session):
+    subquery = db.query(
+        Price.product_id,
+        Price.store_id,
+        func.max(Price.scraped_at).label('max_scraped_at')
+    ).group_by(Price.product_id, Price.store_id).subquery()
+
+    return db.query(Price).join(
+        subquery,
+        (Price.product_id == subquery.c.product_id) &
+        (Price.store_id == subquery.c.store_id) &
+        (Price.scraped_at == subquery.c.max_scraped_at)
+    ).join(Store).join(Product)
+
 # 利益情報を含む価格レスポンス用のヘルパー関数
 def price_to_dict(price: Price) -> dict:
     """価格モデルを辞書に変換（利益情報付き）"""
@@ -157,20 +171,7 @@ def get_prices(
     store_id: Optional[int] = None,
     limit: int = 1000
 ):
-    # サブクエリ: 各 product_id + store_id の最新 scraped_at を取得
-    subquery = db.query(
-        Price.product_id,
-        Price.store_id,
-        func.max(Price.scraped_at).label('max_scraped_at')
-    ).group_by(Price.product_id, Price.store_id).subquery()
-    
-    # メインクエリ: 最新の価格のみを取得
-    query = db.query(Price).join(
-        subquery,
-        (Price.product_id == subquery.c.product_id) &
-        (Price.store_id == subquery.c.store_id) &
-        (Price.scraped_at == subquery.c.max_scraped_at)
-    ).join(Store).join(Product)
+    query = latest_prices_query(db)
     
     if product_id:
         query = query.filter(Price.product_id == product_id)
@@ -182,17 +183,7 @@ def get_prices(
 
 @router.get("/prices/latest/{product_id}")
 def get_latest_prices(product_id: int, db: Session = Depends(get_db)):
-    # Get latest price for each store
-    subquery = db.query(
-        Price.store_id,
-        func.max(Price.scraped_at).label('max_scraped_at')
-    ).filter(Price.product_id == product_id).group_by(Price.store_id).subquery()
-    
-    prices = db.query(Price).join(
-        subquery,
-        (Price.store_id == subquery.c.store_id) & 
-        (Price.scraped_at == subquery.c.max_scraped_at)
-    ).filter(Price.product_id == product_id).all()
+    prices = latest_prices_query(db).filter(Price.product_id == product_id).order_by(desc(Price.price)).all()
     
     return [price_to_dict(p) for p in prices]
 
@@ -408,6 +399,63 @@ def get_stats(db: Session = Depends(get_db)):
         "last_updated": last_updated
     }
 
+@router.get("/homepage/summary")
+def get_homepage_summary(db: Session = Depends(get_db)):
+    from datetime import datetime, timedelta
+
+    latest_prices = latest_prices_query(db).all()
+    best_by_product = {}
+
+    for price in latest_prices:
+        if price.profit is None:
+            continue
+
+        current = best_by_product.get(price.product_id)
+        if current is None:
+            best_by_product[price.product_id] = price
+            continue
+
+        current_profit = current.profit if current.profit is not None else float("-inf")
+        next_profit = price.profit if price.profit is not None else float("-inf")
+        if next_profit > current_profit or (
+            next_profit == current_profit and price.price > current.price
+        ):
+            best_by_product[price.product_id] = price
+
+    recommended_models = sorted(
+        best_by_product.values(),
+        key=lambda item: (
+            item.profit if item.profit is not None else float("-inf"),
+            item.price,
+        ),
+        reverse=True,
+    )[:3]
+
+    now = datetime.now()
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    since_24h = now - timedelta(hours=24)
+
+    latest_update = None
+    if latest_prices:
+        latest_update = max(
+            (price.scraped_at for price in latest_prices if price.scraped_at),
+            default=None,
+        )
+
+    return {
+        "recommended_models": [price_to_dict(price) for price in recommended_models],
+        "stats": {
+            "last_updated": latest_update.isoformat() if latest_update else None,
+            "today_updates": db.query(func.count(Price.id)).filter(Price.scraped_at >= today).scalar() or 0,
+            "total_products": db.query(func.count(Product.id)).scalar() or 0,
+            "total_stores": db.query(func.count(Store.id)).filter(Store.is_active == 1).scalar() or 0,
+            "price_changes_24h": db.query(func.count(Price.id)).filter(
+                Price.scraped_at >= since_24h,
+                Price.price_change != 0,
+            ).scalar() or 0,
+        },
+    }
+
 @router.get("/fx")
 def get_fx_rates_endpoint():
     return get_fx_rates()
@@ -444,18 +492,7 @@ def search_products(
 
 
 def build_price_context(db: Session) -> list:
-    subquery = db.query(
-        Price.product_id,
-        Price.store_id,
-        func.max(Price.scraped_at).label('max_scraped_at')
-    ).group_by(Price.product_id, Price.store_id).subquery()
-
-    prices = db.query(Price).join(
-        subquery,
-        (Price.product_id == subquery.c.product_id) &
-        (Price.store_id == subquery.c.store_id) &
-        (Price.scraped_at == subquery.c.max_scraped_at)
-    ).join(Store).join(Product).all()
+    prices = latest_prices_query(db).all()
 
     data = []
     for p in prices:
