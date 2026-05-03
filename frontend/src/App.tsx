@@ -16,6 +16,7 @@ function App() {
         <Route path="/ai" element={<AI />} />
         <Route path="/prices" element={<Prices />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/company" element={<LegalPage />} />
         <Route path="/notice" element={<LegalPage />} />
         <Route path="/privacy" element={<LegalPage />} />
         <Route path="/terms" element={<LegalPage />} />

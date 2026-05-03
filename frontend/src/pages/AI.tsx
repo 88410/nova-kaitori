@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { AlertCircle, ArrowUpRight, Bot, Radar, TrendingUp } from 'lucide-react'
 import { apiPost } from '../lib/api'
 import { useI18n, type Language } from '../i18n'
 
@@ -47,6 +48,11 @@ export default function AI() {
   const [isLoading, setIsLoading] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const examplePrompts = EXAMPLE_PROMPTS[language]
+  const marketSignal = {
+    outlook: t('aiSignalOutlookValue'),
+    action: t('aiSignalActionValue'),
+    confidence: t('aiSignalConfidenceValue'),
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -124,7 +130,7 @@ export default function AI() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-[linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] flex flex-col">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
           <Link to="/" className="text-sm text-slate-500 hover:text-slate-900">
@@ -139,6 +145,49 @@ export default function AI() {
       </header>
 
       <main className="flex-1 mx-auto w-full max-w-4xl px-4 py-6">
+        <section className="mb-6 overflow-hidden rounded-[28px] border border-slate-200 bg-slate-950 p-6 text-white shadow-sm">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-200">
+                <Bot className="h-3.5 w-3.5" />
+                {t('aiSignalEyebrow')}
+              </div>
+              <h1 className="mt-4 text-3xl font-semibold tracking-tight">{t('aiSignalTitle')}</h1>
+              <p className="mt-3 text-sm leading-7 text-slate-300">{t('aiSignalDescription')}</p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[440px]">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="flex items-center gap-2 text-slate-300">
+                  <TrendingUp className="h-4 w-4" />
+                  <p className="text-xs uppercase tracking-[0.16em]">{t('aiSignalOutlookLabel')}</p>
+                </div>
+                <p className="mt-3 text-xl font-semibold text-white">{marketSignal.outlook}</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="flex items-center gap-2 text-slate-300">
+                  <ArrowUpRight className="h-4 w-4" />
+                  <p className="text-xs uppercase tracking-[0.16em]">{t('aiSignalActionLabel')}</p>
+                </div>
+                <p className="mt-3 text-xl font-semibold text-emerald-200">{marketSignal.action}</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="flex items-center gap-2 text-slate-300">
+                  <Radar className="h-4 w-4" />
+                  <p className="text-xs uppercase tracking-[0.16em]">{t('aiSignalConfidenceLabel')}</p>
+                </div>
+                <p className="mt-3 text-xl font-semibold text-white">{marketSignal.confidence}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-5 rounded-2xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <p>{t('aiSignalDisclaimer')}</p>
+            </div>
+          </div>
+        </section>
+
         <div className="space-y-4">
           {messages.map((msg) => (
             <div key={msg.id} className={msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'}>

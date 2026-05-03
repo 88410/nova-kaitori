@@ -85,13 +85,32 @@ nova-kaitori/
 
 **サーバー:**
 - ドメイン: novakai.net
+- 本番フロント配信先: `/var/www/novakai`（nginx の静的配信ディレクトリ）
 
 **APIエンドポイント:**
 - https://novakai.net/api/v1/prices
 - https://novakai.net/api/v1/stats
 
+### 本番フロント更新手順
+
+`novakai.net` は現在、Docker の `3000` 番ではなく nginx から `/var/www/novakai` の静的ファイルを直接配信しています。
+そのため、本番の見た目を更新するときは、`frontend/dist` をライブディレクトリへ同期する必要があります。
+
+```bash
+./scripts/deploy_frontend_live.sh
+```
+
+このスクリプトは以下をまとめて実行します。
+
+- ビルド時の `Current version updated` タイムスタンプを自動埋め込み
+- `frontend` の本番ビルド
+- `dist/` を `/var/www/novakai` に同期
+
+同期後は、ページ最下部のバージョン時刻で新旧を確認できます。
+
 ### 📝 更新履歴
 
+- 2026-05-03: 本番フロント配信経路を整理し、`scripts/deploy_frontend_live.sh` による静的配信更新フローとバージョン時刻表示を追加
 - 2026-03-31: README更新。最新の技術構成、ページ構成、主要機能を反映
 - 2026-03-31: 日本語 / English / 中文 の多言語UI切り替えを追加
 - 2026-03-31: 利用規約、プライバシーポリシー、特商法ページを追加

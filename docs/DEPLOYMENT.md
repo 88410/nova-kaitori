@@ -97,6 +97,30 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 docker compose exec backend python scripts/seed_data.py
 ```
 
+### 本番フロント反映
+
+現在の `novakai.net` フロントは nginx が `/var/www/novakai` を静的配信しています。
+そのため、フロントの見た目変更を本番へ反映するときは Docker コンテナ再作成だけでは不十分で、ビルド済み静的ファイルの同期が必要です。
+
+```bash
+cd nova-kaitori
+./scripts/deploy_frontend_live.sh
+```
+
+このスクリプトは以下を実施します。
+
+- `VITE_APP_VERSION_UPDATED_AT` をビルド時刻で自動注入
+- `frontend` の本番ビルド
+- `frontend/dist/` を `/var/www/novakai` へ `rsync --delete` で同期
+
+反映確認:
+
+```bash
+curl -s https://novakai.net | sed -n '1,40p'
+```
+
+ページ最下部の `Current version updated` / `当前版本更新时间` / `現在のバージョン更新日時` が最新時刻なら、新バージョンが配信されています。
+
 ### クラウドサービス
 
 #### Render

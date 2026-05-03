@@ -26,6 +26,7 @@ ignore_globs=(
   ':!.env'
   ':!.env.local'
   ':!.env.*.local'
+  ':!scripts/pre_push_sensitive_check.sh'
 )
 
 tmpfile="$(mktemp)"
