@@ -9,6 +9,35 @@ type LegalContent = {
 
 const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
   en: {
+    '/company': {
+      title: 'Company Overview',
+      lead: '',
+      sections: [
+        {
+          heading: 'Company Profile',
+          body: [
+            'Novatech Co., Ltd. develops and operates NOVA AI, an iPhone buyback price intelligence platform that integrates store-by-store pricing data, market movement, and product information to support faster and more precise selling, resale, and trading decisions.',
+            'Through real-time price comparison, multilingual product guidance, AI-assisted store recommendations, and structured store intelligence, NOVA AI aims to become a decision layer for the next generation of cross-border device circulation.',
+          ],
+        },
+        {
+          heading: 'Basic Information',
+          body: [
+            'Address: Musashino Building, 2-13-10 Shinjuku, Shinjuku-ku, Tokyo',
+            'Business: Trading operations and AI business development',
+          ],
+        },
+        {
+          heading: 'Key Members',
+          body: [
+            'Morita, AI Technology Lead: Leads AI feature design, development, and business implementation, with responsibility for improving price comparison and store recommendation accuracy.',
+            'LIU ZHANQI, Store Partner Lead: Manages store relationships, merchant information maintenance, and store-side coordination.',
+            'SATO KENICHI, Product Strategy Lead: Leads product design and improvement planning that connects store pricing, user needs, and operational decision-making.',
+            'TANAKA MISAKI, System Operations Lead: Maintains monitoring, system operations, and quality control frameworks that support reliable market information.',
+          ],
+        },
+      ],
+    },
     '/notice': {
       title: 'Notice',
       lead: 'Please review the following points before using NOVA.',
@@ -71,6 +100,35 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
     },
   },
   zh: {
+    '/company': {
+      title: '公司简介',
+      lead: '',
+      sections: [
+        {
+          heading: '公司简介',
+          body: [
+            '诺瓦科技株式会社正在开发并运营 NOVA AI iPhone 回收价格智能平台，整合各店铺价格数据、市场变化和商品信息，为出售、转售和贸易判断提供更快速、更精确的决策环境。',
+            '通过实时价格对比、多语言商品引导、AI 店铺推荐和结构化店铺情报，NOVA AI 希望成为下一代跨境电子设备流通的智能决策层。',
+          ],
+        },
+        {
+          heading: '基本信息',
+          body: [
+            '所在地：东京都新宿区新宿2丁目13番10号 武藏野大楼',
+            '事业内容：贸易业务、AI 业务开发',
+          ],
+        },
+        {
+          heading: '主要员工介绍',
+          body: [
+            '森田，AI 技术负责人：负责 AI 功能设计、开发和业务导入，推进价格比较与店铺推荐精度提升。',
+            '刘 展奇，店铺合作负责人：负责对接收录店铺、维护商家信息，并推进店铺侧沟通协调。',
+            '佐藤 健一，产品战略负责人：负责连接店铺价格、用户需求和运营判断的产品设计与改善方针。',
+            '田中 美咲，系统运营负责人：负责系统监视、运行维护和质量管理机制建设，支撑市场信息的稳定性。',
+          ],
+        },
+      ],
+    },
     '/notice': {
       title: '注意事项',
       lead: '使用 NOVA 前，请先确认以下说明。',
@@ -133,6 +191,35 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
     },
   },
   ja: {
+    '/company': {
+      title: '会社概要',
+      lead: '',
+      sections: [
+        {
+          heading: '会社概要',
+          body: [
+            'ノーヴァテック株式会社は、iPhone買取価格インテリジェンスプラットフォーム「NOVA AI」を開発・運営し、店舗別の価格データ、市場変動、商品情報を統合することで、売却・再販・貿易判断をより速く、より精密に行える環境を提供しています。',
+            'リアルタイム価格比較、多言語の商品案内、AIによる店舗提案、構造化された店舗情報を組み合わせ、国境を越えるスマートデバイス流通の意思決定レイヤーとなることを目指しています。',
+          ],
+        },
+        {
+          heading: '基本情報',
+          body: [
+            '所在地：東京都新宿区新宿2丁目13番10号 武蔵野ビル',
+            '事業内容：貿易業務、AI事業開発',
+          ],
+        },
+        {
+          heading: '主要メンバー',
+          body: [
+            '森田（AI技術責任者）：AI機能の設計・開発・業務導入を推進し、価格比較と店舗提案の精度向上を担当。',
+            '劉 展奇（店舗パートナー責任者）：掲載店舗との連携、商家情報の維持管理、店舗側との調整を担当。',
+            '佐藤 健一（プロダクト戦略責任者）：店舗価格、ユーザーニーズ、運用判断をつなぐプロダクト設計と改善方針を担当。',
+            '田中 美咲（システム運用責任者）：システム監視、運用保守、品質管理体制を整備し、市場情報の安定性を担当。',
+          ],
+        },
+      ],
+    },
     '/notice': {
       title: '注意事項',
       lead: 'NOVAをご利用いただく前に、以下の点をご確認ください。',
@@ -215,8 +302,8 @@ export default function LegalPage() {
 
       <main className="mx-auto max-w-4xl px-4 py-8">
         <section className="rounded-[28px] border border-slate-200 bg-white px-6 py-8 shadow-sm sm:px-8">
-          <p className="text-sm leading-7 text-slate-600">{content.lead}</p>
-          <div className="mt-8 space-y-8">
+          {content.lead && <p className="text-sm leading-7 text-slate-600">{content.lead}</p>}
+          <div className={`${content.lead ? 'mt-8' : ''} space-y-8`}>
             {content.sections.map((section) => (
               <section key={section.heading}>
                 <h2 className="text-base font-semibold text-slate-900">{section.heading}</h2>
