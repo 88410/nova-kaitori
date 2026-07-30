@@ -1,6 +1,6 @@
 import axios, { type AxiosRequestConfig } from 'axios'
 
-const API_URL = ''
+const API_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
 
 export async function apiGet<T>(path: string, config: AxiosRequestConfig = {}) {
   const params = {

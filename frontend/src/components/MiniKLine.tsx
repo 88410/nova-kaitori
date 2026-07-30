@@ -26,7 +26,7 @@ export default function MiniKLine({ productId, days = 7, width = 80, height = 30
   const { data: klineData, isLoading } = useQuery<KLineData[]>({
     queryKey: ['kline', productId, days],
     queryFn: async () => {
-      return apiGet(`/prices/kline/${productId}?days=${days}`)
+      return apiGet(`/api/v1/prices/kline/${productId}?days=${days}`)
     },
     staleTime: 5 * 60 * 1000, // 5分钟缓存
   })

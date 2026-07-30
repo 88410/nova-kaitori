@@ -24,16 +24,19 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
           heading: 'Basic Information',
           body: [
             'Address: Musashino Building, 2-13-10 Shinjuku, Shinjuku-ku, Tokyo',
-            'Business: Trading operations and AI business development',
+            'Business: AI business development',
+            'Corporate Number: 0111-01-110714',
+            'Capital: JPY 6,000,000',
+            'Founded: February 17, 2025',
           ],
         },
         {
-          heading: 'Key Members',
+          heading: 'Operations & Technical Support Framework',
           body: [
-            'Morita, AI Technology Lead: Leads AI feature design, development, and business implementation, with responsibility for improving price comparison and store recommendation accuracy.',
-            'LIU ZHANQI, Store Partner Lead: Manages store relationships, merchant information maintenance, and store-side coordination.',
-            'SATO KENICHI, Product Strategy Lead: Leads product design and improvement planning that connects store pricing, user needs, and operational decision-making.',
-            'TANAKA MISAKI, System Operations Lead: Maintains monitoring, system operations, and quality control frameworks that support reliable market information.',
+            'Morita: Business operations and product planning',
+            'Sato: Customer experience and service guidance',
+            'Tanaka: System maintenance and operational stability',
+            'Liu: Merchant-side coordination and price-data acquisition',
           ],
         },
       ],
@@ -101,7 +104,7 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
   },
   zh: {
     '/company': {
-      title: '公司简介',
+      title: '会社概要',
       lead: '',
       sections: [
         {
@@ -115,16 +118,19 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
           heading: '基本信息',
           body: [
             '所在地：东京都新宿区新宿2丁目13番10号 武藏野大楼',
-            '事业内容：贸易业务、AI 业务开发',
+            '事业内容：AI 业务开发',
+            '法人番号：０１１１－０１－１１０７１４',
+            '资本金：金６００万円',
+            '成立年月日：令和７年２月１７日',
           ],
         },
         {
-          heading: '主要员工介绍',
+          heading: '运营与技术支持体系',
           body: [
-            '森田，AI 技术负责人：负责 AI 功能设计、开发和业务导入，推进价格比较与店铺推荐精度提升。',
-            '刘 展奇，店铺合作负责人：负责对接收录店铺、维护商家信息，并推进店铺侧沟通协调。',
-            '佐藤 健一，产品战略负责人：负责连接店铺价格、用户需求和运营判断的产品设计与改善方针。',
-            '田中 美咲，系统运营负责人：负责系统监视、运行维护和质量管理机制建设，支撑市场信息的稳定性。',
+            '森田：业务运营与产品规划',
+            '佐藤：客户体验与服务引导',
+            '田中：系统维护与运行稳定',
+            '劉：商家侧沟通与价格数据获取',
           ],
         },
       ],
@@ -206,16 +212,19 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
           heading: '基本情報',
           body: [
             '所在地：東京都新宿区新宿2丁目13番10号 武蔵野ビル',
-            '事業内容：貿易業務、AI事業開発',
+            '事業内容：AI事業開発',
+            '法人番号：０１１１－０１－１１０７１４',
+            '資本金：金６００万円',
+            '成立年月日：令和７年２月１７日',
           ],
         },
         {
-          heading: '主要メンバー',
+          heading: '運営・技術支援体制',
           body: [
-            '森田（AI技術責任者）：AI機能の設計・開発・業務導入を推進し、価格比較と店舗提案の精度向上を担当。',
-            '劉 展奇（店舗パートナー責任者）：掲載店舗との連携、商家情報の維持管理、店舗側との調整を担当。',
-            '佐藤 健一（プロダクト戦略責任者）：店舗価格、ユーザーニーズ、運用判断をつなぐプロダクト設計と改善方針を担当。',
-            '田中 美咲（システム運用責任者）：システム監視、運用保守、品質管理体制を整備し、市場情報の安定性を担当。',
+            '森田：事業運営・プロダクト企画',
+            '佐藤：顧客体験・サービス案内',
+            '田中：システム保守・運用安定化',
+            '劉：店舗側連携・価格データ取得',
           ],
         },
       ],

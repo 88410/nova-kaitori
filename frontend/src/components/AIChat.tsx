@@ -67,7 +67,7 @@ export default function AIChat() {
 
     try {
       // 获取当前价格数据用于分析
-      const prices = await apiGet<any[]>('/prices?limit=1000')
+      const prices = await apiGet<any[]>('/api/v1/prices?limit=1000')
       
       // 调用 AI（这里使用简单的模拟，实际应该调用后端 API）
       const response = await mockAIResponse(content, prices)

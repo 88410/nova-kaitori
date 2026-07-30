@@ -1,18 +1,9 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts'
-import { ArrowLeft, TrendingUp, ArrowUp, ArrowDown } from 'lucide-react'
+import { ArrowLeft, TrendingUp } from 'lucide-react'
 import { apiGet } from '../lib/api'
 import { useI18n } from '../i18n'
+import ProfessionalKLineChart from '../components/ProfessionalKLineChart'
 
 interface Product {
   id: number
@@ -43,15 +34,19 @@ interface PriceWithStore {
   profit_percent: number | null
 }
 
-interface HistoryEntry {
-  price: number
-  recorded_at: string
+function formatPrice(price: number): string {
+  return `¥${price.toLocaleString()}`
 }
 
-interface PriceHistory {
-  product: Product
-  store: Store
-  history: HistoryEntry[]
+function formatSignedPrice(price: number): string {
+  const sign = price > 0 ? '+' : price < 0 ? '-' : ''
+  return `${sign}¥${Math.abs(price).toLocaleString()}`
+}
+
+function formatChange(priceChange: number, percentChange: number): string {
+  if (priceChange === 0) return '-'
+  const sign = priceChange > 0 ? '+' : '-'
+  return `${sign}¥${Math.abs(priceChange).toLocaleString()} (${Math.abs(percentChange)}%)`
 }
 
 export default function ProductDetail() {
@@ -74,7 +69,7 @@ export default function ProductDetail() {
       <div className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <Link
-            to="/"
+            to="/prices"
             className="inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors"
           >
             <ArrowLeft className="w-5 h-5 mr-1" />
@@ -83,20 +78,20 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
         {product && bestPrice && (
           <>
-            <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center space-x-6">
-                  <div className="w-24 h-24 bg-gray-200 rounded-xl flex items-center justify-center text-4xl">
+            <div className="mb-8 rounded-xl bg-white p-4 shadow-lg sm:p-8">
+              <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+                <div className="flex min-w-0 items-center gap-4 sm:gap-6">
+                  <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-gray-200 text-3xl sm:h-24 sm:w-24 sm:text-4xl">
                     {product.image_url ? (
                       <img src={product.image_url} alt={product.name} className="w-full h-full object-contain" />
                     ) : '📱'}
                   </div>
-                  <div>
-                    <h1 className="text-3xl font-bold text-gray-900">{product.model}</h1>
-                    <p className="text-lg text-gray-600 mt-1">
+                  <div className="min-w-0">
+                    <h1 className="break-words text-2xl font-bold text-gray-900 sm:text-3xl">{product.model}</h1>
+                    <p className="mt-1 break-words text-sm text-gray-600 sm:text-lg">
                       {product.capacity}
                       {t('conditionSeparator')}
                       {product.color}
@@ -111,10 +106,10 @@ export default function ProductDetail() {
                   </div>
                 </div>
 
-                <div className="text-right">
+                <div className="min-w-0 rounded-lg border border-slate-200 bg-slate-50 p-4 text-left md:text-right">
                   <p className="text-sm text-gray-500">{t('bestBuybackPrice')}</p>
-                  <p className="text-4xl font-bold text-green-600">¥{bestPrice.price.toLocaleString()}</p>
-                  <p className="text-sm text-gray-500 mt-1">{bestPrice.store.name}</p>
+                  <p className="mt-1 break-words text-3xl font-bold text-green-600 sm:text-4xl">¥{bestPrice.price.toLocaleString()}</p>
+                  <p className="mt-1 break-words text-sm text-gray-500">{bestPrice.store.name}</p>
                   {bestPrice.profit !== null && bestPrice.profit > 0 && (
                     <p className="text-green-600 mt-1">
                       {t('profit')} ¥{bestPrice.profit.toLocaleString()}
@@ -129,39 +124,59 @@ export default function ProductDetail() {
                 <h2 className="text-xl font-semibold text-gray-800">{t('byStorePrices')}</h2>
               </div>
 
-              <div className="divide-y divide-gray-200">
-                {prices?.map((price) => (
-                  <div
-                    key={price.id}
-                    className="px-6 py-4 flex items-center justify-between hover:bg-gray-50"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <span className="font-medium text-gray-900">{price.store.name}</span>
-                      {price.is_best_price === 1 && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">
-                          {t('bestPriceBadge')}
-                        </span>
-                      )}
-                    </div>
+              <div className="overflow-x-auto px-4 py-4 sm:px-6">
+                <table className="min-w-full table-auto text-left">
+                  <thead className="bg-white">
+                    <tr className="border-b border-slate-200 text-xs font-medium uppercase tracking-wide text-slate-500">
+                      <th className="px-3 py-3">{t('store')}</th>
+                      <th className="px-3 py-3">{t('buybackPrice')}</th>
+                      <th className="px-3 py-3">{t('retailPrice')}</th>
+                      <th className="px-3 py-3">{t('profit')}</th>
+                      <th className="px-3 py-3">{t('change')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {prices?.map((price) => {
+                      const profit =
+                        price.profit ?? (product.retail_price !== null ? price.price - product.retail_price : null)
+                      const changeClass =
+                        price.price_change > 0
+                          ? 'text-emerald-600'
+                          : price.price_change < 0
+                            ? 'text-red-600'
+                            : 'text-slate-500'
 
-                    <div className="flex items-center space-x-6">
-                      {price.price_change !== 0 && (
-                        <div className={`flex items-center space-x-1 ${price.price_change > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {price.price_change > 0 ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
-                          <span className="text-sm">
-                            {Math.abs(price.price_change).toLocaleString()} ({price.price_change_percent}%)
-                          </span>
-                        </div>
-                      )}
-                      {price.profit !== null && (
-                        <span className={`text-sm ${price.profit > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {t('profit')} {price.profit > 0 ? '+' : ''}¥{price.profit.toLocaleString()}
-                        </span>
-                      )}
-                      <span className="text-2xl font-bold text-gray-900">¥{price.price.toLocaleString()}</span>
-                    </div>
-                  </div>
-                ))}
+                      return (
+                        <tr key={price.id} className="border-b border-slate-100 text-sm text-slate-700 last:border-b-0">
+                          <td className="px-3 py-3">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-medium text-slate-900">{price.store.name}</span>
+                              {price.is_best_price === 1 && (
+                                <span className="inline-flex items-center rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                                  {t('bestPriceBadge')}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-3 py-3 font-semibold text-slate-900">{formatPrice(price.price)}</td>
+                          <td className="px-3 py-3">
+                            {product.retail_price !== null ? formatPrice(product.retail_price) : '-'}
+                          </td>
+                          <td
+                            className={`px-3 py-3 font-medium ${
+                              profit === null ? 'text-slate-500' : profit >= 0 ? 'text-emerald-600' : 'text-red-600'
+                            }`}
+                          >
+                            {profit === null ? '-' : formatSignedPrice(profit)}
+                          </td>
+                          <td className={`px-3 py-3 font-medium ${changeClass}`}>
+                            {formatChange(price.price_change, price.price_change_percent)}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
               </div>
             </div>
 
@@ -171,77 +186,12 @@ export default function ProductDetail() {
                 <TrendingUp className="w-6 h-6 text-blue-600" />
                 <h2 className="text-xl font-semibold text-gray-800">{t('priceTrend')}</h2>
               </div>
-              <PriceHistoryChart storeId={bestPrice.store.id} productId={productId} language={language} />
+              <ProfessionalKLineChart productId={productId} language={language} />
               </div>
             )}
           </>
         )}
       </div>
-    </div>
-  )
-}
-
-function PriceHistoryChart({
-  storeId,
-  productId,
-  language,
-}: {
-  storeId: number
-  productId: number
-  language: 'en' | 'zh' | 'ja'
-}) {
-  const { t } = useI18n()
-  const { data: history } = useQuery<PriceHistory>({
-    queryKey: ['price-history', productId, storeId],
-    queryFn: async () => {
-      return apiGet<PriceHistory>(`/api/v1/history/${productId}/${storeId}`, {
-        params: { days: 30 },
-      })
-    },
-  })
-
-  if (!history?.history?.length) {
-    return (
-      <div className="h-64 flex items-center justify-center text-gray-500">
-        {t('noHistory')}
-      </div>
-    )
-  }
-
-  const chartData = history.history.map((h) => ({
-    date: new Date(h.recorded_at).toLocaleDateString(
-      language === 'zh' ? 'zh-CN' : language === 'ja' ? 'ja-JP' : 'en-US',
-      { month: 'short', day: 'numeric' },
-    ),
-    price: h.price,
-  }))
-
-  return (
-    <div className="h-80">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis dataKey="date" stroke="#6b7280" />
-          <YAxis
-            stroke="#6b7280"
-            tickFormatter={(value) => `¥${(value / 1000).toFixed(0)}k`}
-            domain={['dataMin - 5000', 'dataMax + 5000']}
-          />
-          <Tooltip
-            formatter={(value: number) => [`¥${value.toLocaleString()}`, t('chartPrice')]}
-            contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-          />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="price"
-            name={t('buybackPrice')}
-            stroke="#0ea5e9"
-            strokeWidth={2}
-            dot={{ fill: '#0ea5e9' }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
     </div>
   )
 }
