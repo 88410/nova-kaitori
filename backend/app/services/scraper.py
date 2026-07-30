@@ -5,6 +5,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models.models import Product, Store, Price, PriceHistory
+from app.services.daily_highs import refresh_daily_high_for_product
 import random
 import time
 
@@ -220,6 +221,7 @@ def scrape_all_prices():
                     price.is_best_price = 1 if price.price == best_price else 0
                 
                 db.commit()
+                refresh_daily_high_for_product(db, product.id)
         
         print(f"{len(products) * len(stores)}件の価格データを取得しました")
         

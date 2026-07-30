@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models.models import Product, Store, Price, PriceHistory
 from app.core.config import settings
+from app.services.daily_highs import refresh_daily_high_for_product
 import re
 
 # Public price source URL is loaded from environment variables to avoid
@@ -50,32 +51,108 @@ IPHONE_IMAGES = {
     '16': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-16-select-2024?wid=470&hei=556&fmt=png-alpha',
     '16e': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-16e-select-2024?wid=470&hei=556&fmt=png-alpha',
     '16Plus': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-16-plus-select-2024?wid=470&hei=556&fmt=png-alpha',
+    '15PM': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-max-naturaltitanium-select?wid=470&hei=556&fmt=png-alpha&.v=1692895703318',
+    '15Pro': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-naturaltitanium-select?wid=470&hei=556&fmt=png-alpha&.v=1692895703318',
+    '15Plus': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-plus-pink-select-202309?wid=470&hei=556&fmt=png-alpha&.v=1692895703318',
+    '15': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pink-select-202309?wid=470&hei=556&fmt=png-alpha&.v=1692895703318',
+    '14PM': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-14-pro-max-deeppurple-select?wid=470&hei=556&fmt=png-alpha&.v=1660753619946',
+    '14Pro': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-14-pro-deeppurple-select?wid=470&hei=556&fmt=png-alpha&.v=1660753619946',
+    '14Plus': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-14-plus-blue-select-202209?wid=470&hei=556&fmt=png-alpha&.v=1660753619946',
+    '14': 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-14-blue-select-202209?wid=470&hei=556&fmt=png-alpha&.v=1660753619946',
 }
+
+MODEL_NAME_MAP = {
+    '17 PM': 'iPhone 17 Pro Max',
+    '17 Pro': 'iPhone 17 Pro',
+    '17': 'iPhone 17',
+    'Air': 'iPhone 17 Air',
+    '16PM': 'iPhone 16 Pro Max',
+    '16 Pro': 'iPhone 16 Pro',
+    '16': 'iPhone 16',
+    '16e': 'iPhone 16e',
+    '16Plus': 'iPhone 16 Plus',
+    '15PM': 'iPhone 15 Pro Max',
+    '15Pro': 'iPhone 15 Pro',
+    '15Plus': 'iPhone 15 Plus',
+    '15': 'iPhone 15',
+    '14PM': 'iPhone 14 Pro Max',
+    '14Pro': 'iPhone 14 Pro',
+    '14Plus': 'iPhone 14 Plus',
+    '14': 'iPhone 14',
+}
+
+MODEL_ALIASES = {
+    '17pm': '17 PM',
+    '17promax': '17 PM',
+    '17pro': '17 Pro',
+    '17air': 'Air',
+    'air': 'Air',
+    '17': '17',
+    '16pm': '16PM',
+    '16promax': '16PM',
+    '16pro': '16 Pro',
+    '16e': '16e',
+    '16plus': '16Plus',
+    '16': '16',
+    '15pm': '15PM',
+    '15promax': '15PM',
+    '15pro': '15Pro',
+    '15plus': '15Plus',
+    '15': '15',
+    '14pm': '14PM',
+    '14promax': '14PM',
+    '14pro': '14Pro',
+    '14plus': '14Plus',
+    '14': '14',
+}
+
+
+def normalize_model_key(raw_model):
+    """表記ゆれをDB用のモデルキーに正規化"""
+    compact = re.sub(r'\s+', '', str(raw_model or '').strip().lower())
+    compact = compact.replace('iphone', '')
+    return MODEL_ALIASES.get(compact)
+
+
+def normalize_capacity(raw_capacity):
+    """容量表記を画面で扱いやすい形式に正規化"""
+    capacity = str(raw_capacity or '').strip()
+    if not capacity:
+        return ""
+
+    normalized = capacity.upper().replace(' ', '')
+    if normalized in ['1024', '1024GB']:
+        return '1TB'
+    if normalized in ['2048', '2048GB']:
+        return '2TB'
+    if normalized.endswith('GB') and normalized[:-2].isdigit():
+        return normalized[:-2]
+    return normalized
 
 def parse_price(value):
     """価格文字列を数値に変換"""
     if not value or value in ['', '問い合わせ', '要問い合わせ', '#N/A', '-']:
         return None
-    
+
     # 文字列に変換してクリーンアップ
     str_value = str(value)
-    
+
     # 「￥226500 オレンジ -2000」など複数の数字が含まれる場合、最初の数字を抽出
     # 「￥数字」形式または純粋な数字を検索
     import re
-    
+
     # まず「￥xxx」形式を検索
     match = re.search(r'[¥￥]\s*(\d{1,3}(?:,\d{3})+|\d+)', str_value)
     if match:
         cleaned = match.group(1).replace(',', '')
         return int(cleaned)
-    
+
     # それでも見つからない場合は最初の純粋な数字を抽出
     numbers = re.findall(r'\d{1,3}(?:,\d{3})+|\d+', str_value)
     if numbers:
         cleaned = numbers[0].replace(',', '')
         return int(cleaned)
-    
+
     return None
 
 def fetch_sheet_data():
@@ -94,13 +171,14 @@ def fetch_sheet_data():
 def infer_capacity(model, apple_price, raw_capacity):
     """Apple公式価格から容量を推定"""
     # 容量が既に設定されている場合はそのまま返す
-    if raw_capacity and raw_capacity.strip():
-        return raw_capacity.strip()
-    
+    normalized_capacity = normalize_capacity(raw_capacity)
+    if normalized_capacity:
+        return normalized_capacity
+
     # 価格から容量を推定
     if not apple_price:
         return ""
-    
+
     # iPhone 17 Pro Max / 16 Pro Max の価格帯
     if model in ['17 PM', '16PM']:
         if 190000 <= apple_price <= 200000:
@@ -111,7 +189,7 @@ def infer_capacity(model, apple_price, raw_capacity):
             return "1TB"
         elif 300000 <= apple_price <= 340000:
             return "2TB"
-    
+
     # iPhone 17 Pro / 16 Pro
     elif model in ['17 Pro', '16 Pro']:
         if 170000 <= apple_price <= 185000:
@@ -120,14 +198,14 @@ def infer_capacity(model, apple_price, raw_capacity):
             return "512"
         elif 220000 <= apple_price <= 260000:
             return "1TB"
-    
+
     # iPhone 17 / 16
     elif model in ['17', '16']:
         if 120000 <= apple_price <= 135000:
             return "256"
         elif 150000 <= apple_price <= 170000:
             return "512"
-    
+
     # iPhone 17 Air
     elif model == 'Air':
         if 150000 <= apple_price <= 165000:
@@ -136,7 +214,7 @@ def infer_capacity(model, apple_price, raw_capacity):
             return "512"
         elif 220000 <= apple_price <= 240000:
             return "1TB"
-    
+
     # iPhone 16e
     elif model == '16e':
         if 90000 <= apple_price <= 105000:
@@ -145,7 +223,7 @@ def infer_capacity(model, apple_price, raw_capacity):
             return "256"
         elif 130000 <= apple_price <= 150000:
             return "512"
-    
+
     # iPhone 16 Plus
     elif model == '16Plus':
         if 130000 <= apple_price <= 145000:
@@ -154,47 +232,123 @@ def infer_capacity(model, apple_price, raw_capacity):
             return "256"
         elif 170000 <= apple_price <= 195000:
             return "512"
-    
+
+    # iPhone 15 Pro Max
+    elif model == '15PM':
+        if 180000 <= apple_price <= 200000:
+            return "256"
+        elif 210000 <= apple_price <= 230000:
+            return "512"
+        elif 240000 <= apple_price <= 260000:
+            return "1TB"
+
+    # iPhone 15 Pro
+    elif model == '15Pro':
+        if 150000 <= apple_price <= 165000:
+            return "128"
+        elif 165000 <= apple_price <= 185000:
+            return "256"
+        elif 195000 <= apple_price <= 215000:
+            return "512"
+        elif 225000 <= apple_price <= 245000:
+            return "1TB"
+
+    # iPhone 15 Plus
+    elif model == '15Plus':
+        if 130000 <= apple_price <= 145000:
+            return "128"
+        elif 145000 <= apple_price <= 165000:
+            return "256"
+        elif 175000 <= apple_price <= 195000:
+            return "512"
+
+    # iPhone 15
+    elif model == '15':
+        if 105000 <= apple_price <= 120000:
+            return "128"
+        elif 120000 <= apple_price <= 135000:
+            return "256"
+        elif 150000 <= apple_price <= 170000:
+            return "512"
+
+    # iPhone 14 Pro Max
+    elif model == '14PM':
+        if 155000 <= apple_price <= 170000:
+            return "128"
+        elif 170000 <= apple_price <= 190000:
+            return "256"
+        elif 200000 <= apple_price <= 220000:
+            return "512"
+        elif 230000 <= apple_price <= 250000:
+            return "1TB"
+
+    # iPhone 14 Pro
+    elif model == '14Pro':
+        if 140000 <= apple_price <= 155000:
+            return "128"
+        elif 155000 <= apple_price <= 175000:
+            return "256"
+        elif 185000 <= apple_price <= 205000:
+            return "512"
+        elif 215000 <= apple_price <= 235000:
+            return "1TB"
+
+    # iPhone 14 Plus
+    elif model == '14Plus':
+        if 115000 <= apple_price <= 130000:
+            return "128"
+        elif 130000 <= apple_price <= 145000:
+            return "256"
+        elif 160000 <= apple_price <= 180000:
+            return "512"
+
+    # iPhone 14
+    elif model == '14':
+        if 105000 <= apple_price <= 120000:
+            return "128"
+        elif 120000 <= apple_price <= 135000:
+            return "256"
+        elif 150000 <= apple_price <= 170000:
+            return "512"
+
     return ""
 
 
 def parse_iphone_data(csv_text):
-    """CSVからiPhoneデータを抽出（16・17シリーズ）"""
+    """CSVからiPhoneデータを抽出（14〜17シリーズ）"""
     reader = csv.reader(io.StringIO(csv_text))
     rows = list(reader)
-    
+
     if len(rows) < 2:
         return []
-    
+
     # ヘッダー行を取得（第0行が店舗名）
     headers = rows[0]
-    
-    # 対象モデル
-    target_models = ['17 PM', '17 Pro', '17', 'Air', '16PM', '16 Pro', '16', '16e', '16Plus']
-    
+
     # iPhoneデータの行を抽出（1行目以降、ヘッダー行の次から）
     iphone_data = []
     for row in rows[1:]:  # 1行目から開始（ヘッダー行 rows[0] をスキップ）
         if len(row) < 3:
             continue
-        
-        model = row[0].strip()
-        
+
+        raw_model = row[0].strip()
+        model = normalize_model_key(raw_model)
+
         # 対象モデルのみ抽出
-        if model not in target_models:
+        if not model:
             continue
-        
+
         raw_capacity = row[1].strip()
         apple_price = parse_price(row[2])  # Apple公式価格
-        
+
         # 欠損している容量を推定
         capacity = infer_capacity(model, apple_price, raw_capacity)
-        
+
         # 【強制フィルタ】capacity が空の場合はこの行をスキップ
         if not capacity or capacity.strip() == '' or capacity.strip() == 'GB':
             print(f"[SKIP] {model} 容量が空のためスキップ")
             continue
-        
+
         # 各店舗の価格を収集（AG列=33列目から開始）
         store_prices = {}
         seen_stores = set()  # 重複排除用
@@ -211,14 +365,14 @@ def parse_iphone_data(csv_text):
                 if price:
                     store_prices[store_name] = price
                     seen_stores.add(store_name)
-        
+
         iphone_data.append({
             'model': model,
             'capacity': capacity,
             'apple_price': apple_price,
             'store_prices': store_prices
         })
-    
+
     return iphone_data
 
 def update_database(data):
@@ -237,7 +391,7 @@ def update_database(data):
                 )
                 db.add(store)
         db.commit()
-        
+
         # 商品と価格を更新
         for item in data:
             # 【強制保護】DB挿入前に capacity を確認し、空の場合はスキップ
@@ -245,23 +399,12 @@ def update_database(data):
             if not cap or cap.strip() == '' or cap.strip() == 'GB':
                 print(f"[DB SKIP] {item['model']} 容量が空のためDBに挿入しません")
                 continue
-            
+
             # モデル名変換
-            model_map = {
-                '17 PM': 'iPhone 17 Pro Max',
-                '17 Pro': 'iPhone 17 Pro',
-                '17': 'iPhone 17',
-                'Air': 'iPhone 17 Air',
-                '16PM': 'iPhone 16 Pro Max',
-                '16 Pro': 'iPhone 16 Pro',
-                '16': 'iPhone 16',
-                '16e': 'iPhone 16e',
-                '16Plus': 'iPhone 16 Plus',
-            }
-            model_name = model_map.get(item['model'], f"iPhone {item['model']}")
-            
+            model_name = MODEL_NAME_MAP.get(item['model'], f"iPhone {item['model']}")
+
             product_name = f"{model_name} {item['capacity']}"
-            
+
             # 商品を取得または作成
             product = db.query(Product).filter(Product.name == product_name).first()
             if not product:
@@ -278,19 +421,19 @@ def update_database(data):
                 db.add(product)
                 db.commit()
                 db.refresh(product)
-            
+
             # 店舗価格を更新
             for store_name, price_value in item['store_prices'].items():
                 store = db.query(Store).filter(Store.name == store_name).first()
                 if not store:
                     continue
-                
+
                 # 現在の価格を取得
                 current = db.query(Price).filter(
                     Price.product_id == product.id,
                     Price.store_id == store.id
                 ).order_by(Price.scraped_at.desc()).first()
-                
+
                 # 価格変動を計算
                 price_change = 0
                 price_change_percent = 0.0
@@ -298,7 +441,7 @@ def update_database(data):
                     price_change = price_value - current.price
                     if current.price > 0:
                         price_change_percent = round((price_change / current.price) * 100, 2)
-                
+
                 # 新しい価格を保存
                 new_price = Price(
                     product_id=product.id,
@@ -310,7 +453,7 @@ def update_database(data):
                     scraped_at=datetime.now()
                 )
                 db.add(new_price)
-                
+
                 # 履歴にも保存
                 history = PriceHistory(
                     product_id=product.id,
@@ -318,10 +461,10 @@ def update_database(data):
                     price=price_value
                 )
                 db.add(history)
-            
+
             # 最高価格フラグを更新
             db.commit()
-            
+
             # この商品の最高価格を取得
             prices = db.query(Price).filter(Price.product_id == product.id).order_by(Price.price.desc()).all()
             if prices:
@@ -329,38 +472,39 @@ def update_database(data):
                 for p in prices:
                     p.is_best_price = 1 if p.price == best_price else 0
                 db.commit()
-        
+                refresh_daily_high_for_product(db, product.id)
+
         print(f"Updated {len(data)} iPhone products")
-        
+
     finally:
         db.close()
 
 def scrape_from_sheet():
     """メイン処理"""
     print(f"[{datetime.now()}] Fetching iPhone data from Google Sheets...")
-    
+
     csv_text = fetch_sheet_data()
     if not csv_text:
         print("Failed to fetch data")
         return
-    
+
     data = parse_iphone_data(csv_text)
     print(f"Found {len(data)} iPhone products")
-    
+
     if data:
         update_database(data)
         print("Database updated successfully")
-    
+
     return data, datetime.now()
 
 # Celery task
 try:
     from celery import shared_task
-    
+
     @shared_task
     def scrape_sheet_task():
         return scrape_from_sheet()
-        
+
 except ImportError:
     pass
 

@@ -65,6 +65,18 @@ class Store(Base):
 
         return get_store_metadata(self.name).get("is_sponsored", False)
 
+class Member(Base):
+    """会員登録モデル"""
+    __tablename__ = "members"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(80), unique=True, index=True, nullable=False)  # ユーザー名
+    email = Column(String(255), unique=True, index=True, nullable=False)  # メールアドレス
+    password_hash = Column(String(255), nullable=True)  # パスワードハッシュ
+    status = Column(String(20), default="active", nullable=False)  # 会員ステータス
+    created_at = Column(DateTime(timezone=True), server_default=func.now())  # 登録日時
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())  # 更新日時
+
 class Price(Base):
     """買取価格モデル"""
     __tablename__ = "prices"

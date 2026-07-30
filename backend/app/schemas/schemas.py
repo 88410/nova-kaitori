@@ -25,6 +25,30 @@ class Store(StoreBase):
     class Config:
         from_attributes = True
 
+# Member Schemas
+class MemberRegisterRequest(BaseModel):
+    username: str
+    email: str
+    password: str
+
+class MemberLoginRequest(BaseModel):
+    email: str
+    password: str
+
+class MemberResetPasswordRequest(BaseModel):
+    email: str
+    password: str
+
+class MemberResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    status: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
 # Product Schemas
 class ProductBase(BaseModel):
     jan_code: Optional[str] = None
@@ -125,6 +149,7 @@ class PriceStats(BaseModel):
 class AIChatRequest(BaseModel):
     session_id: str
     message: str
+    language: Optional[str] = None
 
 class AIChatResponse(BaseModel):
     reply: str

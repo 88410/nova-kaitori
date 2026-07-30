@@ -13,8 +13,13 @@ class Settings(BaseSettings):
     ad_client_id: str = ""
     ad_slot_id: str = ""
     kimi_api_key: str = ""
-    kimi_model: str = "k2p5"
-    kimi_base_url: str = "https://api.kimi.com/coding"
+    kimi_model: str = "kimi-k2.5"
+    kimi_base_url: str = "https://api.moonshot.cn/v1"
+    codex_proxy_url: str = ""
+    codex_model: str = "gpt-5.4"
+    openai_api_key: str = ""
+    openai_model: str = "gpt-5.4-nano"
+    openai_base_url: str = "https://api.openai.com/v1"
     fx_rates_url: str = "https://open.er-api.com/v6/latest/JPY"
     
     @property
