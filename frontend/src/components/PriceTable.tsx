@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import { X } from 'lucide-react'
 import { apiGet } from '../lib/api'
 import { useI18n } from '../i18n'
@@ -209,41 +210,46 @@ function ProductRow({
 
   return (
     <div className="border-b border-slate-200 last:border-b-0">
-      <button
-        type="button"
-        onClick={() => onSelect(item)}
-        className="flex w-full items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-slate-50 sm:grid sm:grid-cols-[100px_1fr_100px_80px] sm:gap-4"
-      >
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-slate-900">{formatCapacity(item.product.capacity)}</p>
-          {retailPrice !== null && (
-            <p className="text-xs text-slate-500 mt-0.5">
-              {t('retailLabel')} {formatPrice(retailPrice)}
-            </p>
-          )}
-        </div>
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-lg font-semibold text-slate-900">{formatPrice(bestPrice.price)}</p>
-            {profit !== null && (
-              <p className={`text-xs font-medium ${profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                ({formatSignedPrice(profit)})
+      <div className="flex w-full items-stretch gap-2 px-4 py-3 transition-colors hover:bg-slate-50 sm:grid sm:grid-cols-[minmax(0,1fr)_96px] sm:gap-3">
+        <Link
+          to={`/product/${item.product.id}`}
+          className="flex min-w-0 flex-1 items-center gap-3 text-left sm:grid sm:grid-cols-[100px_1fr_100px] sm:gap-4"
+        >
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-slate-900">{formatCapacity(item.product.capacity)}</p>
+            {retailPrice !== null && (
+              <p className="text-xs text-slate-500 mt-0.5">
+                {t('retailLabel')} {formatPrice(retailPrice)}
               </p>
             )}
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
-            {Object.entries(fxRates)
-              .map(([currency, data]) => `${currency} ${formatFxPrice(bestPrice.price, data.rate, data.symbol)}`)
-              .join(' / ')}
-          </p>
-        </div>
-        <div className="min-w-0 text-center">
-          <p className="text-sm text-slate-600">{bestPrice.store.name}</p>
-        </div>
-        <div className="min-w-0 text-right">
-          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">{t('details')}</span>
-        </div>
-      </button>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-lg font-semibold text-slate-900">{formatPrice(bestPrice.price)}</p>
+              {profit !== null && (
+                <p className={`text-xs font-medium ${profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                  ({formatSignedPrice(profit)})
+                </p>
+              )}
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {Object.entries(fxRates)
+                .map(([currency, data]) => `${currency} ${formatFxPrice(bestPrice.price, data.rate, data.symbol)}`)
+                .join(' / ')}
+            </p>
+          </div>
+          <div className="min-w-0 text-center">
+            <p className="text-sm text-slate-600">{bestPrice.store.name}</p>
+          </div>
+        </Link>
+        <button
+          type="button"
+          onClick={() => onSelect(item)}
+          className="flex w-20 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-950 sm:w-auto"
+        >
+          {t('details')}
+        </button>
+      </div>
     </div>
   )
 }
