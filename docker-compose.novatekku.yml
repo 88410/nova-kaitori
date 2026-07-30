@@ -1,11 +1,10 @@
-version: '3.8'
-
-# NOVA買取サイト - ローカル開発環境用Docker Compose設定
+# Novatekku deployment on 43.165.129.165.
+# Frontend assets are served by nginx from /var/www/novatekku-*.
 
 services:
   db:
     image: postgres:15-alpine
-    container_name: nova-db
+    container_name: novatekku-nova-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-app_user}
@@ -13,19 +12,15 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-nova_kaitori}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "127.0.0.1:5432:5432"
 
   redis:
     image: redis:7-alpine
-    container_name: nova-redis
+    container_name: novatekku-nova-redis
     restart: unless-stopped
-    ports:
-      - "127.0.0.1:6379:6379"
 
   backend:
     build: ./backend
-    container_name: nova-backend
+    container_name: novatekku-nova-backend
     restart: unless-stopped
     ports:
       - "127.0.0.1:8000:8000"
@@ -34,50 +29,41 @@ services:
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-app_user}:${POSTGRES_PASSWORD:-change_me}@db:5432/${POSTGRES_DB:-nova_kaitori}
       - REDIS_URL=redis://redis:6379/0
-      - CORS_ORIGINS=http://localhost:3000,http://localhost:5173
+      - CORS_ORIGINS=https://ai.novatekku.com,https://novatekku.com
+      - ENVIRONMENT=production
       - CODEX_MODEL=gpt-5.4
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    volumes:
-      - ./backend:/app
     depends_on:
       - db
       - redis
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
-  frontend:
-    build: ./frontend
-    container_name: nova-frontend
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:3000:3000"
-    environment:
-      - VITE_API_URL=https://novakai.net/api
-    # 本番モードで動作
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
 
   celery:
     build: ./backend
-    container_name: nova-celery-worker
+    container_name: novatekku-nova-celery-worker
     restart: unless-stopped
+    env_file:
+      - ./backend/.env
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-app_user}:${POSTGRES_PASSWORD:-change_me}@db:5432/${POSTGRES_DB:-nova_kaitori}
       - REDIS_URL=redis://redis:6379/0
-    volumes:
-      - ./backend:/app
+      - ENVIRONMENT=production
     depends_on:
       - db
       - redis
-    command: celery -A app.celery_app worker --loglevel=info
+    command: celery -A app.celery_app worker --loglevel=info --concurrency=2
 
   celery-beat:
     build: ./backend
-    container_name: nova-celery-beat
+    container_name: novatekku-nova-celery-beat
     restart: unless-stopped
+    env_file:
+      - ./backend/.env
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-app_user}:${POSTGRES_PASSWORD:-change_me}@db:5432/${POSTGRES_DB:-nova_kaitori}
       - REDIS_URL=redis://redis:6379/0
-    volumes:
-      - ./backend:/app
+      - ENVIRONMENT=production
     depends_on:
       - db
       - redis
@@ -85,4 +71,4 @@ services:
 
 volumes:
   postgres_data:
-    name: nova_postgres_data
+    name: novatekku_nova_postgres_data
