@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 
@@ -19,11 +19,10 @@ class StoreCreate(StoreBase):
     pass
 
 class Store(StoreBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     created_at: datetime
-    
-    class Config:
-        from_attributes = True
 
 # Member Schemas
 class MemberRegisterRequest(BaseModel):
@@ -35,19 +34,31 @@ class MemberLoginRequest(BaseModel):
     email: str
     password: str
 
-class MemberResetPasswordRequest(BaseModel):
+class MemberPasswordResetRequest(BaseModel):
     email: str
+
+class MemberPasswordResetConfirm(BaseModel):
+    token: str
     password: str
 
+class MemberChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
 class MemberResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     username: str
     email: str
     status: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+class MessageResponse(BaseModel):
+    message: str
+
+class PasswordResetAvailabilityResponse(BaseModel):
+    enabled: bool
 
 # Product Schemas
 class ProductBase(BaseModel):
@@ -66,13 +77,12 @@ class ProductCreate(ProductBase):
     pass
 
 class Product(ProductBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
     
-    class Config:
-        from_attributes = True
-
 # Price Schemas
 class PriceBase(BaseModel):
     product_id: int
@@ -87,6 +97,8 @@ class PriceCreate(PriceBase):
     pass
 
 class Price(PriceBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     scraped_at: datetime
     created_at: datetime
@@ -94,11 +106,10 @@ class Price(PriceBase):
     profit: Optional[int] = None
     profit_percent: Optional[float] = None
     
-    class Config:
-        from_attributes = True
-
 # Price with Product info (for listing)
 class PriceWithProduct(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     price: int
     price_change: int
@@ -108,17 +119,13 @@ class PriceWithProduct(BaseModel):
     store: Store
     product: Product
     
-    class Config:
-        from_attributes = True
-
 # Price History Schema
 class PriceHistoryEntry(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     price: int
     recorded_at: datetime
     
-    class Config:
-        from_attributes = True
-
 class ProductPriceHistory(BaseModel):
     product: Product
     store: Store

@@ -10,6 +10,7 @@ export async function apiGet<T>(path: string, config: AxiosRequestConfig = {}) {
 
   const response = await axios.get<T>(`${API_URL}${path}`, {
     ...config,
+    withCredentials: true,
     params,
     headers: {
       'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -25,6 +26,7 @@ export async function apiGet<T>(path: string, config: AxiosRequestConfig = {}) {
 export async function apiPost<T>(path: string, data?: unknown, config: AxiosRequestConfig = {}) {
   const response = await axios.post<T>(`${API_URL}${path}`, data, {
     ...config,
+    withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
       ...(config.headers ?? {}),

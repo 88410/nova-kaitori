@@ -29,7 +29,10 @@ services:
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-app_user}:${POSTGRES_PASSWORD:-change_me}@db:5432/${POSTGRES_DB:-nova_kaitori}
       - REDIS_URL=redis://redis:6379/0
-      - CORS_ORIGINS=https://ai.novatekku.com,https://novatekku.com
+      - CORS_ORIGINS=https://ai.novatekku.com,https://novakai.net,https://novatekku.com
+      - PUBLIC_APP_URL=https://ai.novatekku.com
+      - AUTH_ORIGINS=https://ai.novatekku.com,https://novakai.net
+      - AUTH_COOKIE_SECURE=true
       - ENVIRONMENT=production
       - CODEX_MODEL=gpt-5.4
     extra_hosts:

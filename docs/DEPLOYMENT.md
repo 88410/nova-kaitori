@@ -121,6 +121,36 @@ curl -s https://novakai.net | sed -n '1,40p'
 
 ページ最下部の `Current version updated` / `当前版本更新时间` / `現在のバージョン更新日時` が最新時刻なら、新バージョンが配信されています。
 
+### 会員認証とパスワード再設定
+
+会員ログインは、ブラウザのローカル保存値ではなく、バックエンドの `member_sessions` テーブルと安全なCookieで管理します。
+
+- セッションCookie: `HttpOnly`、`Secure`、`SameSite=Lax`
+- CSRF保護: `nova_csrf` Cookieと `X-NOVA-CSRF` ヘッダーを照合
+- ログイン・登録・パスワード操作: Redis優先のレート制限
+- パスワード再設定Token: ハッシュ化してDB保存、有効期限あり、一度のみ使用可能
+- パスワード変更・再設定後: 既存セッションをすべて無効化
+
+パスワード再設定メールは、SMTPを設定するまで安全のため無効です。未設定時にメールアドレスだけでパスワードを変更できる代替経路は設けません。
+
+```env
+PUBLIC_APP_URL=https://ai.example.com
+AUTH_ORIGINS=https://ai.example.com
+AUTH_COOKIE_SECURE=true
+PASSWORD_RESET_EMAIL_ENABLED=true
+PASSWORD_RESET_TOKEN_MINUTES=30
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USERNAME=
+SMTP_PASSWORD=
+SMTP_FROM_EMAIL=noreply@example.com
+SMTP_STARTTLS=true
+```
+
+SMTPを有効化する前に、実際の受信先でメール到達、リンクの有効期限、一度使用したTokenの拒否を確認してください。
+
+依存関係監査では、React RouterのRSCモード向けCSRFアドバイザリが表示されます。本プロジェクトはViteのブラウザSPAで、React Server Components、サーバーAction、React RouterのRSCルートを使用していないため、該当する実行経路はありません。修正版が公開された時点で更新し、監査例外を解消してください。
+
 ### クラウドサービス
 
 #### Render

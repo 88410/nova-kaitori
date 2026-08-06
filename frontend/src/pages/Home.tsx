@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { Activity, ArrowRight, Clock3, Database, Store as StoreIcon, UserPlus, UserRound } from 'lucide-react'
 import { apiGet } from '../lib/api'
-import { getStoredMember } from '../lib/member'
+import { getCurrentMember } from '../lib/member'
 import { type Language, useI18n } from '../i18n'
 
 interface DashboardPrice {
@@ -241,7 +241,12 @@ function formatDateTime(value: string | null, language: Language) {
 
 export default function Home() {
   const { language, t } = useI18n()
-  const currentMember = getStoredMember()
+  const { data: currentMember } = useQuery({
+    queryKey: ['current-member'],
+    queryFn: getCurrentMember,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+  })
   const { data: homepageSummary } = useQuery<HomepageSummary>({
     queryKey: ['homepage-summary'],
     queryFn: async () => apiGet<HomepageSummary>('/api/v1/homepage/summary'),

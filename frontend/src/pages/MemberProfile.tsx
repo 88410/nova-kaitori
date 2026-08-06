@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
 import { Bell, Bookmark, History, LogOut, UserRound } from 'lucide-react'
-import { clearStoredMember, getStoredMember } from '../lib/member'
+import { getCurrentMember, logoutMember } from '../lib/member'
 import { useI18n, type Language } from '../i18n'
 
 function formatDateTime(value: string, language: Language) {
@@ -20,7 +21,14 @@ function formatDateTime(value: string, language: Language) {
 export default function MemberProfile() {
   const { language, t } = useI18n()
   const navigate = useNavigate()
-  const [member, setMember] = useState(() => getStoredMember())
+  const queryClient = useQueryClient()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const { data: member, isLoading } = useQuery({
+    queryKey: ['current-member'],
+    queryFn: getCurrentMember,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+  })
 
   const futureItems = useMemo(
     () => [
@@ -31,10 +39,25 @@ export default function MemberProfile() {
     [t],
   )
 
-  const handleLogout = () => {
-    clearStoredMember()
-    setMember(null)
-    navigate('/')
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await logoutMember()
+      queryClient.setQueryData(['current-member'], null)
+      navigate('/')
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <main className="mx-auto max-w-4xl px-4 py-16 text-center text-sm text-slate-500">
+          {t('memberSessionChecking')}
+        </main>
+      </div>
+    )
   }
 
   if (!member) {
@@ -81,7 +104,12 @@ export default function MemberProfile() {
             ← {t('back')}
           </Link>
           <h1 className="text-lg font-semibold text-slate-900">{t('memberMyPageNav')}</h1>
-          <button type="button" onClick={handleLogout} className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900">
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 disabled:opacity-50"
+          >
             <LogOut className="h-4 w-4" />
             {t('memberLogout')}
           </button>

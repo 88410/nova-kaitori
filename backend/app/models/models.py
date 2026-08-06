@@ -77,6 +77,42 @@ class Member(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())  # 登録日時
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())  # 更新日時
 
+    sessions = relationship("MemberSession", back_populates="member", cascade="all, delete-orphan")
+    password_reset_tokens = relationship(
+        "PasswordResetToken",
+        back_populates="member",
+        cascade="all, delete-orphan",
+    )
+
+
+class MemberSession(Base):
+    """サーバー側で管理する会員セッション"""
+    __tablename__ = "member_sessions"
+
+    id = Column(Integer, primary_key=True)
+    member_id = Column(Integer, ForeignKey("members.id", ondelete="CASCADE"), nullable=False, index=True)
+    token_hash = Column(String(64), unique=True, nullable=False, index=True)
+    csrf_hash = Column(String(64), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False, index=True)
+    revoked_at = Column(DateTime(timezone=True), nullable=True)
+
+    member = relationship("Member", back_populates="sessions")
+
+
+class PasswordResetToken(Base):
+    """一度だけ使用できるパスワード再設定トークン"""
+    __tablename__ = "password_reset_tokens"
+
+    id = Column(Integer, primary_key=True)
+    member_id = Column(Integer, ForeignKey("members.id", ondelete="CASCADE"), nullable=False, index=True)
+    token_hash = Column(String(64), unique=True, nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False, index=True)
+    used_at = Column(DateTime(timezone=True), nullable=True)
+
+    member = relationship("Member", back_populates="password_reset_tokens")
+
 class Price(Base):
     """買取価格モデル"""
     __tablename__ = "prices"
