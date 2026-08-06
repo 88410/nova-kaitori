@@ -59,6 +59,7 @@ function App() {
         <Route path="/members/register" element={<MemberRegister />} />
         <Route path="/members/login" element={<MemberLogin />} />
         <Route path="/members/reset-password" element={<MemberResetPassword />} />
+        <Route path="/members/reset-password/confirm" element={<MemberResetPassword />} />
         <Route path="/members/me" element={<MemberProfile />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/company" element={<LegalPage />} />

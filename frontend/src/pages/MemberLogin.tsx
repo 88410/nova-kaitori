@@ -1,15 +1,15 @@
 import { FormEvent, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
 import { KeyRound, LogIn, Mail } from 'lucide-react'
 import { apiPost } from '../lib/api'
-import { setStoredMember, type StoredMember } from '../lib/member'
+import { type MemberProfile } from '../lib/member'
 import { useI18n } from '../i18n'
 
 function getErrorKey(error: unknown) {
   const response = (error as { response?: { status?: number } }).response
-  if (response?.status === 404) return 'memberLoginErrorNotFound'
-  if (response?.status === 401) return 'memberLoginErrorPassword'
-  if (response?.status === 409) return 'memberLoginErrorPasswordNotSet'
+  if (response?.status === 401) return 'memberLoginErrorGeneric'
+  if (response?.status === 429) return 'memberAuthRateLimited'
   if (response?.status === 422) return 'memberRegisterErrorValidation'
   return 'memberLoginErrorGeneric'
 }
@@ -17,6 +17,7 @@ function getErrorKey(error: unknown) {
 export default function MemberLogin() {
   const { t } = useI18n()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errorKey, setErrorKey] = useState<string | null>(null)
@@ -28,8 +29,8 @@ export default function MemberLogin() {
     setIsSubmitting(true)
 
     try {
-      const member = await apiPost<StoredMember>('/api/v1/members/login', { email, password })
-      setStoredMember(member)
+      const member = await apiPost<MemberProfile>('/api/v1/members/login', { email, password })
+      queryClient.setQueryData(['current-member'], member)
       navigate('/members/me')
     } catch (error) {
       setErrorKey(getErrorKey(error))
