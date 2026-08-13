@@ -353,8 +353,8 @@ const translations: Record<Language, TranslationMap> = {
       'NOVA AIが Singapore Bay AI Developer Innovation Showcase の Top 6 企画に選出',
     homeAwardDescription:
       'AIによるiPhone買取相談体験に向けた、重要な開発マイルストーンです。',
-    homePrimaryCta: 'NOVA AIに相談',
-    homeSecondaryCta: '価格一覧を見る',
+    homePrimaryCta: 'NOVA AI',
+    homeSecondaryCta: '価格一覧',
     homeFreshnessEyebrow: '稼働ステータス',
     homeFreshnessTitle: '',
     homeFreshnessDescription:
