@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { ArrowRight, ArrowUpRight, Database, LineChart, Sparkles } from 'lucide-react'
 import { type Language, useI18n } from '../i18n'
 
@@ -7,8 +8,6 @@ type CompanyCopy = {
   title: string
   lead: string
   aiButton: string
-  companyLink: string
-  logLink: string
   productEyebrow: string
   productTitle: string
   productLead: string
@@ -22,11 +21,9 @@ const COMPANY_COPY: Record<Language, CompanyCopy> = {
   en: {
     brand: 'NOVATECH',
     eyebrow: 'AI PRODUCT STUDIO · TOKYO',
-    title: 'Intelligence that moves with the world.',
-    lead: 'We design practical AI products that turn complex market data into clear, confident decisions.',
+    title: 'Turn data into confident decisions.',
+    lead: 'We turn complex market data into clear, reliable decisions and build AI products designed for real-world use.',
     aiButton: 'Enter AI',
-    companyLink: 'Company',
-    logLink: 'Development',
     productEyebrow: 'OUR FIRST PRODUCT',
     productTitle: 'NOVA AI',
     productLead: 'Live iPhone buyback intelligence, powered by local price data and natural conversation.',
@@ -42,11 +39,9 @@ const COMPANY_COPY: Record<Language, CompanyCopy> = {
   zh: {
     brand: 'NOVATECH',
     eyebrow: 'AI PRODUCT STUDIO · TOKYO',
-    title: '让智能，跟上世界的变化。',
+    title: '让数据，成为可靠的判断。',
     lead: '我们把复杂的市场数据变成清晰、可靠的判断，开发真正能够投入使用的 AI 产品。',
     aiButton: '进入 AI',
-    companyLink: '公司信息',
-    logLink: '开发日志',
     productEyebrow: '首个公开产品',
     productTitle: 'NOVA AI',
     productLead: '结合本地价格数据与自然对话，实时分析 iPhone 回收市场。',
@@ -62,11 +57,9 @@ const COMPANY_COPY: Record<Language, CompanyCopy> = {
   ja: {
     brand: 'NOVATECH',
     eyebrow: 'AI PRODUCT STUDIO · TOKYO',
-    title: '世界の変化を、知性で前へ。',
-    lead: '複雑な市場データを、明確で信頼できる判断へ。実際に使えるAIプロダクトを開発しています。',
+    title: 'データを、確かな判断へ。',
+    lead: '複雑な市場データを明確で信頼できる判断へ変え、実際に使えるAIプロダクトを開発しています。',
     aiButton: 'AIへ',
-    companyLink: '会社情報',
-    logLink: '開発ログ',
     productEyebrow: '最初の公開プロダクト',
     productTitle: 'NOVA AI',
     productLead: 'ローカル価格データと自然な対話を組み合わせた、iPhone買取市場のリアルタイムAIです。',
@@ -86,6 +79,27 @@ const PRODUCT_URL = 'https://ai.novatekku.com/'
 export default function CompanyHome() {
   const { language } = useI18n()
   const copy = COMPANY_COPY[language]
+  const [priceRecords, setPriceRecords] = useState<number | null>(null)
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    fetch('https://ai.novatekku.com/api/v1/homepage/summary', {
+      cache: 'no-store',
+      signal: controller.signal,
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error('Failed to load NOVA statistics')
+        return response.json()
+      })
+      .then((data) => setPriceRecords(data?.stats?.total_price_records ?? null))
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === 'AbortError') return
+        setPriceRecords(null)
+      })
+
+    return () => controller.abort()
+  }, [])
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#07080b] text-white">
@@ -97,10 +111,6 @@ export default function CompanyHome() {
             </span>
             <span className="hidden text-sm font-semibold tracking-[0.22em] sm:block">{copy.brand}</span>
           </a>
-          <nav className="ml-auto hidden items-center gap-7 pr-64 text-xs font-medium text-white/60 lg:flex">
-            <a href="/company" className="transition-colors hover:text-white">{copy.companyLink}</a>
-            <a href="/development" className="transition-colors hover:text-white">{copy.logLink}</a>
-          </nav>
         </div>
       </header>
 
@@ -121,7 +131,7 @@ export default function CompanyHome() {
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-5xl text-center">
             <p className="text-[11px] font-semibold tracking-[0.28em] text-white/45 sm:text-xs">{copy.eyebrow}</p>
-            <h1 className="mx-auto mt-7 max-w-5xl text-5xl font-medium leading-[0.98] tracking-[-0.055em] sm:text-7xl lg:text-[96px]">
+            <h1 className="mx-auto mt-7 max-w-5xl text-4xl font-medium leading-[1.05] tracking-[-0.055em] sm:text-7xl sm:leading-[0.98] lg:text-[96px]">
               {copy.title}
             </h1>
             <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/55 sm:text-lg">{copy.lead}</p>
@@ -180,7 +190,9 @@ export default function CompanyHome() {
                     <div className="flex flex-col justify-between border-r border-white/10 p-5 sm:p-7 lg:border-b lg:border-r-0">
                       <Database className="h-5 w-5 text-violet-300/70" />
                       <div className="mt-14">
-                        <p className="text-3xl font-medium tracking-tight sm:text-4xl">611K+</p>
+                        <p className="text-3xl font-medium tracking-tight sm:text-4xl">
+                          {priceRecords === null ? '—' : new Intl.NumberFormat(language === 'zh' ? 'zh-CN' : language === 'en' ? 'en-US' : 'ja-JP').format(priceRecords)}
+                        </p>
                         <p className="mt-2 text-[10px] tracking-[0.2em] text-white/35">{copy.recordsLabel}</p>
                       </div>
                     </div>

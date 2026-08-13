@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { ArrowUp, LogIn, Sparkles, Store, Tags, UserPlus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { apiPost } from '../lib/api'
 import { useI18n, type Language } from '../i18n'
@@ -14,68 +15,84 @@ interface AIChatResponse {
   remaining: number
 }
 
-const EXAMPLE_PROMPTS: Record<Language, string[]> = {
-  en: [
-    'Which store offers the highest buyback price for iPhone 17 Pro Max 256GB?',
-    'Compare buyback prices for iPhone 17 Pro 256GB across stores.',
-    'If I sell an iPhone 17 128GB today, which shop looks best?',
-  ],
-  zh: [
-    'iPhone 17 Pro Max 256GB 现在哪家回收价最高？',
-    '帮我比较一下 iPhone 17 Pro 256GB 各店铺回收价格。',
-    '如果我今天卖 iPhone 17 128GB，推荐哪家店？',
-  ],
-  ja: [
-    'iPhone 17 Pro Max 256GB は今どの店舗が一番高いですか？',
-    'iPhone 17 Pro 256GB の買取価格を店舗ごとに比較してください。',
-    '今日 iPhone 17 128GB を売るなら、どのお店がおすすめですか？',
-  ],
+const COPY: Record<Language, {
+  eyebrow: string
+  title: string
+  lead: string
+  price: string
+  stores: string
+  login: string
+  register: string
+  examples: string[]
+  databaseNote: string
+}> = {
+  en: {
+    eyebrow: 'SMARTPHONE & PRICE INTELLIGENCE',
+    title: 'What would you like to know?',
+    lead: 'Ask about smartphones or analyze the latest local buyback prices.',
+    price: 'Prices',
+    stores: 'Stores',
+    login: 'Log in',
+    register: 'Sign up',
+    examples: [
+      'Which store pays the most for iPhone 17 Pro Max 256GB?',
+      'Is now a good time to sell my iPhone?',
+      'How do I move data from Android to iPhone?',
+    ],
+    databaseNote: 'Price answers use NOVA local market data.',
+  },
+  zh: {
+    eyebrow: '手机知识与价格智能',
+    title: '今天想了解什么？',
+    lead: '可以问手机问题，也可以分析最新的本地回收价格。',
+    price: '价格',
+    stores: '店铺',
+    login: '登录',
+    register: '注册',
+    examples: [
+      'iPhone 17 Pro Max 256GB 现在哪家价格最高？',
+      '现在适合卖掉我的 iPhone 吗？',
+      '安卓手机怎么把数据转到 iPhone？',
+    ],
+    databaseNote: '价格回答使用 NOVA 本地市场数据。',
+  },
+  ja: {
+    eyebrow: 'スマートフォンと価格インテリジェンス',
+    title: '今日は何を知りたいですか？',
+    lead: 'スマートフォンの相談も、最新のローカル買取価格の分析もできます。',
+    price: '価格',
+    stores: '店舗',
+    login: 'ログイン',
+    register: '会員登録',
+    examples: [
+      'iPhone 17 Pro Max 256GB は今どの店舗が一番高いですか？',
+      '今はiPhoneを売る良いタイミングですか？',
+      'AndroidからiPhoneへデータを移す方法は？',
+    ],
+    databaseNote: '価格の回答にはNOVAのローカル市場データを使用します。',
+  },
 }
 
 export default function AI() {
-  const { language, t } = useI18n()
+  const { language, setLanguage, t } = useI18n()
+  const copy = COPY[language]
   const [sessionId] = useState(() => crypto.randomUUID())
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content: t('aiWelcome'),
-    },
-  ])
+  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [remaining, setRemaining] = useState(10)
   const [isLoading, setIsLoading] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
-  const examplePrompts = EXAMPLE_PROMPTS[language]
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isLoading])
 
-  useEffect(() => {
-    setMessages((prev) => {
-      if (prev.length !== 1 || prev[0]?.id !== 'welcome') return prev
-      return [
-        {
-          id: 'welcome',
-          role: 'assistant',
-          content: t('aiWelcome'),
-        },
-      ]
-    })
-  }, [language, t])
-
-  const handleSend = async () => {
-    const content = input.trim()
+  const handleSend = async (rawContent = input) => {
+    const content = rawContent.trim()
     if (!content || isLoading || remaining <= 0) return
 
-    const userMessage: ChatMessage = {
-      id: `${Date.now()}-user`,
-      role: 'user',
-      content,
-    }
-
-    setMessages((prev) => [...prev, userMessage])
+    setMessages((previous) => [...previous, { id: `${Date.now()}-user`, role: 'user', content }])
     setInput('')
     setIsLoading(true)
 
@@ -83,122 +100,190 @@ export default function AI() {
       const data = await apiPost<AIChatResponse>('/api/v1/ai/chat', {
         session_id: sessionId,
         message: content,
+        language,
       })
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `${Date.now()}-assistant`,
-          role: 'assistant',
-          content: data.reply || t('aiEmptyReply'),
-        },
+      setMessages((previous) => [
+        ...previous,
+        { id: `${Date.now()}-assistant`, role: 'assistant', content: data.reply || t('aiEmptyReply') },
       ])
       setRemaining(data.remaining)
     } catch (error: any) {
       const status = error?.response?.status
-      const message =
-        status === 429
-          ? t('aiLimitReached')
-          : t('aiError')
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `${Date.now()}-assistant`,
-          role: 'assistant',
-          content: message,
-        },
+      setMessages((previous) => [
+        ...previous,
+        { id: `${Date.now()}-error`, role: 'assistant', content: status === 429 ? t('aiLimitReached') : t('aiError') },
       ])
-
-      if (status === 429) {
-        setRemaining(0)
-      }
+      if (status === 429) setRemaining(0)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleExampleClick = (prompt: string) => {
-    if (isLoading || remaining <= 0) return
-    setInput(prompt)
+  const chooseExample = (question: string) => {
+    setInput(question)
+    textareaRef.current?.focus()
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
-          <Link to="/" className="text-sm text-slate-500 hover:text-slate-900">
-            ← {t('back')}
-          </Link>
-          <div className="text-center">
-            <h2 className="text-lg font-semibold text-slate-900">{t('novaAi')}</h2>
-            <p className="text-xs text-slate-500">{t('remainingCount', { count: remaining })}</p>
+    <div className="flex min-h-[100dvh] flex-col bg-[#f7f7f8] text-slate-950">
+      <header className="sticky top-0 z-40 border-b border-black/[0.07] bg-white/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-[68px] max-w-7xl items-center gap-2 px-3 sm:gap-4 sm:px-6 lg:px-8">
+          <a href="https://novatekku.com/" className="flex shrink-0 items-center gap-2.5" aria-label="Novatekku home">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-slate-950 text-xs font-semibold text-white">N</span>
+            <span className="hidden text-sm font-semibold tracking-[0.16em] sm:block">NOVA AI</span>
+          </a>
+
+          <nav className="ml-1 flex items-center sm:ml-6 sm:gap-2">
+            <Link to="/prices" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full px-2 text-[11px] font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 sm:px-4 sm:text-sm">
+              <Tags className="hidden h-4 w-4 sm:block" />
+              {copy.price}
+            </Link>
+            <Link to="/stores" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full px-2 text-[11px] font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 sm:px-4 sm:text-sm">
+              <Store className="hidden h-4 w-4 sm:block" />
+              {copy.stores}
+            </Link>
+          </nav>
+
+          <div className="ml-auto flex items-center gap-1 sm:gap-2">
+            <select
+              value={language}
+              onChange={(event) => setLanguage(event.target.value as Language)}
+              aria-label={t('languageLabel')}
+              className="h-9 w-10 rounded-full border border-slate-200 bg-white px-0.5 text-center text-[10px] text-slate-600 outline-none focus:border-slate-400 sm:w-auto sm:px-3 sm:text-xs"
+            >
+              <option value="ja">JA</option>
+              <option value="zh">中</option>
+              <option value="en">EN</option>
+            </select>
+            <Link to="/members/login" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full px-1.5 text-[11px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950 sm:px-3 sm:text-sm">
+              <LogIn className="hidden h-4 w-4 sm:block" />
+              {copy.login}
+            </Link>
+            <Link to="/members/register" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-slate-950 px-2.5 text-[11px] font-semibold text-white transition-colors hover:bg-slate-800 sm:px-4 sm:text-sm">
+              <UserPlus className="hidden h-4 w-4 sm:block" />
+              {copy.register}
+            </Link>
           </div>
-          <span className="w-10" />
         </div>
       </header>
 
-      <main className="flex-1 mx-auto w-full max-w-4xl px-4 py-6">
-        <div className="space-y-4">
-          {messages.map((msg) => (
-            <div key={msg.id} className={msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'}>
-              <div
-                className={
-                  msg.role === 'user'
-                    ? 'max-w-[80%] rounded-2xl bg-black px-4 py-3 text-white'
-                    : 'max-w-[80%] rounded-2xl bg-white px-4 py-3 text-slate-800 shadow-sm'
-                }
-              >
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+      <main className="relative flex flex-1 flex-col overflow-hidden">
+        <div className="pointer-events-none absolute left-1/2 top-[-18rem] h-[42rem] w-[42rem] -translate-x-1/2 rounded-full bg-violet-200/45 blur-[130px]" />
+
+        {messages.length === 0 ? (
+          <section className="relative mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center px-4 pb-8 pt-14 sm:px-6">
+            <div className="text-center">
+              <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-950 text-white shadow-xl shadow-slate-300">
+                <Sparkles className="h-5 w-5" />
               </div>
+              <p className="mt-6 text-[10px] font-semibold tracking-[0.22em] text-slate-400 sm:text-xs">{copy.eyebrow}</p>
+              <h1 className="mt-4 text-3xl font-medium tracking-[-0.04em] sm:text-5xl">{copy.title}</h1>
+              <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-slate-500 sm:text-base">{copy.lead}</p>
             </div>
-          ))}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="rounded-2xl bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">{t('thinking')}</div>
-            </div>
-          )}
-          {messages.length === 1 && !isLoading && (
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-500">{t('aiExamplesTitle')}</p>
-              <div className="flex flex-col gap-2">
-                {examplePrompts.map((prompt) => (
-                  <button
-                    key={prompt}
-                    type="button"
-                    onClick={() => handleExampleClick(prompt)}
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100"
-                  >
-                    {prompt}
+
+            <div className="mx-auto mt-9 w-full max-w-3xl">
+              <Composer
+                input={input}
+                setInput={setInput}
+                textareaRef={textareaRef}
+                onSend={() => handleSend()}
+                disabled={remaining <= 0 || isLoading}
+                placeholder={remaining > 0 ? t('inputPlaceholder') : t('noQuestionsLeft')}
+              />
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                {copy.examples.map((question) => (
+                  <button key={question} type="button" onClick={() => chooseExample(question)} className="rounded-full border border-black/[0.08] bg-white/80 px-3.5 py-2 text-left text-xs text-slate-500 shadow-sm transition-colors hover:border-slate-300 hover:text-slate-950">
+                    {question}
                   </button>
                 ))}
               </div>
+              <p className="mt-5 text-center text-[11px] text-slate-400">{copy.databaseNote} · {t('remainingCount', { count: remaining })}</p>
             </div>
-          )}
-          <div ref={bottomRef} />
-        </div>
-      </main>
+          </section>
+        ) : (
+          <section className="relative mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 sm:px-6">
+            <div className="flex-1 space-y-8 py-10 sm:py-14">
+              {messages.map((message) => (
+                <article key={message.id} className="grid grid-cols-[36px_1fr] gap-3 sm:grid-cols-[42px_1fr] sm:gap-4">
+                  <div className={`grid h-9 w-9 place-items-center rounded-xl text-xs font-semibold sm:h-10 sm:w-10 ${message.role === 'user' ? 'bg-white text-slate-500 ring-1 ring-slate-200' : 'bg-slate-950 text-white'}`}>
+                    {message.role === 'user' ? 'YOU' : 'N'}
+                  </div>
+                  <div className={`min-w-0 rounded-2xl px-4 py-3.5 sm:px-5 ${message.role === 'user' ? 'bg-white ring-1 ring-black/[0.06]' : 'bg-transparent'}`}>
+                    <p className="whitespace-pre-wrap break-words text-sm leading-7 text-slate-700 sm:text-base sm:leading-8">{message.content}</p>
+                  </div>
+                </article>
+              ))}
+              {isLoading && (
+                <div className="grid grid-cols-[36px_1fr] gap-3 sm:grid-cols-[42px_1fr] sm:gap-4">
+                  <div className="grid h-9 w-9 place-items-center rounded-xl bg-slate-950 text-xs font-semibold text-white sm:h-10 sm:w-10">N</div>
+                  <div className="flex items-center gap-1.5 px-4 py-4">
+                    {[0, 150, 300].map((delay) => <span key={delay} className="h-2 w-2 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: `${delay}ms` }} />)}
+                  </div>
+                </div>
+              )}
+              <div ref={bottomRef} />
+            </div>
 
-      <footer className="border-t border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-4xl items-center gap-2 px-4 py-4">
-          <input
-            className="flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-slate-400"
-            placeholder={remaining > 0 ? t('inputPlaceholder') : t('noQuestionsLeft')}
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-            onKeyDown={(event) => event.key === 'Enter' && handleSend()}
-            disabled={remaining <= 0 || isLoading}
-            maxLength={200}
-          />
-          <button
-            className="rounded-xl bg-black px-4 py-3 text-sm font-medium text-white disabled:bg-slate-300"
-            onClick={handleSend}
-            disabled={remaining <= 0 || isLoading || !input.trim()}
-          >
-            {t('send')}
-          </button>
-        </div>
-      </footer>
+            <div className="sticky bottom-0 bg-gradient-to-t from-[#f7f7f8] via-[#f7f7f8] to-transparent pb-5 pt-8">
+              <Composer
+                input={input}
+                setInput={setInput}
+                textareaRef={textareaRef}
+                onSend={() => handleSend()}
+                disabled={remaining <= 0 || isLoading}
+                placeholder={remaining > 0 ? t('inputPlaceholder') : t('noQuestionsLeft')}
+              />
+              <p className="mt-2 text-center text-[10px] text-slate-400">{copy.databaseNote} · {t('remainingCount', { count: remaining })}</p>
+            </div>
+          </section>
+        )}
+      </main>
+    </div>
+  )
+}
+
+function Composer({
+  input,
+  setInput,
+  textareaRef,
+  onSend,
+  disabled,
+  placeholder,
+}: {
+  input: string
+  setInput: (value: string) => void
+  textareaRef: React.RefObject<HTMLTextAreaElement>
+  onSend: () => void
+  disabled: boolean
+  placeholder: string
+}) {
+  return (
+    <div className="flex items-end gap-2 rounded-[24px] border border-black/[0.09] bg-white p-2.5 shadow-[0_18px_60px_rgba(15,23,42,0.12)] focus-within:border-slate-300">
+      <textarea
+        ref={textareaRef}
+        value={input}
+        onChange={(event) => setInput(event.target.value.slice(0, 2000))}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault()
+            onSend()
+          }
+        }}
+        rows={1}
+        maxLength={2000}
+        disabled={disabled}
+        placeholder={placeholder}
+        className="max-h-36 min-h-12 flex-1 resize-none bg-transparent px-3 py-3 text-sm leading-6 text-slate-800 outline-none placeholder:text-slate-400 disabled:cursor-not-allowed sm:text-base"
+      />
+      <button
+        type="button"
+        onClick={onSend}
+        disabled={disabled || !input.trim()}
+        aria-label="Send"
+        className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-slate-950 text-white transition-colors hover:bg-violet-700 disabled:bg-slate-200 disabled:text-slate-400"
+      >
+        <ArrowUp className="h-5 w-5" />
+      </button>
     </div>
   )
 }

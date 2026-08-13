@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
-import Home from './pages/Home'
 import Prices from './pages/Prices'
 import Stores from './pages/Stores'
 import MemberRegister from './pages/MemberRegister'
@@ -28,6 +27,8 @@ function ScrollToTop() {
 }
 
 function App() {
+  const { pathname } = useLocation()
+
   if (isCompanySite) {
     return (
       <>
@@ -49,10 +50,10 @@ function App() {
 
   return (
     <>
-      <LanguageSwitcher />
+      {pathname !== '/' && pathname !== '/ai' && <LanguageSwitcher />}
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<AI />} />
         <Route path="/ai" element={<AI />} />
         <Route path="/prices" element={<Prices />} />
         <Route path="/stores" element={<Stores />} />
@@ -66,7 +67,7 @@ function App() {
         <Route path="/privacy" element={<LegalPage />} />
         <Route path="/terms" element={<LegalPage />} />
       </Routes>
-      <SiteFooter />
+      {pathname !== '/' && pathname !== '/ai' && <SiteFooter />}
     </>
   )
 }
