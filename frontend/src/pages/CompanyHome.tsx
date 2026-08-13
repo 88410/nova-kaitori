@@ -1,251 +1,83 @@
-import { ArrowUpRight, Database, LineChart, Sparkles, Store as StoreIcon } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Database, LineChart, Sparkles } from 'lucide-react'
 import { type Language, useI18n } from '../i18n'
 
 type CompanyCopy = {
   brand: string
-  navCompany: string
-  navLog: string
   eyebrow: string
   title: string
   lead: string
-  novaEyebrow: string
-  novaTitle: string
-  novaLead: string
-  novaButton: string
-  profileTitle: string
-  profileLead: string
-  addressLabel: string
-  address: string
-  businessLabel: string
-  business: string
-  registrationTitle: string
-  registrationItems: Array<{ label: string; value: string }>
-  teamTitle: string
-  teamItems: Array<{ label: string; value: string }>
-  strengthsTitle: string
-  strengths: Array<{ title: string; body: string }>
-  priceRecordsLabel: string
-  productsLabel: string
-  partnerStoresLabel: string
+  aiButton: string
+  companyLink: string
+  logLink: string
+  productEyebrow: string
+  productTitle: string
+  productLead: string
+  signalLabel: string
+  recordsLabel: string
+  storesLabel: string
+  capabilities: Array<{ number: string; title: string; body: string }>
 }
 
 const COMPANY_COPY: Record<Language, CompanyCopy> = {
   en: {
-    brand: 'Novatech Co., Ltd.',
-    navCompany: 'Company Profile',
-    navLog: 'Development Log',
-    eyebrow: 'AI business development',
-    title: 'Building practical AI products for cross-border device circulation.',
-    lead:
-      'Novatech Co., Ltd. develops data-driven software for price intelligence and customer-facing AI guidance. Our first public product is NOVA AI, an iPhone buyback price intelligence platform for the Japanese market.',
-    novaEyebrow: 'Featured Product',
-    novaTitle: 'NOVA AI',
-    novaLead:
-      'NOVA AI combines store-level buyback price data, product details, multilingual guidance, and AI-assisted store recommendations so users can decide where to sell faster and with clearer context.',
-    novaButton: 'Open NOVA AI',
-    profileTitle: 'Company Information',
-    profileLead:
-      'The company page presents the operating entity, service direction, and technical release records in Japanese, Chinese, and English.',
-    addressLabel: 'Address',
-    address: 'Musashino Building, 2-13-10 Shinjuku, Shinjuku-ku, Tokyo',
-    businessLabel: 'Business',
-    business: 'AI business development',
-    registrationTitle: 'Corporate Registration',
-    registrationItems: [
-      {
-        label: 'Corporate Number',
-        value: '0111-01-110714',
-      },
-      {
-        label: 'Capital',
-        value: 'JPY 6,000,000',
-      },
-      {
-        label: 'Founded',
-        value: 'February 17, 2025',
-      },
+    brand: 'NOVATECH',
+    eyebrow: 'AI PRODUCT STUDIO · TOKYO',
+    title: 'Intelligence that moves with the world.',
+    lead: 'We design practical AI products that turn complex market data into clear, confident decisions.',
+    aiButton: 'Enter AI',
+    companyLink: 'Company',
+    logLink: 'Development',
+    productEyebrow: 'OUR FIRST PRODUCT',
+    productTitle: 'NOVA AI',
+    productLead: 'Live iPhone buyback intelligence, powered by local price data and natural conversation.',
+    signalLabel: 'LIVE PRICE SIGNAL',
+    recordsLabel: 'PRICE RECORDS',
+    storesLabel: 'PARTNER STORES',
+    capabilities: [
+      { number: '01', title: 'Price intelligence', body: 'Real market data, filtered and structured for faster decisions.' },
+      { number: '02', title: 'Natural conversation', body: 'Ask about smartphones, prices, and the best time to sell.' },
+      { number: '03', title: 'Built for movement', body: 'A multilingual product designed for a cross-border market.' },
     ],
-    teamTitle: 'Operations & Technical Support Framework',
-    teamItems: [
-      {
-        label: 'Morita',
-        value: 'Business operations and product planning',
-      },
-      {
-        label: 'Sato',
-        value: 'Customer experience and service guidance',
-      },
-      {
-        label: 'Tanaka',
-        value: 'System maintenance and operational stability',
-      },
-      {
-        label: 'Liu',
-        value: 'Merchant-side coordination and price-data acquisition',
-      },
-    ],
-    strengthsTitle: 'Operating Focus',
-    strengths: [
-      {
-        title: 'Price intelligence',
-        body: 'Structured collection and presentation of store-by-store buyback data.',
-      },
-      {
-        title: 'AI consultation',
-        body: 'Natural-language support for model selection, store comparison, and selling decisions.',
-      },
-      {
-        title: 'Multilingual service',
-        body: 'Japanese, Chinese, and English pages prepared for customers and business partners.',
-      },
-    ],
-    priceRecordsLabel: 'price records',
-    productsLabel: 'products',
-    partnerStoresLabel: 'partner stores',
   },
   zh: {
-    brand: '诺瓦科技株式会社',
-    navCompany: '公司概要',
-    navLog: '开发日志',
-    eyebrow: 'AI 业务开发',
-    title: '为跨境电子设备流通开发可落地的 AI 产品。',
-    lead:
-      '诺瓦科技株式会社围绕价格智能和面向客户的 AI 引导开发数据驱动的软件产品。当前第一个公开产品是 NOVA AI，一个面向日本市场的 iPhone 回收价格智能平台。',
-    novaEyebrow: '核心产品',
-    novaTitle: 'NOVA AI',
-    novaLead:
-      'NOVA AI 整合各店铺回收价格、商品信息、多语言说明和 AI 店铺推荐，让用户更快判断应该卖给哪家店，并理解价格差异背后的依据。',
-    novaButton: '进入 NOVA AI',
-    profileTitle: '公司信息',
-    profileLead: '本页面以日语、中文、英文展示运营主体、服务方向和技术发布记录。',
-    addressLabel: '所在地',
-    address: '东京都新宿区新宿2丁目13番10号 武藏野大楼',
-    businessLabel: '事业内容',
-    business: 'AI 业务开发',
-    registrationTitle: '法人登记信息',
-    registrationItems: [
-      {
-        label: '法人番号',
-        value: '０１１１－０１－１１０７１４',
-      },
-      {
-        label: '资本金',
-        value: '金６００万円',
-      },
-      {
-        label: '成立年月日',
-        value: '令和７年２月１７日',
-      },
+    brand: 'NOVATECH',
+    eyebrow: 'AI PRODUCT STUDIO · TOKYO',
+    title: '让智能，跟上世界的变化。',
+    lead: '我们把复杂的市场数据变成清晰、可靠的判断，开发真正能够投入使用的 AI 产品。',
+    aiButton: '进入 AI',
+    companyLink: '公司信息',
+    logLink: '开发日志',
+    productEyebrow: '首个公开产品',
+    productTitle: 'NOVA AI',
+    productLead: '结合本地价格数据与自然对话，实时分析 iPhone 回收市场。',
+    signalLabel: '实时价格信号',
+    recordsLabel: '价格记录',
+    storesLabel: '合作店铺',
+    capabilities: [
+      { number: '01', title: '价格智能', body: '整理真实市场数据、排除异常值，让判断更直接。' },
+      { number: '02', title: '自然对话', body: '可以询问手机、价格以及适合出售的时间。' },
+      { number: '03', title: '面向流动市场', body: '为跨境市场设计的多语言 AI 产品。' },
     ],
-    teamTitle: '运营与技术支持体系',
-    teamItems: [
-      {
-        label: '森田',
-        value: '业务运营与产品规划',
-      },
-      {
-        label: '佐藤',
-        value: '客户体验与服务引导',
-      },
-      {
-        label: '田中',
-        value: '系统维护与运行稳定',
-      },
-      {
-        label: '劉',
-        value: '商家侧沟通与价格数据获取',
-      },
-    ],
-    strengthsTitle: '业务重点',
-    strengths: [
-      {
-        title: '价格智能',
-        body: '结构化收集并展示各店铺回收价格数据。',
-      },
-      {
-        title: 'AI 咨询',
-        body: '用自然语言支持机型判断、店铺比较和出售决策。',
-      },
-      {
-        title: '多语言服务',
-        body: '面向客户和业务伙伴准备日语、中文、英文页面。',
-      },
-    ],
-    priceRecordsLabel: '价格数据',
-    productsLabel: '收录商品',
-    partnerStoresLabel: '合作店铺',
   },
   ja: {
-    brand: 'ノーヴァテック株式会社',
-    navCompany: '会社概要',
-    navLog: '開発ログ',
-    eyebrow: 'AI事業開発',
-    title: '越境デバイス流通に向けた実用的なAIプロダクトを開発しています。',
-    lead:
-      'ノーヴァテック株式会社は、価格インテリジェンスと顧客向けAI案内を支えるデータ駆動型ソフトウェアを開発しています。最初の公開プロダクトは、日本市場向けのiPhone買取価格インテリジェンスプラットフォーム「NOVA AI」です。',
-    novaEyebrow: '主要プロダクト',
-    novaTitle: 'NOVA AI',
-    novaLead:
-      'NOVA AIは、店舗別の買取価格データ、商品情報、多言語案内、AIによる店舗提案を組み合わせ、どの店舗に売却するべきかをより速く、根拠を持って判断できるようにします。',
-    novaButton: 'NOVA AIを開く',
-    profileTitle: '会社情報',
-    profileLead: '運営主体、サービス方針、技術リリース記録を日本語・中国語・英語で掲載しています。',
-    addressLabel: '所在地',
-    address: '東京都新宿区新宿2丁目13番10号 武蔵野ビル',
-    businessLabel: '事業内容',
-    business: 'AI事業開発',
-    registrationTitle: '法人登記情報',
-    registrationItems: [
-      {
-        label: '法人番号',
-        value: '０１１１－０１－１１０７１４',
-      },
-      {
-        label: '資本金',
-        value: '金６００万円',
-      },
-      {
-        label: '成立年月日',
-        value: '令和７年２月１７日',
-      },
+    brand: 'NOVATECH',
+    eyebrow: 'AI PRODUCT STUDIO · TOKYO',
+    title: '世界の変化を、知性で前へ。',
+    lead: '複雑な市場データを、明確で信頼できる判断へ。実際に使えるAIプロダクトを開発しています。',
+    aiButton: 'AIへ',
+    companyLink: '会社情報',
+    logLink: '開発ログ',
+    productEyebrow: '最初の公開プロダクト',
+    productTitle: 'NOVA AI',
+    productLead: 'ローカル価格データと自然な対話を組み合わせた、iPhone買取市場のリアルタイムAIです。',
+    signalLabel: 'リアルタイム価格シグナル',
+    recordsLabel: '価格データ',
+    storesLabel: '掲載店舗',
+    capabilities: [
+      { number: '01', title: '価格インテリジェンス', body: '実市場データを整理し、異常値を除外して判断を明確にします。' },
+      { number: '02', title: '自然な対話', body: 'スマートフォン、価格、売却タイミングを自然な言葉で相談できます。' },
+      { number: '03', title: '動く市場のために', body: '越境市場に向けて設計した、多言語対応のAIプロダクトです。' },
     ],
-    teamTitle: '運営・技術支援体制',
-    teamItems: [
-      {
-        label: '森田',
-        value: '事業運営・プロダクト企画',
-      },
-      {
-        label: '佐藤',
-        value: '顧客体験・サービス案内',
-      },
-      {
-        label: '田中',
-        value: 'システム保守・運用安定化',
-      },
-      {
-        label: '劉',
-        value: '店舗側連携・価格データ取得',
-      },
-    ],
-    strengthsTitle: '事業上の重点',
-    strengths: [
-      {
-        title: '価格インテリジェンス',
-        body: '店舗別の買取価格データを構造化して収集・表示します。',
-      },
-      {
-        title: 'AI相談',
-        body: '機種選定、店舗比較、売却判断を自然言語で支援します。',
-      },
-      {
-        title: '多言語サービス',
-        body: '顧客と事業パートナー向けに日本語・中国語・英語のページを整備します。',
-      },
-    ],
-    priceRecordsLabel: '価格データ',
-    productsLabel: '掲載商品',
-    partnerStoresLabel: '掲載店舗',
   },
 }
 
@@ -256,58 +88,126 @@ export default function CompanyHome() {
   const copy = COMPANY_COPY[language]
 
   return (
-    <main className="min-h-screen bg-stone-50 text-slate-950">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <a href="/" className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-md border border-slate-900 text-sm font-semibold">
-              NT
+    <main className="min-h-screen overflow-hidden bg-[#07080b] text-white">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-[#07080b]/75 backdrop-blur-xl">
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
+          <a href="/" className="flex items-center gap-3" aria-label={copy.brand}>
+            <span className="grid h-9 w-9 place-items-center rounded-full border border-white/25 text-xs font-semibold tracking-wider">
+              N
             </span>
-            <span className="text-sm font-semibold sm:text-base">{copy.brand}</span>
+            <span className="hidden text-sm font-semibold tracking-[0.22em] sm:block">{copy.brand}</span>
           </a>
+          <nav className="ml-auto hidden items-center gap-7 pr-64 text-xs font-medium text-white/60 lg:flex">
+            <a href="/company" className="transition-colors hover:text-white">{copy.companyLink}</a>
+            <a href="/development" className="transition-colors hover:text-white">{copy.logLink}</a>
+          </nav>
         </div>
       </header>
 
-      <section className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-16">
-        <div className="flex flex-col justify-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{copy.eyebrow}</p>
-          <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">{copy.title}</h1>
-          <p className="mt-5 max-w-2xl text-base leading-8 text-slate-600">{copy.lead}</p>
+      <a
+        href={PRODUCT_URL}
+        className="fixed right-4 top-4 z-[70] inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-full bg-white px-4 text-xs font-semibold text-slate-950 shadow-lg shadow-black/20 transition-transform hover:-translate-y-0.5 sm:px-5 sm:text-sm"
+      >
+        {copy.aiButton}
+        <ArrowUpRight className="h-4 w-4" />
+      </a>
+
+      <section className="relative isolate px-4 pb-20 pt-32 sm:px-6 sm:pb-28 sm:pt-40 lg:px-8">
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute left-1/2 top-[-18rem] h-[52rem] w-[52rem] -translate-x-1/2 rounded-full bg-violet-600/20 blur-[130px]" />
+          <div className="absolute right-[-12rem] top-[22rem] h-[34rem] w-[34rem] rounded-full bg-cyan-500/10 blur-[120px]" />
         </div>
 
-        <div id="nova-ai" className="border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-          <div className="flex items-center justify-between gap-4 border-b border-slate-200 pb-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{copy.novaEyebrow}</p>
-              <h2 className="mt-2 text-3xl font-semibold">{copy.novaTitle}</h2>
-            </div>
-            <Sparkles className="h-8 w-8 text-cyan-700" />
+        <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-5xl text-center">
+            <p className="text-[11px] font-semibold tracking-[0.28em] text-white/45 sm:text-xs">{copy.eyebrow}</p>
+            <h1 className="mx-auto mt-7 max-w-5xl text-5xl font-medium leading-[0.98] tracking-[-0.055em] sm:text-7xl lg:text-[96px]">
+              {copy.title}
+            </h1>
+            <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/55 sm:text-lg">{copy.lead}</p>
+            <a
+              href={PRODUCT_URL}
+              className="mt-9 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold backdrop-blur transition-colors hover:bg-white hover:text-slate-950"
+            >
+              {copy.productTitle}
+              <ArrowRight className="h-4 w-4" />
+            </a>
           </div>
-          <p className="mt-5 text-base leading-8 text-slate-600">{copy.novaLead}</p>
-          <div className="mt-5 grid grid-cols-3 gap-2">
-            <div className="min-w-0 border border-slate-200 p-2.5 sm:p-3">
-              <LineChart className="h-4 w-4 text-cyan-700" />
-              <p className="mt-2 text-sm font-semibold leading-none">611K+</p>
-              <p className="mt-1 text-[11px] leading-4 text-slate-500">{copy.priceRecordsLabel}</p>
-            </div>
-            <div className="min-w-0 border border-slate-200 p-2.5 sm:p-3">
-              <Database className="h-4 w-4 text-emerald-700" />
-              <p className="mt-2 text-sm font-semibold leading-none">53</p>
-              <p className="mt-1 text-[11px] leading-4 text-slate-500">{copy.productsLabel}</p>
-            </div>
-            <div className="min-w-0 border border-slate-200 p-2.5 sm:p-3">
-              <StoreIcon className="h-4 w-4 text-indigo-700" />
-              <p className="mt-2 text-sm font-semibold leading-none">23</p>
-              <p className="mt-1 text-[11px] leading-4 text-slate-500">{copy.partnerStoresLabel}</p>
+
+          <div className="relative mx-auto mt-16 max-w-6xl sm:mt-24">
+            <div className="absolute inset-x-10 bottom-[-2rem] h-28 rounded-full bg-violet-500/20 blur-[70px]" />
+            <div className="relative overflow-hidden rounded-[28px] border border-white/15 bg-white/[0.06] p-2 shadow-2xl shadow-black/60 backdrop-blur sm:rounded-[38px] sm:p-3">
+              <div className="overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0f15] sm:rounded-[30px]">
+                <div className="flex h-12 items-center border-b border-white/10 px-4 sm:px-6">
+                  <div className="flex gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-white/15" />
+                    <span className="h-2 w-2 rounded-full bg-white/15" />
+                    <span className="h-2 w-2 rounded-full bg-white/15" />
+                  </div>
+                  <span className="mx-auto text-[10px] font-medium tracking-[0.24em] text-white/35">NOVA INTELLIGENCE</span>
+                </div>
+
+                <div className="grid min-h-[420px] lg:grid-cols-[1.35fr_0.65fr]">
+                  <div className="relative flex min-h-[360px] flex-col justify-between overflow-hidden border-b border-white/10 p-6 sm:p-10 lg:border-b-0 lg:border-r">
+                    <div className="absolute right-[-5rem] top-[-7rem] h-80 w-80 rounded-full border border-cyan-300/20 bg-[radial-gradient(circle_at_35%_35%,rgba(255,255,255,0.35),rgba(104,76,255,0.24)_28%,rgba(25,211,255,0.08)_58%,transparent_70%)] shadow-[inset_0_0_70px_rgba(255,255,255,0.08)]" />
+                    <div className="relative">
+                      <p className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.24em] text-cyan-300/70">
+                        <Sparkles className="h-3.5 w-3.5" />
+                        {copy.productEyebrow}
+                      </p>
+                      <h2 className="mt-5 text-5xl font-medium tracking-[-0.05em] sm:text-7xl">{copy.productTitle}</h2>
+                      <p className="mt-5 max-w-xl text-sm leading-7 text-white/50 sm:text-base">{copy.productLead}</p>
+                    </div>
+
+                    <div className="relative mt-14 flex items-end justify-between gap-5">
+                      <div>
+                        <p className="text-[10px] tracking-[0.24em] text-white/35">{copy.signalLabel}</p>
+                        <div className="mt-3 flex h-12 items-end gap-1">
+                          {[18, 31, 25, 42, 36, 56, 48, 72, 61, 84, 76, 96].map((height, index) => (
+                            <span
+                              key={`${height}-${index}`}
+                              className="w-1.5 rounded-full bg-gradient-to-t from-violet-600 to-cyan-300 sm:w-2"
+                              style={{ height: `${height}%` }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <LineChart className="h-8 w-8 text-white/20 sm:h-10 sm:w-10" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-1">
+                    <div className="flex flex-col justify-between border-r border-white/10 p-5 sm:p-7 lg:border-b lg:border-r-0">
+                      <Database className="h-5 w-5 text-violet-300/70" />
+                      <div className="mt-14">
+                        <p className="text-3xl font-medium tracking-tight sm:text-4xl">611K+</p>
+                        <p className="mt-2 text-[10px] tracking-[0.2em] text-white/35">{copy.recordsLabel}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-between p-5 sm:p-7">
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.8)]" />
+                      <div className="mt-14">
+                        <p className="text-3xl font-medium tracking-tight sm:text-4xl">23</p>
+                        <p className="mt-2 text-[10px] tracking-[0.2em] text-white/35">{copy.storesLabel}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <a
-            href={PRODUCT_URL}
-            className="mt-6 inline-flex items-center justify-center gap-2 rounded-md bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
-          >
-            {copy.novaButton}
-            <ArrowUpRight className="h-4 w-4" />
-          </a>
+        </div>
+      </section>
+
+      <section className="border-t border-white/10 bg-white/[0.025] px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-px overflow-hidden rounded-[28px] border border-white/10 bg-white/10 md:grid-cols-3">
+          {copy.capabilities.map((item) => (
+            <article key={item.number} className="min-h-64 bg-[#0a0b0f] p-7 sm:p-9">
+              <p className="text-xs tracking-[0.2em] text-white/30">{item.number}</p>
+              <h2 className="mt-16 text-2xl font-medium tracking-tight">{item.title}</h2>
+              <p className="mt-4 max-w-sm text-sm leading-7 text-white/45">{item.body}</p>
+            </article>
+          ))}
         </div>
       </section>
     </main>

@@ -6,20 +6,20 @@ export default function SiteFooter() {
   const isCompanySite = import.meta.env.VITE_SITE_MODE === 'company'
 
   return (
-    <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+    <footer className={isCompanySite ? 'border-t border-white/10 bg-[#07080b]' : 'border-t border-slate-200 bg-white'}>
+      <div className={`mx-auto flex max-w-6xl flex-col gap-3 px-4 py-6 text-sm sm:flex-row sm:items-center sm:justify-between ${isCompanySite ? 'text-white/40' : 'text-slate-500'}`}>
         <div className="flex flex-col gap-1">
-          <p className="font-medium text-slate-700">{t('companyName')}</p>
-          <a href="mailto:info@novatekku.com" className="break-all hover:text-slate-900">
+          <p className={`font-medium ${isCompanySite ? 'text-white/70' : 'text-slate-700'}`}>{t('companyName')}</p>
+          <a href="mailto:info@novatekku.com" className={isCompanySite ? 'break-all hover:text-white' : 'break-all hover:text-slate-900'}>
             info@novatekku.com
           </a>
         </div>
         {isCompanySite ? (
           <nav className="flex flex-wrap items-center gap-4">
-            <Link to="/company" className="hover:text-slate-900">
+            <Link to="/company" className="hover:text-white">
               {t('footerCompany')}
             </Link>
-            <Link to="/development" className="hover:text-slate-900">
+            <Link to="/development" className="hover:text-white">
               {t('developmentLogEyebrow')}
             </Link>
           </nav>
