@@ -80,6 +80,11 @@ export default function CompanyHome() {
   const { language } = useI18n()
   const copy = COMPANY_COPY[language]
   const [priceRecords, setPriceRecords] = useState<number | null>(null)
+  const capabilityStyles = [
+    'border-t-violet-400/70 bg-[#121022]',
+    'border-t-cyan-400/70 bg-[#0b161e]',
+    'border-t-emerald-400/70 bg-[#0b1714]',
+  ]
 
   useEffect(() => {
     const controller = new AbortController()
@@ -126,17 +131,17 @@ export default function CompanyHome() {
           className="pointer-events-none absolute inset-0 -z-10"
           style={{
             background:
-              'radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.20), transparent 38%), radial-gradient(circle at 100% 38%, rgba(6, 182, 212, 0.08), transparent 30%)',
+              'radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.34), transparent 40%), radial-gradient(circle at 100% 42%, rgba(6, 182, 212, 0.16), transparent 34%)',
           }}
         />
 
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-5xl text-center">
-            <p className="text-[11px] font-semibold tracking-[0.28em] text-white/45 sm:text-xs">{copy.eyebrow}</p>
+            <p className="text-[11px] font-semibold tracking-[0.28em] text-violet-200/80 sm:text-xs">{copy.eyebrow}</p>
             <h1 className="mx-auto mt-7 max-w-5xl text-4xl font-medium leading-[1.05] tracking-[-0.055em] sm:text-7xl sm:leading-[0.98] lg:text-[96px]">
               {copy.title}
             </h1>
-            <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/55 sm:text-lg">{copy.lead}</p>
+            <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/75 sm:text-lg">{copy.lead}</p>
             <a
               href={PRODUCT_URL}
               className="mt-9 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold transition-colors hover:bg-white hover:text-slate-950"
@@ -147,8 +152,8 @@ export default function CompanyHome() {
           </div>
 
           <div className="relative mx-auto mt-16 max-w-6xl sm:mt-24">
-            <div className="relative overflow-hidden rounded-[28px] border border-white/15 bg-white/[0.06] p-2 sm:rounded-[38px] sm:p-3 sm:shadow-2xl sm:shadow-black/50">
-              <div className="overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0f15] sm:rounded-[30px]">
+            <div className="relative overflow-hidden rounded-[28px] border border-violet-300/25 bg-[#141827] p-2 sm:rounded-[38px] sm:p-3 sm:shadow-2xl sm:shadow-black/50">
+              <div className="overflow-hidden rounded-[22px] border border-white/15 bg-[#090c12] sm:rounded-[30px]">
                 <div className="flex h-12 items-center border-b border-white/10 px-4 sm:px-6">
                   <div className="flex gap-1.5">
                     <span className="h-2 w-2 rounded-full bg-white/15" />
@@ -159,20 +164,20 @@ export default function CompanyHome() {
                 </div>
 
                 <div className="grid min-h-[420px] lg:grid-cols-[1.35fr_0.65fr]">
-                  <div className="relative flex min-h-[360px] flex-col justify-between overflow-hidden border-b border-white/10 p-6 sm:p-10 lg:border-b-0 lg:border-r">
+                  <div className="relative flex min-h-[360px] flex-col justify-between overflow-hidden border-b border-white/15 bg-gradient-to-br from-[#17142d] via-[#0d1320] to-[#07171a] p-6 sm:p-10 lg:border-b-0 lg:border-r">
                     <div className="absolute right-[-5rem] top-[-7rem] h-80 w-80 rounded-full border border-cyan-300/20 bg-[radial-gradient(circle_at_35%_35%,rgba(255,255,255,0.35),rgba(104,76,255,0.24)_28%,rgba(25,211,255,0.08)_58%,transparent_70%)] shadow-[inset_0_0_70px_rgba(255,255,255,0.08)]" />
                     <div className="relative">
-                      <p className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.24em] text-cyan-300/70">
+                      <p className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.24em] text-cyan-200/90">
                         <Sparkles className="h-3.5 w-3.5" />
                         {copy.productEyebrow}
                       </p>
                       <h2 className="mt-5 text-5xl font-medium tracking-[-0.05em] sm:text-7xl">{copy.productTitle}</h2>
-                      <p className="mt-5 max-w-xl text-sm leading-7 text-white/50 sm:text-base">{copy.productLead}</p>
+                      <p className="mt-5 max-w-xl text-sm leading-7 text-white/70 sm:text-base">{copy.productLead}</p>
                     </div>
 
                     <div className="relative mt-14 flex items-end justify-between gap-5">
                       <div>
-                        <p className="text-[10px] tracking-[0.24em] text-white/35">{copy.signalLabel}</p>
+                        <p className="text-[10px] tracking-[0.24em] text-white/55">{copy.signalLabel}</p>
                         <div className="mt-3 flex h-12 items-end gap-1">
                           {[18, 31, 25, 42, 36, 56, 48, 72, 61, 84, 76, 96].map((height, index) => (
                             <span
@@ -188,20 +193,20 @@ export default function CompanyHome() {
                   </div>
 
                   <div className="grid grid-cols-2 lg:grid-cols-1">
-                    <div className="flex flex-col justify-between border-r border-white/10 p-5 sm:p-7 lg:border-b lg:border-r-0">
-                      <Database className="h-5 w-5 text-violet-300/70" />
+                    <div className="flex flex-col justify-between border-r border-white/15 bg-violet-500/[0.10] p-5 sm:p-7 lg:border-b lg:border-r-0">
+                      <Database className="h-5 w-5 text-violet-200" />
                       <div className="mt-14">
                         <p className="text-3xl font-medium tracking-tight sm:text-4xl">
                           {priceRecords === null ? '—' : new Intl.NumberFormat(language === 'zh' ? 'zh-CN' : language === 'en' ? 'en-US' : 'ja-JP').format(priceRecords)}
                         </p>
-                        <p className="mt-2 text-[10px] tracking-[0.2em] text-white/35">{copy.recordsLabel}</p>
+                        <p className="mt-2 text-[10px] tracking-[0.2em] text-white/55">{copy.recordsLabel}</p>
                       </div>
                     </div>
-                    <div className="flex flex-col justify-between p-5 sm:p-7">
+                    <div className="flex flex-col justify-between bg-cyan-400/[0.08] p-5 sm:p-7">
                       <span className="h-2 w-2 rounded-full bg-emerald-400" />
                       <div className="mt-14">
                         <p className="text-3xl font-medium tracking-tight sm:text-4xl">23</p>
-                        <p className="mt-2 text-[10px] tracking-[0.2em] text-white/35">{copy.storesLabel}</p>
+                        <p className="mt-2 text-[10px] tracking-[0.2em] text-white/55">{copy.storesLabel}</p>
                       </div>
                     </div>
                   </div>
@@ -212,13 +217,13 @@ export default function CompanyHome() {
         </div>
       </section>
 
-      <section className="border-t border-white/10 bg-white/[0.025] px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-px overflow-hidden rounded-[28px] border border-white/10 bg-white/10 md:grid-cols-3">
-          {copy.capabilities.map((item) => (
-            <article key={item.number} className="min-h-64 bg-[#0a0b0f] p-7 sm:p-9">
-              <p className="text-xs tracking-[0.2em] text-white/30">{item.number}</p>
+      <section className="border-t border-white/15 bg-[#090c12] px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-3">
+          {copy.capabilities.map((item, index) => (
+            <article key={item.number} className={`min-h-64 rounded-2xl border border-white/10 border-t-2 p-7 sm:p-9 ${capabilityStyles[index]}`}>
+              <p className="text-xs tracking-[0.2em] text-white/50">{item.number}</p>
               <h2 className="mt-16 text-2xl font-medium tracking-tight">{item.title}</h2>
-              <p className="mt-4 max-w-sm text-sm leading-7 text-white/45">{item.body}</p>
+              <p className="mt-4 max-w-sm text-sm leading-7 text-white/70">{item.body}</p>
             </article>
           ))}
         </div>
