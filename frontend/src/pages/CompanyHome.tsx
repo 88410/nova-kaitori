@@ -85,7 +85,6 @@ export default function CompanyHome() {
     const controller = new AbortController()
 
     fetch('https://ai.novatekku.com/api/v1/homepage/summary', {
-      cache: 'no-store',
       signal: controller.signal,
     })
       .then((response) => {
@@ -103,7 +102,7 @@ export default function CompanyHome() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#07080b] text-white">
-      <header className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-[#07080b]/75 backdrop-blur-xl">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-[#07080b] sm:bg-[#07080b]/90 sm:backdrop-blur-md">
         <div className="mx-auto flex h-[72px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
           <a href="/" className="flex items-center gap-3" aria-label={copy.brand}>
             <span className="grid h-9 w-9 place-items-center rounded-full border border-white/25 text-xs font-semibold tracking-wider">
@@ -123,10 +122,13 @@ export default function CompanyHome() {
       </a>
 
       <section className="relative isolate px-4 pb-20 pt-32 sm:px-6 sm:pb-28 sm:pt-40 lg:px-8">
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute left-1/2 top-[-18rem] h-[52rem] w-[52rem] -translate-x-1/2 rounded-full bg-violet-600/20 blur-[130px]" />
-          <div className="absolute right-[-12rem] top-[22rem] h-[34rem] w-[34rem] rounded-full bg-cyan-500/10 blur-[120px]" />
-        </div>
+        <div
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{
+            background:
+              'radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.20), transparent 38%), radial-gradient(circle at 100% 38%, rgba(6, 182, 212, 0.08), transparent 30%)',
+          }}
+        />
 
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-5xl text-center">
@@ -137,7 +139,7 @@ export default function CompanyHome() {
             <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/55 sm:text-lg">{copy.lead}</p>
             <a
               href={PRODUCT_URL}
-              className="mt-9 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold backdrop-blur transition-colors hover:bg-white hover:text-slate-950"
+              className="mt-9 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold transition-colors hover:bg-white hover:text-slate-950"
             >
               {copy.productTitle}
               <ArrowRight className="h-4 w-4" />
@@ -145,8 +147,7 @@ export default function CompanyHome() {
           </div>
 
           <div className="relative mx-auto mt-16 max-w-6xl sm:mt-24">
-            <div className="absolute inset-x-10 bottom-[-2rem] h-28 rounded-full bg-violet-500/20 blur-[70px]" />
-            <div className="relative overflow-hidden rounded-[28px] border border-white/15 bg-white/[0.06] p-2 shadow-2xl shadow-black/60 backdrop-blur sm:rounded-[38px] sm:p-3">
+            <div className="relative overflow-hidden rounded-[28px] border border-white/15 bg-white/[0.06] p-2 sm:rounded-[38px] sm:p-3 sm:shadow-2xl sm:shadow-black/50">
               <div className="overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0f15] sm:rounded-[30px]">
                 <div className="flex h-12 items-center border-b border-white/10 px-4 sm:px-6">
                   <div className="flex gap-1.5">
@@ -197,7 +198,7 @@ export default function CompanyHome() {
                       </div>
                     </div>
                     <div className="flex flex-col justify-between p-5 sm:p-7">
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.8)]" />
+                      <span className="h-2 w-2 rounded-full bg-emerald-400" />
                       <div className="mt-14">
                         <p className="text-3xl font-medium tracking-tight sm:text-4xl">23</p>
                         <p className="mt-2 text-[10px] tracking-[0.2em] text-white/35">{copy.storesLabel}</p>

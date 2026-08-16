@@ -126,7 +126,7 @@ export default function AI() {
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-[#f7f7f8] text-slate-950">
-      <header className="sticky top-0 z-40 border-b border-black/[0.07] bg-white/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-black/[0.07] bg-white sm:bg-white/95 sm:backdrop-blur-md">
         <div className="mx-auto flex h-[68px] max-w-7xl items-center gap-2 px-3 sm:gap-4 sm:px-6 lg:px-8">
           <a href="https://novatekku.com/" className="flex shrink-0 items-center gap-2.5" aria-label="Novatekku home">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-slate-950 text-xs font-semibold text-white">N</span>
@@ -168,7 +168,10 @@ export default function AI() {
       </header>
 
       <main className="relative flex flex-1 flex-col overflow-hidden">
-        <div className="pointer-events-none absolute left-1/2 top-[-18rem] h-[42rem] w-[42rem] -translate-x-1/2 rounded-full bg-violet-200/45 blur-[130px]" />
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-80"
+          style={{ background: 'radial-gradient(circle at 50% 0%, rgba(221, 214, 254, 0.48), transparent 68%)' }}
+        />
 
         {messages.length === 0 ? (
           <section className="relative mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center px-4 pb-8 pt-14 sm:px-6">

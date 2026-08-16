@@ -9,7 +9,7 @@ export default function DevelopmentLogPage() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#07080b] text-white">
-      <header className="border-b border-white/10 bg-[#07080b]/90 backdrop-blur-xl">
+      <header className="border-b border-white/10 bg-[#07080b] sm:bg-[#07080b]/95 sm:backdrop-blur-md">
         <div className="mx-auto flex h-[72px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-3" aria-label={t('back')}>
             <span className="grid h-9 w-9 place-items-center rounded-full border border-white/25 text-xs font-semibold">N</span>
@@ -26,7 +26,10 @@ export default function DevelopmentLogPage() {
       </header>
 
       <section className="relative px-4 pb-24 pt-20 sm:px-6 sm:pt-28 lg:px-8">
-        <div className="pointer-events-none absolute left-1/2 top-[-18rem] h-[48rem] w-[48rem] -translate-x-1/2 rounded-full bg-violet-600/15 blur-[130px]" />
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-80"
+          style={{ background: 'radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.16), transparent 68%)' }}
+        />
         <div className="relative mx-auto max-w-6xl">
           <Link to="/" className="inline-flex items-center gap-2 text-xs text-white/45 transition-colors hover:text-white">
             <ArrowLeft className="h-4 w-4" />

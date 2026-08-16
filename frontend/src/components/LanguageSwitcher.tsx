@@ -15,7 +15,7 @@ export default function LanguageSwitcher() {
         id="language-select"
         value={language}
         onChange={(event) => setLanguage(event.target.value as Language)}
-        className={`h-10 rounded-full px-3 text-xs shadow-sm outline-none backdrop-blur sm:px-4 sm:text-sm ${
+        className={`h-10 rounded-full px-3 text-xs shadow-sm outline-none sm:px-4 sm:text-sm ${
           isCompanySite
             ? 'border border-white/15 bg-[#07080b]/80 text-white focus:border-white/40'
             : 'border border-slate-200 bg-white/95 text-slate-700 focus:border-slate-400'

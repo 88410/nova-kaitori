@@ -1,18 +1,19 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
-import Prices from './pages/Prices'
-import Stores from './pages/Stores'
-import MemberRegister from './pages/MemberRegister'
-import MemberLogin from './pages/MemberLogin'
-import MemberProfile from './pages/MemberProfile'
-import MemberResetPassword from './pages/MemberResetPassword'
-import AI from './pages/AI'
-import ProductDetail from './pages/ProductDetail'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import SiteFooter from './components/SiteFooter'
-import LegalPage from './pages/LegalPage'
-import CompanyHome from './pages/CompanyHome'
-import DevelopmentLogPage from './pages/DevelopmentLogPage'
+
+const Prices = lazy(() => import('./pages/Prices'))
+const Stores = lazy(() => import('./pages/Stores'))
+const MemberRegister = lazy(() => import('./pages/MemberRegister'))
+const MemberLogin = lazy(() => import('./pages/MemberLogin'))
+const MemberProfile = lazy(() => import('./pages/MemberProfile'))
+const MemberResetPassword = lazy(() => import('./pages/MemberResetPassword'))
+const AI = lazy(() => import('./pages/AI'))
+const ProductDetail = lazy(() => import('./pages/ProductDetail'))
+const LegalPage = lazy(() => import('./pages/LegalPage'))
+const CompanyHome = lazy(() => import('./pages/CompanyHome'))
+const DevelopmentLogPage = lazy(() => import('./pages/DevelopmentLogPage'))
 
 const isCompanySite = import.meta.env.VITE_SITE_MODE === 'company'
 
@@ -29,20 +30,30 @@ function ScrollToTop() {
 function App() {
   const { pathname } = useLocation()
 
+  const pageFallback = (
+    <main
+      aria-busy="true"
+      aria-label="Loading"
+      className={`min-h-[100dvh] ${isCompanySite ? 'bg-[#07080b]' : 'bg-[#f7f7f8]'}`}
+    />
+  )
+
   if (isCompanySite) {
     return (
       <>
         <LanguageSwitcher />
         <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<CompanyHome />} />
-          <Route path="/company" element={<LegalPage />} />
-          <Route path="/development" element={<DevelopmentLogPage />} />
-          <Route path="/notice" element={<LegalPage />} />
-          <Route path="/privacy" element={<LegalPage />} />
-          <Route path="/terms" element={<LegalPage />} />
-          <Route path="*" element={<CompanyHome />} />
-        </Routes>
+        <Suspense fallback={pageFallback}>
+          <Routes>
+            <Route path="/" element={<CompanyHome />} />
+            <Route path="/company" element={<LegalPage />} />
+            <Route path="/development" element={<DevelopmentLogPage />} />
+            <Route path="/notice" element={<LegalPage />} />
+            <Route path="/privacy" element={<LegalPage />} />
+            <Route path="/terms" element={<LegalPage />} />
+            <Route path="*" element={<CompanyHome />} />
+          </Routes>
+        </Suspense>
         <SiteFooter />
       </>
     )
@@ -52,21 +63,23 @@ function App() {
     <>
       {pathname !== '/' && pathname !== '/ai' && <LanguageSwitcher />}
       <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<AI />} />
-        <Route path="/ai" element={<AI />} />
-        <Route path="/prices" element={<Prices />} />
-        <Route path="/stores" element={<Stores />} />
-        <Route path="/members/register" element={<MemberRegister />} />
-        <Route path="/members/login" element={<MemberLogin />} />
-        <Route path="/members/reset-password" element={<MemberResetPassword />} />
-        <Route path="/members/me" element={<MemberProfile />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/company" element={<LegalPage />} />
-        <Route path="/notice" element={<LegalPage />} />
-        <Route path="/privacy" element={<LegalPage />} />
-        <Route path="/terms" element={<LegalPage />} />
-      </Routes>
+      <Suspense fallback={pageFallback}>
+        <Routes>
+          <Route path="/" element={<AI />} />
+          <Route path="/ai" element={<AI />} />
+          <Route path="/prices" element={<Prices />} />
+          <Route path="/stores" element={<Stores />} />
+          <Route path="/members/register" element={<MemberRegister />} />
+          <Route path="/members/login" element={<MemberLogin />} />
+          <Route path="/members/reset-password" element={<MemberResetPassword />} />
+          <Route path="/members/me" element={<MemberProfile />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/company" element={<LegalPage />} />
+          <Route path="/notice" element={<LegalPage />} />
+          <Route path="/privacy" element={<LegalPage />} />
+          <Route path="/terms" element={<LegalPage />} />
+        </Routes>
+      </Suspense>
       {pathname !== '/' && pathname !== '/ai' && <SiteFooter />}
     </>
   )
