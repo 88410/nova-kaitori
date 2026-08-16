@@ -4,6 +4,7 @@ import { CheckCircle2, KeyRound, Mail } from 'lucide-react'
 import { apiPost } from '../lib/api'
 import { clearStoredMember } from '../lib/member'
 import { useI18n } from '../i18n'
+import { LightPage, PageHeader, lightPanelClass } from '../components/PageChrome'
 
 interface MemberResponse {
   id: number
@@ -58,20 +59,12 @@ export default function MemberResetPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
-          <Link to="/" className="text-sm text-slate-500 hover:text-slate-900">
-            ← {t('back')}
-          </Link>
-          <h1 className="text-lg font-semibold text-slate-900">{t('memberResetPasswordNav')}</h1>
-          <span className="w-10" />
-        </div>
-      </header>
+    <LightPage>
+      <PageHeader title={t('memberResetPasswordNav')} />
 
-      <main className="mx-auto max-w-4xl px-4 py-8">
-        <section className="rounded-[28px] border border-slate-200 bg-white px-6 py-8 shadow-sm sm:px-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+      <main className="mx-auto max-w-3xl px-3 py-4 sm:px-4 sm:py-10">
+        <section className={`border-t-2 border-t-emerald-500 p-5 sm:p-9 ${lightPanelClass}`}>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
             {t('memberResetPasswordEyebrow')}
           </p>
           <h2 className="mt-3 text-2xl font-semibold text-slate-950">{t('memberResetPasswordTitle')}</h2>
@@ -82,7 +75,7 @@ export default function MemberResetPassword() {
           <form onSubmit={handleSubmit} className="mt-8 grid gap-5">
             <label className="grid gap-2">
               <span className="text-sm font-medium text-slate-800">{t('memberEmail')}</span>
-              <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 focus-within:border-slate-400">
+                  <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-[#f8f9fc] px-4 py-3 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-100">
                 <Mail className="h-5 w-5 text-slate-400" />
                 <input
                   value={email}
@@ -98,7 +91,7 @@ export default function MemberResetPassword() {
 
             <label className="grid gap-2">
               <span className="text-sm font-medium text-slate-800">{t('memberNewPassword')}</span>
-              <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 focus-within:border-slate-400">
+                    <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-[#f8f9fc] px-4 py-3 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-100">
                 <KeyRound className="h-5 w-5 text-slate-400" />
                 <input
                   value={password}
@@ -115,7 +108,7 @@ export default function MemberResetPassword() {
 
             <label className="grid gap-2">
               <span className="text-sm font-medium text-slate-800">{t('memberPasswordConfirm')}</span>
-              <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 focus-within:border-slate-400">
+                    <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-[#f8f9fc] px-4 py-3 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-100">
                 <KeyRound className="h-5 w-5 text-slate-400" />
                 <input
                   value={passwordConfirm}
@@ -133,7 +126,7 @@ export default function MemberResetPassword() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-slate-800 disabled:bg-slate-300"
+                className="inline-flex items-center justify-center rounded-xl bg-slate-950 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-emerald-700 disabled:bg-slate-300"
             >
               {isSubmitting ? t('memberResetPasswordSubmitting') : t('memberResetPasswordSubmit')}
             </button>
@@ -163,6 +156,6 @@ export default function MemberResetPassword() {
           )}
         </section>
       </main>
-    </div>
+    </LightPage>
   )
 }

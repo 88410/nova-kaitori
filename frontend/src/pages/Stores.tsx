@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowRight, Building2 } from 'lucide-react'
 import { useI18n } from '../i18n'
 import { apiGet } from '../lib/api'
+import { LightPage, PageHeader, lightPanelClass } from '../components/PageChrome'
 
 const STORE_ACCENTS = [
   'border-l-violet-500 bg-violet-50/50',
@@ -34,19 +34,11 @@ export default function Stores() {
   })
 
   return (
-    <div className="min-h-[100dvh] bg-[#f3f5f9] text-slate-950">
-      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-3 sm:px-4">
-          <Link to="/" className="shrink-0 text-sm font-medium text-slate-600 hover:text-slate-950">
-            ← {t('back')}
-          </Link>
-          <h2 className="min-w-0 truncate px-2 text-base font-semibold text-slate-950 sm:text-lg">{t('homeStoreListTitle')}</h2>
-          <span className="w-16 shrink-0" />
-        </div>
-      </header>
+    <LightPage>
+      <PageHeader title={t('homeStoreListTitle')} />
 
       <main className="mx-auto max-w-6xl px-3 py-4 sm:px-4 sm:py-8">
-        <section className="sm:rounded-2xl sm:border sm:border-slate-200 sm:bg-white sm:p-6">
+        <section className={`p-4 sm:p-7 ${lightPanelClass}`}>
           <p className="hidden text-xs font-semibold uppercase tracking-[0.18em] text-violet-600 sm:block">{t('homeFeaturedStores')}</p>
           <h1 className="text-xl font-semibold text-slate-950 sm:mt-2 sm:text-2xl">{t('homeStoreListTitle')}</h1>
           <p className="mt-1 text-sm leading-6 text-slate-600 sm:mt-2">{t('homeStoreListDescription')}</p>
@@ -100,6 +92,6 @@ export default function Stores() {
           )}
         </section>
       </main>
-    </div>
+    </LightPage>
   )
 }

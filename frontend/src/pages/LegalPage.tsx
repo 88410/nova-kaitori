@@ -1,5 +1,6 @@
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useI18n, type Language } from '../i18n'
+import { LightPage, PageHeader, lightPanelClass } from '../components/PageChrome'
 
 type LegalContent = {
   title: string
@@ -293,29 +294,72 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
 }
 
 export default function LegalPage() {
-  const { language, t } = useI18n()
+  const { language } = useI18n()
   const location = useLocation()
   const content = LEGAL_CONTENT[language][location.pathname] ?? LEGAL_CONTENT.ja['/notice']
+  const isCompanySite = import.meta.env.VITE_SITE_MODE === 'company'
+
+  if (isCompanySite) {
+    return (
+      <div className="min-h-[100dvh] bg-[#07080b] text-white">
+        <PageHeader title={content.title} tone="dark" />
+        <main className="relative overflow-hidden px-4 pb-20 pt-12 sm:px-6 sm:pb-28 sm:pt-20 lg:px-8">
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 h-80"
+            style={{ background: 'radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.18), transparent 68%)' }}
+          />
+          <div className="relative mx-auto max-w-6xl">
+            <p className="text-[11px] font-semibold tracking-[0.26em] text-violet-300/65">NOVATECH · TOKYO</p>
+            <h2 className="mt-5 max-w-4xl text-4xl font-medium tracking-[-0.04em] sm:text-6xl">{content.title}</h2>
+            {content.lead && <p className="mt-6 max-w-2xl text-sm leading-8 text-white/55 sm:text-base">{content.lead}</p>}
+
+            <div className="mt-12 grid gap-4 sm:mt-16 md:grid-cols-2">
+              {content.sections.map((section, index) => (
+                <section
+                  key={section.heading}
+                  className={`rounded-2xl border border-white/10 border-t-2 p-6 sm:p-8 ${
+                    index % 3 === 0
+                      ? 'border-t-violet-400/70 bg-[#121022]'
+                      : index % 3 === 1
+                        ? 'border-t-cyan-400/70 bg-[#0b161e]'
+                        : 'border-t-emerald-400/70 bg-[#0b1714]'
+                  } ${content.sections.length % 2 === 1 && index === 0 ? 'md:col-span-2' : ''}`}
+                >
+                  <p className="text-[10px] font-semibold tracking-[0.2em] text-white/35">
+                    {String(index + 1).padStart(2, '0')}
+                  </p>
+                  <h3 className="mt-5 text-xl font-medium tracking-tight text-white">{section.heading}</h3>
+                  <div className="mt-4 space-y-3">
+                    {section.body.map((paragraph) => (
+                      <p key={paragraph} className="text-sm leading-7 text-white/60">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
-          <Link to="/" className="text-sm text-slate-500 hover:text-slate-900">
-            ← {t('back')}
-          </Link>
-          <h1 className="text-lg font-semibold text-slate-900">{content.title}</h1>
-          <span className="w-10" />
-        </div>
-      </header>
+    <LightPage>
+      <PageHeader title={content.title} />
 
-      <main className="mx-auto max-w-4xl px-4 py-8">
-        <section className="rounded-[28px] border border-slate-200 bg-white px-6 py-8 shadow-sm sm:px-8">
+      <main className="mx-auto max-w-5xl px-3 py-4 sm:px-4 sm:py-10">
+        <section className={`overflow-hidden p-5 sm:p-9 ${lightPanelClass}`}>
+          <div className="mb-8 border-b border-slate-100 pb-7">
+            <p className="text-[11px] font-semibold tracking-[0.2em] text-violet-600">NOVA INFORMATION</p>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">{content.title}</h2>
+          </div>
           {content.lead && <p className="text-sm leading-7 text-slate-600">{content.lead}</p>}
-          <div className={`${content.lead ? 'mt-8' : ''} space-y-8`}>
-            {content.sections.map((section) => (
-              <section key={section.heading}>
-                <h2 className="text-base font-semibold text-slate-900">{section.heading}</h2>
+          <div className={`${content.lead ? 'mt-8' : ''} grid gap-4 md:grid-cols-2`}>
+            {content.sections.map((section, index) => (
+              <section key={section.heading} className={`rounded-xl border border-slate-200 border-t-2 p-5 ${index % 2 === 0 ? 'border-t-violet-500 bg-violet-50/35' : 'border-t-cyan-500 bg-cyan-50/35'}`}>
+                <h3 className="text-base font-semibold text-slate-900">{section.heading}</h3>
                 <div className="mt-3 space-y-3">
                   {section.body.map((paragraph) => (
                     <p key={paragraph} className="text-sm leading-7 text-slate-600">
@@ -328,6 +372,6 @@ export default function LegalPage() {
           </div>
         </section>
       </main>
-    </div>
+    </LightPage>
   )
 }

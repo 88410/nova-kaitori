@@ -1,7 +1,6 @@
-import { ArrowLeft, ArrowUpRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { DEVELOPMENT_LOGS } from './Home'
 import { useI18n } from '../i18n'
+import { PageHeader } from '../components/PageChrome'
 
 export default function DevelopmentLogPage() {
   const { language, t } = useI18n()
@@ -9,39 +8,30 @@ export default function DevelopmentLogPage() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#07080b] text-white">
-      <header className="border-b border-white/10 bg-[#07080b] sm:bg-[#07080b]/95 sm:backdrop-blur-md">
-        <div className="mx-auto flex h-[72px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
-          <Link to="/" className="flex items-center gap-3" aria-label={t('back')}>
-            <span className="grid h-9 w-9 place-items-center rounded-full border border-white/25 text-xs font-semibold">N</span>
-            <span className="hidden text-sm font-semibold tracking-[0.22em] sm:block">NOVATECH</span>
-          </Link>
-          <a
-            href="https://ai.novatekku.com/"
-            className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold transition-colors hover:bg-white hover:text-slate-950"
-          >
-            NOVA AI
-            <ArrowUpRight className="h-4 w-4" />
-          </a>
-        </div>
-      </header>
+      <PageHeader title={t('developmentLogTitle')} tone="dark" />
 
-      <section className="relative px-4 pb-24 pt-20 sm:px-6 sm:pt-28 lg:px-8">
+      <section className="relative px-4 pb-24 pt-12 sm:px-6 sm:pt-20 lg:px-8">
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-80"
           style={{ background: 'radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.16), transparent 68%)' }}
         />
         <div className="relative mx-auto max-w-6xl">
-          <Link to="/" className="inline-flex items-center gap-2 text-xs text-white/45 transition-colors hover:text-white">
-            <ArrowLeft className="h-4 w-4" />
-            {t('back')}
-          </Link>
-          <p className="mt-12 text-[11px] font-semibold tracking-[0.28em] text-violet-300/60">DEVELOPMENT ARCHIVE</p>
+          <p className="text-[11px] font-semibold tracking-[0.28em] text-violet-300/60">DEVELOPMENT ARCHIVE</p>
           <h1 className="mt-5 max-w-4xl text-4xl font-medium tracking-[-0.04em] sm:text-6xl">{t('developmentLogTitle')}</h1>
           <p className="mt-6 max-w-2xl text-sm leading-8 text-white/45 sm:text-base">{t('developmentLogDescription')}</p>
 
-          <div className="mt-16 border-t border-white/10">
+          <div className="mt-12 grid gap-4 sm:mt-16">
             {developmentLogs.map((entry, index) => (
-              <article key={entry.period} className="grid gap-7 border-b border-white/10 py-10 md:grid-cols-[180px_1fr] md:py-14">
+              <article
+                key={entry.period}
+                className={`grid gap-7 rounded-2xl border border-white/10 border-l-2 p-6 md:grid-cols-[180px_1fr] md:p-8 ${
+                  index % 3 === 0
+                    ? 'border-l-violet-400/70 bg-[#121022]'
+                    : index % 3 === 1
+                      ? 'border-l-cyan-400/70 bg-[#0b161e]'
+                      : 'border-l-emerald-400/70 bg-[#0b1714]'
+                }`}
+              >
                 <div>
                   <p className="text-2xl font-medium tracking-tight text-white/85">{entry.period}</p>
                   <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-300/55">

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Bell, Bookmark, History, LogOut, UserRound } from 'lucide-react'
 import { clearStoredMember, getStoredMember } from '../lib/member'
 import { useI18n, type Language } from '../i18n'
+import { LightPage, PageHeader, lightPanelClass } from '../components/PageChrome'
 
 function formatDateTime(value: string, language: Language) {
   return new Intl.DateTimeFormat(
@@ -39,18 +40,10 @@ export default function MemberProfile() {
 
   if (!member) {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <header className="border-b border-slate-200 bg-white">
-          <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
-            <Link to="/" className="text-sm text-slate-500 hover:text-slate-900">
-              ← {t('back')}
-            </Link>
-            <h1 className="text-lg font-semibold text-slate-900">{t('memberMyPageNav')}</h1>
-            <span className="w-10" />
-          </div>
-        </header>
-        <main className="mx-auto max-w-4xl px-4 py-8">
-          <section className="rounded-[28px] border border-slate-200 bg-white px-6 py-8 text-center shadow-sm sm:px-8">
+      <LightPage>
+        <PageHeader title={t('memberMyPageNav')} />
+        <main className="mx-auto max-w-4xl px-3 py-4 sm:px-4 sm:py-10">
+          <section className={`border-t-2 border-t-violet-500 px-5 py-8 text-center sm:px-8 ${lightPanelClass}`}>
             <p className="text-lg font-semibold text-slate-950">{t('memberProfileEmptyTitle')}</p>
             <p className="mt-2 text-sm leading-6 text-slate-600">{t('memberProfileEmptyDescription')}</p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
@@ -69,27 +62,16 @@ export default function MemberProfile() {
             </div>
           </section>
         </main>
-      </div>
+      </LightPage>
     )
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <Link to="/" className="text-sm text-slate-500 hover:text-slate-900">
-            ← {t('back')}
-          </Link>
-          <h1 className="text-lg font-semibold text-slate-900">{t('memberMyPageNav')}</h1>
-          <button type="button" onClick={handleLogout} className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900">
-            <LogOut className="h-4 w-4" />
-            {t('memberLogout')}
-          </button>
-        </div>
-      </header>
+    <LightPage>
+      <PageHeader title={t('memberMyPageNav')} />
 
-      <main className="mx-auto max-w-5xl px-4 py-8">
-        <section className="rounded-[28px] border border-slate-200 bg-white px-6 py-8 shadow-sm sm:px-8">
+      <main className="mx-auto max-w-5xl px-3 py-4 sm:px-4 sm:py-10">
+        <section className={`border-t-2 border-t-violet-500 p-5 sm:p-8 ${lightPanelClass}`}>
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-950 text-white">
@@ -102,9 +84,19 @@ export default function MemberProfile() {
                 <h2 className="mt-1 text-2xl font-semibold text-slate-950">{member.username}</h2>
               </div>
             </div>
-            <span className="inline-flex w-fit rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-              {t('memberNormalStatus')}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="inline-flex w-fit rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                {t('memberNormalStatus')}
+              </span>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-slate-300 hover:text-slate-950"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                {t('memberLogout')}
+              </button>
+            </div>
           </div>
 
           <dl className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -125,7 +117,7 @@ export default function MemberProfile() {
 
         <section className="mt-6 grid gap-4 md:grid-cols-3">
           {futureItems.map((item) => (
-            <article key={item.title} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <article key={item.title} className={`p-5 ${lightPanelClass}`}>
               <div className="flex items-center justify-between gap-3">
                 <item.icon className="h-5 w-5 text-slate-500" />
                 <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500">
@@ -138,6 +130,6 @@ export default function MemberProfile() {
           ))}
         </section>
       </main>
-    </div>
+    </LightPage>
   )
 }

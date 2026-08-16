@@ -1,9 +1,10 @@
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, TrendingUp } from 'lucide-react'
+import { TrendingUp } from 'lucide-react'
 import { apiGet } from '../lib/api'
 import { useI18n } from '../i18n'
 import ProfessionalKLineChart from '../components/ProfessionalKLineChart'
+import { LightPage, PageHeader, lightPanelClass } from '../components/PageChrome'
 
 interface Product {
   id: number
@@ -65,33 +66,30 @@ export default function ProductDetail() {
   const product = bestPrice?.product
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <Link
-            to="/prices"
-            className="inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 mr-1" />
-            {t('back')}
-          </Link>
-        </div>
-      </div>
+    <LightPage>
+      <PageHeader title={product?.model ?? t('priceDetails')} backTo="/prices" />
 
-      <div className="container mx-auto px-4 py-6 sm:py-8">
+      <main className="mx-auto max-w-6xl px-3 py-4 sm:px-4 sm:py-8">
         {product && bestPrice && (
           <>
-            <div className="mb-8 rounded-xl bg-white p-4 shadow-lg sm:p-8">
+            <section className={`mb-4 overflow-hidden p-5 sm:mb-6 sm:p-8 ${lightPanelClass}`}>
               <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
                 <div className="flex min-w-0 items-center gap-4 sm:gap-6">
-                  <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-gray-200 text-3xl sm:h-24 sm:w-24 sm:text-4xl">
-                    {product.image_url ? (
-                      <img src={product.image_url} alt={product.name} className="w-full h-full object-contain" />
-                    ) : '📱'}
+                  <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-violet-50 to-cyan-50 text-3xl sm:h-24 sm:w-24 sm:text-4xl">
+                    <span aria-hidden="true">📱</span>
+                    {product.image_url && (
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="absolute inset-0 h-full w-full bg-white object-contain p-2"
+                        onError={(event) => event.currentTarget.remove()}
+                      />
+                    )}
                   </div>
                   <div className="min-w-0">
-                    <h1 className="break-words text-2xl font-bold text-gray-900 sm:text-3xl">{product.model}</h1>
-                    <p className="mt-1 break-words text-sm text-gray-600 sm:text-lg">
+                    <p className="text-[10px] font-semibold tracking-[0.18em] text-violet-600">NOVA PRICE DATA</p>
+                    <h1 className="mt-2 break-words text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">{product.model}</h1>
+                    <p className="mt-1 break-words text-sm text-slate-600 sm:text-base">
                       {product.capacity}
                       {t('conditionSeparator')}
                       {product.color}
@@ -99,32 +97,64 @@ export default function ProductDetail() {
                       {product.carrier}
                     </p>
                     {product.retail_price && (
-                      <p className="text-gray-500 mt-2">
+                      <p className="mt-2 text-sm text-slate-500">
                         {t('newRetailPrice')}: ¥{product.retail_price.toLocaleString()}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="min-w-0 rounded-lg border border-slate-200 bg-slate-50 p-4 text-left md:text-right">
-                  <p className="text-sm text-gray-500">{t('bestBuybackPrice')}</p>
-                  <p className="mt-1 break-words text-3xl font-bold text-green-600 sm:text-4xl">¥{bestPrice.price.toLocaleString()}</p>
-                  <p className="mt-1 break-words text-sm text-gray-500">{bestPrice.store.name}</p>
+                <div className="min-w-0 rounded-xl border border-emerald-200 bg-emerald-50/70 p-5 text-left md:min-w-64 md:text-right">
+                  <p className="text-xs font-semibold tracking-wide text-emerald-700">{t('bestBuybackPrice')}</p>
+                  <p className="mt-2 break-words text-3xl font-semibold tracking-tight text-emerald-700 sm:text-4xl">¥{bestPrice.price.toLocaleString()}</p>
+                  <p className="mt-1 truncate text-sm font-medium text-slate-600">{bestPrice.store.name}</p>
                   {bestPrice.profit !== null && bestPrice.profit > 0 && (
-                    <p className="text-green-600 mt-1">
+                    <p className="mt-1 text-sm text-emerald-700">
                       {t('profit')} ¥{bestPrice.profit.toLocaleString()}
                     </p>
                   )}
                 </div>
               </div>
-            </div>
+            </section>
 
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-800">{t('byStorePrices')}</h2>
+            <section className={`mb-4 overflow-hidden sm:mb-6 ${lightPanelClass}`}>
+              <div className="border-b border-slate-100 px-5 py-4 sm:px-7 sm:py-5">
+                <h2 className="text-lg font-semibold text-slate-950 sm:text-xl">{t('byStorePrices')}</h2>
               </div>
 
-              <div className="overflow-x-auto px-4 py-4 sm:px-6">
+              <div className="grid gap-3 p-3 sm:hidden">
+                {prices?.map((price) => {
+                  const profit = price.profit ?? (product.retail_price !== null ? price.price - product.retail_price : null)
+                  const changeClass = price.price_change > 0 ? 'text-emerald-600' : price.price_change < 0 ? 'text-rose-600' : 'text-slate-500'
+
+                  return (
+                    <article key={price.id} className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+                      <div className="flex min-w-0 items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="flex min-w-0 items-center gap-2">
+                            <h3 className="truncate text-sm font-semibold text-slate-950">{price.store.name}</h3>
+                            {price.is_best_price === 1 && (
+                              <span className="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                                {t('bestPriceBadge')}
+                              </span>
+                            )}
+                          </div>
+                          <p className={`mt-2 text-xs font-medium ${changeClass}`}>{formatChange(price.price_change, price.price_change_percent)}</p>
+                        </div>
+                        <p className="shrink-0 text-xl font-semibold tracking-tight text-slate-950">{formatPrice(price.price)}</p>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-3 text-xs">
+                        <span className="text-slate-500">{t('profit')}</span>
+                        <span className={`font-semibold ${profit === null ? 'text-slate-500' : profit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                          {profit === null ? '-' : formatSignedPrice(profit)}
+                        </span>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+
+              <div className="hidden overflow-x-auto px-5 py-4 sm:block sm:px-7">
                 <table className="min-w-full table-auto text-left">
                   <thead className="bg-white">
                     <tr className="border-b border-slate-200 text-xs font-medium uppercase tracking-wide text-slate-500">
@@ -178,20 +208,22 @@ export default function ProductDetail() {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </section>
 
             {prices && prices.length > 0 && (
-              <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center space-x-2 mb-6">
-                <TrendingUp className="w-6 h-6 text-blue-600" />
-                <h2 className="text-xl font-semibold text-gray-800">{t('priceTrend')}</h2>
-              </div>
-              <ProfessionalKLineChart productId={productId} language={language} />
-              </div>
+              <section className={`p-3 sm:p-7 ${lightPanelClass}`}>
+                <div className="mb-4 flex items-center gap-2 px-2 sm:mb-6 sm:px-0">
+                  <span className="grid h-9 w-9 place-items-center rounded-xl bg-violet-50 text-violet-600">
+                    <TrendingUp className="h-5 w-5" />
+                  </span>
+                  <h2 className="text-lg font-semibold text-slate-950 sm:text-xl">{t('priceTrend')}</h2>
+                </div>
+                <ProfessionalKLineChart productId={productId} language={language} />
+              </section>
             )}
           </>
         )}
-      </div>
-    </div>
+      </main>
+    </LightPage>
   )
 }
