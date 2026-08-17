@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUp, ClipboardCheck, LogIn, Sparkles, Store, Tags, UserPlus } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { apiPost } from '../lib/api'
+import { apiGet, apiPost } from '../lib/api'
+import { getCsrfHeaders, getCurrentMember, type MemberProfile } from '../lib/member'
 import { useI18n, type Language } from '../i18n'
 
 interface ChatMessage {
@@ -84,6 +85,7 @@ export default function AI() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [remaining, setRemaining] = useState(10)
+  const [member, setMember] = useState<MemberProfile | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -91,6 +93,19 @@ export default function AI() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isLoading])
+
+  useEffect(() => {
+    let active = true
+    Promise.all([
+      getCurrentMember(),
+      apiGet<{ remaining: number }>(`/api/v1/ai/usage`, { params: { session_id: sessionId } }),
+    ]).then(([currentMember, usage]) => {
+      if (!active) return
+      setMember(currentMember)
+      setRemaining(usage.remaining)
+    }).catch(() => undefined)
+    return () => { active = false }
+  }, [sessionId])
 
   const handleSend = async (rawContent = input) => {
     const content = rawContent.trim()
@@ -101,11 +116,11 @@ export default function AI() {
     setIsLoading(true)
 
     try {
-      const data = await apiPost<AIChatResponse>('/api/v1/ai/chat', {
-        session_id: sessionId,
-        message: content,
-        language,
-      })
+      const data = await apiPost<AIChatResponse>(
+        '/api/v1/ai/chat',
+        { session_id: sessionId, message: content, language },
+        { headers: getCsrfHeaders() },
+      )
       setMessages((previous) => [
         ...previous,
         { id: `${Date.now()}-assistant`, role: 'assistant', content: data.reply || t('aiEmptyReply') },
@@ -163,14 +178,23 @@ export default function AI() {
               <option value="zh">中</option>
               <option value="en">EN</option>
             </select>
-            <Link to="/members/login" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full px-1.5 text-[11px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950 sm:px-3 sm:text-sm">
-              <LogIn className="hidden h-4 w-4 sm:block" />
-              {copy.login}
-            </Link>
-            <Link to="/members/register" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-slate-950 px-2.5 text-[11px] font-semibold text-white transition-colors hover:bg-slate-800 sm:px-4 sm:text-sm">
-              <UserPlus className="hidden h-4 w-4 sm:block" />
-              {copy.register}
-            </Link>
+            {member ? (
+              <>
+                {member.is_admin && <Link to="/admin" className="inline-flex h-9 items-center rounded-full px-2 text-[11px] font-medium text-violet-700 hover:bg-violet-50 sm:px-3 sm:text-sm">Admin</Link>}
+                <Link to="/members/me" className="inline-flex h-9 items-center rounded-full bg-slate-950 px-2.5 text-[11px] font-semibold text-white hover:bg-slate-800 sm:px-4 sm:text-sm">{member.username}</Link>
+              </>
+            ) : (
+              <>
+                <Link to="/members/login" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full px-1.5 text-[11px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950 sm:px-3 sm:text-sm">
+                  <LogIn className="hidden h-4 w-4 sm:block" />
+                  {copy.login}
+                </Link>
+                <Link to="/members/register" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-slate-950 px-2.5 text-[11px] font-semibold text-white transition-colors hover:bg-slate-800 sm:px-4 sm:text-sm">
+                  <UserPlus className="hidden h-4 w-4 sm:block" />
+                  {copy.register}
+                </Link>
+              </>
+            )}
           </div>
         </div>
         <nav className="grid grid-cols-3 border-t border-slate-100 bg-white px-3 sm:hidden">

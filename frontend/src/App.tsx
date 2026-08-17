@@ -10,6 +10,7 @@ const MemberRegister = lazy(() => import('./pages/MemberRegister'))
 const MemberLogin = lazy(() => import('./pages/MemberLogin'))
 const MemberProfile = lazy(() => import('./pages/MemberProfile'))
 const MemberResetPassword = lazy(() => import('./pages/MemberResetPassword'))
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
 const AI = lazy(() => import('./pages/AI'))
 const ProductDetail = lazy(() => import('./pages/ProductDetail'))
 const LegalPage = lazy(() => import('./pages/LegalPage'))
@@ -74,7 +75,9 @@ function App() {
           <Route path="/members/register" element={<MemberRegister />} />
           <Route path="/members/login" element={<MemberLogin />} />
           <Route path="/members/reset-password" element={<MemberResetPassword />} />
+          <Route path="/members/reset-password/confirm" element={<MemberResetPassword />} />
           <Route path="/members/me" element={<MemberProfile />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/company" element={<LegalPage />} />
           <Route path="/notice" element={<LegalPage />} />

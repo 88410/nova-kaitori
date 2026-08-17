@@ -1,18 +1,11 @@
 import { FormEvent, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { CheckCircle2, KeyRound, Mail, UserRound } from 'lucide-react'
 import { apiPost } from '../lib/api'
-import { setStoredMember } from '../lib/member'
+import { type MemberProfile } from '../lib/member'
 import { useI18n } from '../i18n'
 import { LightPage, PageHeader, lightPanelClass } from '../components/PageChrome'
-
-interface MemberResponse {
-  id: number
-  username: string
-  email: string
-  status: string
-  created_at: string
-}
 
 function getErrorKey(error: unknown) {
   const response = (error as { response?: { status?: number; data?: { detail?: string } } }).response
@@ -21,16 +14,18 @@ function getErrorKey(error: unknown) {
   if (response?.status === 409 && detail.includes('Email')) return 'memberRegisterErrorEmail'
   if (response?.status === 409 && detail.includes('Username')) return 'memberRegisterErrorUsername'
   if (response?.status === 422) return 'memberRegisterErrorValidation'
+  if (response?.status === 429) return 'memberAuthRateLimited'
   return 'memberRegisterErrorGeneric'
 }
 
 export default function MemberRegister() {
   const { t } = useI18n()
+  const queryClient = useQueryClient()
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
-  const [member, setMember] = useState<MemberResponse | null>(null)
+  const [member, setMember] = useState<MemberProfile | null>(null)
   const [errorKey, setErrorKey] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -47,13 +42,13 @@ export default function MemberRegister() {
     setIsSubmitting(true)
 
     try {
-      const data = await apiPost<MemberResponse>('/api/v1/members/register', {
+      const data = await apiPost<MemberProfile>('/api/v1/members/register', {
         username,
         email,
         password,
       })
       setMember(data)
-      setStoredMember(data)
+      queryClient.setQueryData(['current-member'], data)
       setUsername('')
       setEmail('')
       setPassword('')

@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
 import { Bell, Bookmark, History, LogOut, UserRound } from 'lucide-react'
-import { clearStoredMember, getStoredMember } from '../lib/member'
+import { getCurrentMember, logoutMember } from '../lib/member'
 import { useI18n, type Language } from '../i18n'
 import { LightPage, PageHeader, lightPanelClass } from '../components/PageChrome'
 
@@ -21,7 +22,14 @@ function formatDateTime(value: string, language: Language) {
 export default function MemberProfile() {
   const { language, t } = useI18n()
   const navigate = useNavigate()
-  const [member, setMember] = useState(() => getStoredMember())
+  const queryClient = useQueryClient()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const { data: member, isLoading } = useQuery({
+    queryKey: ['current-member'],
+    queryFn: getCurrentMember,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+  })
 
   const futureItems = useMemo(
     () => [
@@ -32,10 +40,25 @@ export default function MemberProfile() {
     [t],
   )
 
-  const handleLogout = () => {
-    clearStoredMember()
-    setMember(null)
-    navigate('/')
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await logoutMember()
+      queryClient.setQueryData(['current-member'], null)
+      navigate('/')
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <LightPage>
+        <main className="mx-auto max-w-4xl px-4 py-16 text-center text-sm text-slate-500">
+          {t('memberSessionChecking')}
+        </main>
+      </LightPage>
+    )
   }
 
   if (!member) {
@@ -86,12 +109,13 @@ export default function MemberProfile() {
             </div>
             <div className="flex items-center gap-3">
               <span className="inline-flex w-fit rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                {t('memberNormalStatus')}
+                {member.is_admin ? t('memberAdminStatus') : t('memberNormalStatus')}
               </span>
               <button
                 type="button"
                 onClick={handleLogout}
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-slate-300 hover:text-slate-950"
+                disabled={isLoggingOut}
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-slate-300 hover:text-slate-950 disabled:opacity-50"
               >
                 <LogOut className="h-3.5 w-3.5" />
                 {t('memberLogout')}
@@ -113,6 +137,16 @@ export default function MemberProfile() {
               <dd className="mt-2 text-sm font-semibold text-slate-950">{formatDateTime(member.created_at, language)}</dd>
             </div>
           </dl>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <span className="rounded-full bg-violet-50 px-3 py-1.5 text-sm font-medium text-violet-700">
+              {t('memberAiRemaining', { count: member.ai_remaining })}
+            </span>
+            {member.is_admin && (
+              <Link to="/admin" className="rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white">
+                {t('memberAdminPanel')}
+              </Link>
+            )}
+          </div>
         </section>
 
         <section className="mt-6 grid gap-4 md:grid-cols-3">

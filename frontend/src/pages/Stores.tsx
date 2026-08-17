@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { ArrowRight, Building2 } from 'lucide-react'
+import { ArrowRight, Building2, MapPin, Phone } from 'lucide-react'
 import { useI18n } from '../i18n'
 import { apiGet } from '../lib/api'
 import { LightPage, PageHeader, lightPanelClass } from '../components/PageChrome'
@@ -14,6 +14,8 @@ interface Store {
   id: number
   name: string
   website_url?: string | null
+  address?: string | null
+  phone?: string | null
   summary?: string | null
   is_sponsored?: boolean
   priority: number
@@ -68,6 +70,22 @@ export default function Stores() {
                         >
                           {store.summary}
                         </p>
+                      )}
+                      {(store.address || store.phone) && (
+                        <div className="mt-3 grid gap-1.5 text-xs leading-5 text-slate-500">
+                          {store.address && (
+                            <p className="flex items-start gap-1.5">
+                              <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                              <span>{store.address}</span>
+                            </p>
+                          )}
+                          {store.phone && (
+                            <a className="flex items-center gap-1.5 hover:text-slate-900" href={`tel:${store.phone}`}>
+                              <Phone className="h-3.5 w-3.5 shrink-0" />
+                              {store.phone}
+                            </a>
+                          )}
+                        </div>
                       )}
                     </div>
                     <div className="shrink-0 rounded-lg border border-white bg-white/80 p-2 text-slate-500 shadow-sm">

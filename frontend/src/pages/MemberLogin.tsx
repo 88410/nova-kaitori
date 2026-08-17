@@ -1,16 +1,16 @@
 import { FormEvent, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
 import { KeyRound, LogIn, Mail } from 'lucide-react'
 import { apiPost } from '../lib/api'
-import { setStoredMember, type StoredMember } from '../lib/member'
+import type { MemberProfile } from '../lib/member'
 import { useI18n } from '../i18n'
 import { LightPage, PageHeader, lightPanelClass } from '../components/PageChrome'
 
 function getErrorKey(error: unknown) {
   const response = (error as { response?: { status?: number } }).response
-  if (response?.status === 404) return 'memberLoginErrorNotFound'
-  if (response?.status === 401) return 'memberLoginErrorPassword'
-  if (response?.status === 409) return 'memberLoginErrorPasswordNotSet'
+  if (response?.status === 401) return 'memberLoginErrorGeneric'
+  if (response?.status === 429) return 'memberAuthRateLimited'
   if (response?.status === 422) return 'memberRegisterErrorValidation'
   return 'memberLoginErrorGeneric'
 }
@@ -18,7 +18,8 @@ function getErrorKey(error: unknown) {
 export default function MemberLogin() {
   const { t } = useI18n()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const queryClient = useQueryClient()
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [errorKey, setErrorKey] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -29,8 +30,8 @@ export default function MemberLogin() {
     setIsSubmitting(true)
 
     try {
-      const member = await apiPost<StoredMember>('/api/v1/members/login', { email, password })
-      setStoredMember(member)
+      const member = await apiPost<MemberProfile>('/api/v1/members/login', { identifier, password })
+      queryClient.setQueryData(['current-member'], member)
       navigate('/members/me')
     } catch (error) {
       setErrorKey(getErrorKey(error))
@@ -53,15 +54,15 @@ export default function MemberLogin() {
 
           <form onSubmit={handleSubmit} className="mt-8 grid gap-5">
             <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-800">{t('memberEmail')}</span>
+              <span className="text-sm font-medium text-slate-800">{t('memberLoginIdentifier')}</span>
               <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-[#f8f9fc] px-4 py-3 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-100">
                 <Mail className="h-5 w-5 text-slate-400" />
                 <input
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
+                  value={identifier}
+                  onChange={(event) => setIdentifier(event.target.value)}
                   className="min-w-0 flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
-                  placeholder={t('memberEmailPlaceholder')}
-                  type="email"
+                  placeholder={t('memberLoginIdentifierPlaceholder')}
+                  type="text"
                   maxLength={255}
                   required
                 />
