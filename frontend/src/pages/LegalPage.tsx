@@ -69,14 +69,14 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
         {
           heading: 'Collected Information',
           body: [
-            'NOVA may process language settings, question text, and session identifiers needed to provide the AI feature.',
-            'This information is used to improve response quality and service stability.',
+            'For member services, NOVA records usernames, email addresses, registration and login times, IP addresses, and browser information.',
+            'For the AI feature, NOVA records language settings, questions and answers, protected session identifiers, IP addresses, and browser information.',
           ],
         },
         {
           heading: 'Use of Information',
           body: [
-            'We use collected information only for operating the comparison service, improving the product, and responding to inquiries when necessary.',
+            'We use collected information only for operating the comparison and AI services, account security, usage management, product improvement, and responding to inquiries when necessary.',
             'We do not sell personal information to third parties.',
           ],
         },
@@ -163,14 +163,14 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
         {
           heading: '收集的信息',
           body: [
-            '为提供 AI 功能，NOVA 可能处理语言设置、提问内容以及会话标识等必要信息。',
-            '这些信息仅用于提升回答质量和维持服务稳定。',
+            '会员服务会记录用户名、邮箱、注册及登录时间、IP 地址和浏览器信息。',
+            'AI 功能会记录语言设置、问题与回答、经过保护的会话标识、IP 地址和浏览器信息。',
           ],
         },
         {
           heading: '信息用途',
           body: [
-            '收集的信息仅用于运营比价服务、改善产品体验，以及在必要时处理咨询。',
+            '收集的信息仅用于运营比价与 AI 服务、账户安全、使用次数管理、产品改善，以及在必要时处理咨询。',
             '我们不会将个人信息出售给第三方。',
           ],
         },
@@ -257,14 +257,14 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
         {
           heading: '取得する情報',
           body: [
-            'NOVAでは、AI機能の提供に必要な範囲で、言語設定、質問内容、セッション識別子などの情報を取り扱う場合があります。',
-            'これらの情報は、回答品質の向上とサービスの安定運用のために利用します。',
+            '会員機能では、ユーザー名、メールアドレス、登録・ログイン日時、IPアドレス、ブラウザ情報を記録します。',
+            'AI機能では、言語設定、質問と回答、保護されたセッション識別子、IPアドレス、ブラウザ情報を記録します。',
           ],
         },
         {
           heading: '利用目的',
           body: [
-            '取得した情報は、価格比較サービスの提供、機能改善、お問い合わせ対応のために利用します。',
+            '取得した情報は、価格比較・AIサービスの提供、アカウント保護、利用回数管理、機能改善、お問い合わせ対応のために利用します。',
             '個人情報を第三者へ販売することはありません。',
           ],
         },

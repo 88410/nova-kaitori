@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUp, ClipboardCheck, LogIn, Sparkles, Store, Tags, UserPlus } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { ArrowUp, Sparkles } from 'lucide-react'
+import ProductNav from '../components/ProductNav'
 import { apiGet, apiPost } from '../lib/api'
-import { getCsrfHeaders, getCurrentMember, type MemberProfile } from '../lib/member'
+import { getCsrfHeaders } from '../lib/member'
 import { useI18n, type Language } from '../i18n'
 
 interface ChatMessage {
@@ -20,11 +20,6 @@ const COPY: Record<Language, {
   eyebrow: string
   title: string
   lead: string
-  price: string
-  stores: string
-  assessment: string
-  login: string
-  register: string
   examples: string[]
   databaseNote: string
 }> = {
@@ -32,11 +27,6 @@ const COPY: Record<Language, {
     eyebrow: 'SMARTPHONE & PRICE INTELLIGENCE',
     title: 'What would you like to know?',
     lead: 'Ask about smartphones or analyze the latest local buyback prices.',
-    price: 'Prices',
-    stores: 'Stores',
-    assessment: 'Valuation',
-    login: 'Log in',
-    register: 'Sign up',
     examples: [
       'Which store pays the most for iPhone 17 Pro Max 256GB?',
       'Is now a good time to sell my iPhone?',
@@ -48,11 +38,6 @@ const COPY: Record<Language, {
     eyebrow: '手机知识与价格智能',
     title: '今天想了解什么？',
     lead: '可以问手机问题，也可以分析最新的本地回收价格。',
-    price: '价格',
-    stores: '店铺',
-    assessment: '査定',
-    login: '登录',
-    register: '注册',
     examples: [
       'iPhone 17 Pro Max 256GB 现在哪家价格最高？',
       '现在适合卖掉我的 iPhone 吗？',
@@ -64,11 +49,6 @@ const COPY: Record<Language, {
     eyebrow: 'スマートフォンと価格インテリジェンス',
     title: '今日は何を知りたいですか？',
     lead: 'スマートフォンの相談も、最新のローカル買取価格の分析もできます。',
-    price: '価格',
-    stores: '店舗',
-    assessment: '査定',
-    login: 'ログイン',
-    register: '会員登録',
     examples: [
       'iPhone 17 Pro Max 256GB は今どの店舗が一番高いですか？',
       '今はiPhoneを売る良いタイミングですか？',
@@ -79,13 +59,12 @@ const COPY: Record<Language, {
 }
 
 export default function AI() {
-  const { language, setLanguage, t } = useI18n()
+  const { language, t } = useI18n()
   const copy = COPY[language]
   const [sessionId] = useState(() => crypto.randomUUID())
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [remaining, setRemaining] = useState(10)
-  const [member, setMember] = useState<MemberProfile | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -96,12 +75,8 @@ export default function AI() {
 
   useEffect(() => {
     let active = true
-    Promise.all([
-      getCurrentMember(),
-      apiGet<{ remaining: number }>(`/api/v1/ai/usage`, { params: { session_id: sessionId } }),
-    ]).then(([currentMember, usage]) => {
+    apiGet<{ remaining: number }>(`/api/v1/ai/usage`, { params: { session_id: sessionId } }).then((usage) => {
       if (!active) return
-      setMember(currentMember)
       setRemaining(usage.remaining)
     }).catch(() => undefined)
     return () => { active = false }
@@ -145,73 +120,7 @@ export default function AI() {
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-[#f7f7f8] text-slate-950">
-      <header className="sticky top-0 z-40 border-b border-black/[0.07] bg-white sm:bg-white/95 sm:backdrop-blur-md">
-        <div className="mx-auto flex h-[60px] max-w-7xl items-center gap-2 px-3 sm:h-[68px] sm:gap-4 sm:px-6 lg:px-8">
-          <a href="https://novatekku.com/" className="flex shrink-0 items-center gap-2.5" aria-label="Novatekku home">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-slate-950 text-xs font-semibold text-white">N</span>
-            <span className="hidden text-sm font-semibold tracking-[0.16em] sm:block">NOVA AI</span>
-          </a>
-
-          <nav className="ml-1 hidden items-center sm:ml-6 sm:flex sm:gap-2">
-            <Link to="/assessment" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-violet-50 px-4 text-sm font-semibold text-violet-700 transition-colors hover:bg-violet-100">
-              <ClipboardCheck className="h-4 w-4" />
-              {copy.assessment}
-            </Link>
-            <Link to="/prices" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full px-2 text-[11px] font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 sm:px-4 sm:text-sm">
-              <Tags className="hidden h-4 w-4 sm:block" />
-              {copy.price}
-            </Link>
-            <Link to="/stores" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full px-2 text-[11px] font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 sm:px-4 sm:text-sm">
-              <Store className="hidden h-4 w-4 sm:block" />
-              {copy.stores}
-            </Link>
-          </nav>
-
-          <div className="ml-auto flex items-center gap-1 sm:gap-2">
-            <select
-              value={language}
-              onChange={(event) => setLanguage(event.target.value as Language)}
-              aria-label={t('languageLabel')}
-              className="h-9 w-10 rounded-full border border-slate-200 bg-white px-0.5 text-center text-[10px] text-slate-600 outline-none focus:border-slate-400 sm:w-auto sm:px-3 sm:text-xs"
-            >
-              <option value="ja">JA</option>
-              <option value="zh">中</option>
-              <option value="en">EN</option>
-            </select>
-            {member ? (
-              <>
-                {member.is_admin && <Link to="/admin" className="inline-flex h-9 items-center rounded-full px-2 text-[11px] font-medium text-violet-700 hover:bg-violet-50 sm:px-3 sm:text-sm">Admin</Link>}
-                <Link to="/members/me" className="inline-flex h-9 items-center rounded-full bg-slate-950 px-2.5 text-[11px] font-semibold text-white hover:bg-slate-800 sm:px-4 sm:text-sm">{member.username}</Link>
-              </>
-            ) : (
-              <>
-                <Link to="/members/login" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full px-1.5 text-[11px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950 sm:px-3 sm:text-sm">
-                  <LogIn className="hidden h-4 w-4 sm:block" />
-                  {copy.login}
-                </Link>
-                <Link to="/members/register" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-slate-950 px-2.5 text-[11px] font-semibold text-white transition-colors hover:bg-slate-800 sm:px-4 sm:text-sm">
-                  <UserPlus className="hidden h-4 w-4 sm:block" />
-                  {copy.register}
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-        <nav className="grid grid-cols-3 border-t border-slate-100 bg-white px-3 sm:hidden">
-          <Link to="/assessment" className="inline-flex h-10 items-center justify-center gap-1.5 text-xs font-semibold text-violet-700">
-            <ClipboardCheck className="h-3.5 w-3.5" />
-            {copy.assessment}
-          </Link>
-          <Link to="/prices" className="inline-flex h-10 items-center justify-center gap-1.5 text-xs font-medium text-slate-600">
-            <Tags className="h-3.5 w-3.5" />
-            {copy.price}
-          </Link>
-          <Link to="/stores" className="inline-flex h-10 items-center justify-center gap-1.5 text-xs font-medium text-slate-600">
-            <Store className="h-3.5 w-3.5" />
-            {copy.stores}
-          </Link>
-        </nav>
-      </header>
+      <ProductNav />
 
       <main className="relative flex flex-1 flex-col overflow-hidden">
         <div

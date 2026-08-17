@@ -11,6 +11,11 @@ const MemberLogin = lazy(() => import('./pages/MemberLogin'))
 const MemberProfile = lazy(() => import('./pages/MemberProfile'))
 const MemberResetPassword = lazy(() => import('./pages/MemberResetPassword'))
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
+const AdminMembers = lazy(() => import('./pages/AdminMembers'))
+const AdminMemberDetail = lazy(() => import('./pages/AdminMemberDetail'))
+const AdminPrices = lazy(() => import('./pages/AdminPrices'))
+const AdminStorePrices = lazy(() => import('./pages/AdminStorePrices'))
+const AdminAIHistory = lazy(() => import('./pages/AdminAIHistory'))
 const AI = lazy(() => import('./pages/AI'))
 const ProductDetail = lazy(() => import('./pages/ProductDetail'))
 const LegalPage = lazy(() => import('./pages/LegalPage'))
@@ -63,7 +68,6 @@ function App() {
 
   return (
     <>
-      {pathname !== '/' && pathname !== '/ai' && <LanguageSwitcher />}
       <ScrollToTop />
       <Suspense fallback={pageFallback}>
         <Routes>
@@ -78,6 +82,11 @@ function App() {
           <Route path="/members/reset-password/confirm" element={<MemberResetPassword />} />
           <Route path="/members/me" element={<MemberProfile />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/members" element={<AdminMembers />} />
+          <Route path="/admin/members/:memberId" element={<AdminMemberDetail />} />
+          <Route path="/admin/prices" element={<AdminPrices />} />
+          <Route path="/admin/prices/:storeId" element={<AdminStorePrices />} />
+          <Route path="/admin/ai-history" element={<AdminAIHistory />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/company" element={<LegalPage />} />
           <Route path="/notice" element={<LegalPage />} />
