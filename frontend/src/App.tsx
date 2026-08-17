@@ -5,6 +5,7 @@ import SiteFooter from './components/SiteFooter'
 
 const Prices = lazy(() => import('./pages/Prices'))
 const Stores = lazy(() => import('./pages/Stores'))
+const Assessment = lazy(() => import('./pages/Assessment'))
 const MemberRegister = lazy(() => import('./pages/MemberRegister'))
 const MemberLogin = lazy(() => import('./pages/MemberLogin'))
 const MemberProfile = lazy(() => import('./pages/MemberProfile'))
@@ -69,6 +70,7 @@ function App() {
           <Route path="/ai" element={<AI />} />
           <Route path="/prices" element={<Prices />} />
           <Route path="/stores" element={<Stores />} />
+          <Route path="/assessment" element={<Assessment />} />
           <Route path="/members/register" element={<MemberRegister />} />
           <Route path="/members/login" element={<MemberLogin />} />
           <Route path="/members/reset-password" element={<MemberResetPassword />} />

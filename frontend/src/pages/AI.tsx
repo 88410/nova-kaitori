@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUp, LogIn, Sparkles, Store, Tags, UserPlus } from 'lucide-react'
+import { ArrowUp, ClipboardCheck, LogIn, Sparkles, Store, Tags, UserPlus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { apiPost } from '../lib/api'
 import { useI18n, type Language } from '../i18n'
@@ -21,6 +21,7 @@ const COPY: Record<Language, {
   lead: string
   price: string
   stores: string
+  assessment: string
   login: string
   register: string
   examples: string[]
@@ -32,6 +33,7 @@ const COPY: Record<Language, {
     lead: 'Ask about smartphones or analyze the latest local buyback prices.',
     price: 'Prices',
     stores: 'Stores',
+    assessment: 'Valuation',
     login: 'Log in',
     register: 'Sign up',
     examples: [
@@ -47,6 +49,7 @@ const COPY: Record<Language, {
     lead: '可以问手机问题，也可以分析最新的本地回收价格。',
     price: '价格',
     stores: '店铺',
+    assessment: '査定',
     login: '登录',
     register: '注册',
     examples: [
@@ -62,6 +65,7 @@ const COPY: Record<Language, {
     lead: 'スマートフォンの相談も、最新のローカル買取価格の分析もできます。',
     price: '価格',
     stores: '店舗',
+    assessment: '査定',
     login: 'ログイン',
     register: '会員登録',
     examples: [
@@ -127,13 +131,17 @@ export default function AI() {
   return (
     <div className="flex min-h-[100dvh] flex-col bg-[#f7f7f8] text-slate-950">
       <header className="sticky top-0 z-40 border-b border-black/[0.07] bg-white sm:bg-white/95 sm:backdrop-blur-md">
-        <div className="mx-auto flex h-[68px] max-w-7xl items-center gap-2 px-3 sm:gap-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-[60px] max-w-7xl items-center gap-2 px-3 sm:h-[68px] sm:gap-4 sm:px-6 lg:px-8">
           <a href="https://novatekku.com/" className="flex shrink-0 items-center gap-2.5" aria-label="Novatekku home">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-slate-950 text-xs font-semibold text-white">N</span>
             <span className="hidden text-sm font-semibold tracking-[0.16em] sm:block">NOVA AI</span>
           </a>
 
-          <nav className="ml-1 flex items-center sm:ml-6 sm:gap-2">
+          <nav className="ml-1 hidden items-center sm:ml-6 sm:flex sm:gap-2">
+            <Link to="/assessment" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-violet-50 px-4 text-sm font-semibold text-violet-700 transition-colors hover:bg-violet-100">
+              <ClipboardCheck className="h-4 w-4" />
+              {copy.assessment}
+            </Link>
             <Link to="/prices" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full px-2 text-[11px] font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 sm:px-4 sm:text-sm">
               <Tags className="hidden h-4 w-4 sm:block" />
               {copy.price}
@@ -165,6 +173,20 @@ export default function AI() {
             </Link>
           </div>
         </div>
+        <nav className="grid grid-cols-3 border-t border-slate-100 bg-white px-3 sm:hidden">
+          <Link to="/assessment" className="inline-flex h-10 items-center justify-center gap-1.5 text-xs font-semibold text-violet-700">
+            <ClipboardCheck className="h-3.5 w-3.5" />
+            {copy.assessment}
+          </Link>
+          <Link to="/prices" className="inline-flex h-10 items-center justify-center gap-1.5 text-xs font-medium text-slate-600">
+            <Tags className="h-3.5 w-3.5" />
+            {copy.price}
+          </Link>
+          <Link to="/stores" className="inline-flex h-10 items-center justify-center gap-1.5 text-xs font-medium text-slate-600">
+            <Store className="h-3.5 w-3.5" />
+            {copy.stores}
+          </Link>
+        </nav>
       </header>
 
       <main className="relative flex flex-1 flex-col overflow-hidden">
