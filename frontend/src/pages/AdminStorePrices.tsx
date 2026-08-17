@@ -30,24 +30,44 @@ interface StorePrices {
 
 interface OfficialCatalogItem {
   id: number
+  source_product_id: number
+  product_id: number
   model: string
   capacity: string
+  standard_product: string
   product_name: string
-  jan_code?: string | null
+  source_jan_code?: string | null
+  jan_code: string
   price: number
   source_url?: string | null
   collected_at: string
-  variant?: {
+  mapping_method: string
+  mapping_confidence: number
+  matcher_version: string
+  offer_condition: 'unopened' | 'opened' | 'new' | 'unspecified'
+  is_default_color_price: boolean
+  variant: {
     id: number
     color_code: string
     color_name_ja: string
     color_name_en: string
     color_name_zh: string
-  } | null
+  }
 }
 
 interface OfficialCatalog {
+  source_product_count: number
+  mapped_source_count: number
+  standard_variant_count: number
+  unmapped_source_count: number
   items: OfficialCatalogItem[]
+}
+
+const conditionLabels: Record<OfficialCatalogItem['offer_condition'], string> = {
+  unopened: '未開封',
+  opened: '開封済',
+  new: '新品',
+  unspecified: '',
 }
 
 function PriceCell({ value, official = false }: { value?: PriceValue | null; official?: boolean }) {
@@ -113,21 +133,36 @@ export default function AdminStorePrices() {
           <details className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-3 text-sm font-semibold">
               <span>公式商品明細</span>
-              <span className="text-sm font-normal text-slate-500">{catalog.data?.items.length ?? 0}件</span>
+              <span className="text-sm font-normal text-slate-500">標準 {catalog.data?.standard_variant_count ?? 0}件</span>
             </summary>
             <div className="border-t border-slate-100">
               {catalog.isLoading && <p className="text-sm text-slate-500">読み込み中...</p>}
               {catalog.isError && <p className="text-sm text-rose-600">公式商品一覧を取得できませんでした。</p>}
               {catalog.data?.items.length === 0 && <p className="text-sm text-slate-500">公式サイトの商品データはまだありません。</p>}
+              {catalog.data && (
+                <div className="flex flex-wrap gap-x-4 gap-y-1 border-b border-slate-100 px-3 py-2 text-[11px] text-slate-500">
+                  <span>取得 {catalog.data.source_product_count}件</span>
+                  <span>対応済み {catalog.data.mapped_source_count}件</span>
+                  <span>カラー別 {catalog.data.standard_variant_count}件</span>
+                  <span className={catalog.data.unmapped_source_count > 0 ? 'font-semibold text-rose-600' : 'text-emerald-600'}>未対応 {catalog.data.unmapped_source_count}件</span>
+                </div>
+              )}
               <div className="max-h-[70vh] overflow-auto">
                 <table className="min-w-[720px] w-full text-left text-xs">
-                  <thead className="sticky top-0 bg-slate-50 text-[10px] uppercase tracking-wider text-slate-400"><tr><th className="px-3 py-2">商品</th><th className="px-3 py-2">標準カラー</th><th className="px-3 py-2">JAN</th><th className="px-3 py-2">価格</th><th className="px-3 py-2">更新</th></tr></thead>
+                  <thead className="sticky top-0 bg-slate-50 text-[10px] uppercase tracking-wider text-slate-400"><tr><th className="px-3 py-2">標準商品 / 取得名</th><th className="px-3 py-2">カラー</th><th className="px-3 py-2">標準JAN</th><th className="px-3 py-2">公式価格</th><th className="px-3 py-2">更新</th></tr></thead>
                   <tbody>
                     {catalog.data?.items.map((item) => (
                       <tr key={item.id} className="border-t border-slate-100 align-top">
-                        <td className="max-w-[330px] break-words px-3 py-2 font-medium text-slate-900">{item.product_name}</td>
-                        <td className="whitespace-nowrap px-3 py-2 text-slate-600">{item.variant?.color_name_ja || '共通'}</td>
-                        <td className="whitespace-nowrap px-3 py-2 font-mono text-[11px] text-slate-500">{item.jan_code || '—'}</td>
+                        <td className="max-w-[360px] break-words px-3 py-2">
+                          <p className="font-semibold text-slate-900">{item.standard_product}</p>
+                          <p className="mt-0.5 text-[10px] leading-4 text-slate-400">{item.product_name}</p>
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 text-slate-600">
+                          <p>{item.variant.color_name_ja}</p>
+                          {item.is_default_color_price && <p className="mt-0.5 text-[10px] text-amber-600">全カラー共通価格</p>}
+                          {conditionLabels[item.offer_condition] && <p className={`mt-0.5 text-[10px] ${item.offer_condition === 'opened' ? 'text-rose-500' : 'text-slate-400'}`}>{conditionLabels[item.offer_condition]}</p>}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 font-mono text-[11px] text-slate-500">{item.jan_code}</td>
                         <td className="whitespace-nowrap px-3 py-2 font-semibold text-violet-700">{yen(item.price)}</td>
                         <td className="whitespace-nowrap px-3 py-2 text-[10px] text-slate-400">{dateTime(item.collected_at)} {item.source_url && <a href={item.source_url} target="_blank" rel="noreferrer" aria-label="公式商品ページを開く" className="ml-1 inline-block text-slate-400 hover:text-violet-700"><ExternalLink className="h-3 w-3" /></a>}</td>
                       </tr>
