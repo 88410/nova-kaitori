@@ -35,6 +35,14 @@ interface Price {
   profit: number | null
 }
 
+interface MarketSummary {
+  product_id: number
+  accepted_prices: Array<{
+    store_id: number
+    price: number
+  }>
+}
+
 interface GroupedProduct {
   product: Product
   prices: Price[]
@@ -472,9 +480,16 @@ export default function PriceTable() {
   const { data: prices, isLoading } = useQuery<Price[]>({
     queryKey: ['prices'],
     queryFn: async () => {
-      return apiGet<Price[]>('/api/v1/prices', {
-        params: { limit: 1000 },
-      })
+      const [rawPrices, market] = await Promise.all([
+        apiGet<Price[]>('/api/v1/prices', { params: { limit: 1000 } }),
+        apiGet<MarketSummary[]>('/api/v1/prices/market-average', { params: { limit: 300 } }),
+      ])
+      const accepted = new Set(
+        market.flatMap((summary) => summary.accepted_prices.map(
+          (price) => `${summary.product_id}:${price.store_id}:${price.price}`,
+        )),
+      )
+      return rawPrices.filter((price) => accepted.has(`${price.product.id}:${price.store.id}:${price.price}`))
     },
     staleTime: 0,
     refetchOnMount: 'always',

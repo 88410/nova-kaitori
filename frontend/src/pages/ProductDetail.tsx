@@ -35,6 +35,13 @@ interface PriceWithStore {
   profit_percent: number | null
 }
 
+interface MarketSummary {
+  accepted_prices: Array<{
+    store_id: number
+    price: number
+  }>
+}
+
 function formatPrice(price: number): string {
   return `¥${price.toLocaleString()}`
 }
@@ -58,7 +65,12 @@ export default function ProductDetail() {
   const { data: prices } = useQuery<PriceWithStore[]>({
     queryKey: ['product-prices', productId],
     queryFn: async () => {
-      return apiGet<PriceWithStore[]>(`/api/v1/prices/latest/${productId}`)
+      const [rawPrices, market] = await Promise.all([
+        apiGet<PriceWithStore[]>(`/api/v1/prices/latest/${productId}`),
+        apiGet<MarketSummary>(`/api/v1/prices/market-average/${productId}`),
+      ])
+      const accepted = new Set(market.accepted_prices.map((price) => `${price.store_id}:${price.price}`))
+      return rawPrices.filter((price) => accepted.has(`${price.store.id}:${price.price}`))
     },
   })
 
