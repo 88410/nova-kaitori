@@ -25,6 +25,18 @@ interface Price {
   product: Product
 }
 
+interface MarketPrice {
+  store_id: number
+  store_name: string
+  price: number
+  scraped_at: string | null
+}
+
+interface MarketSummary {
+  product_id: number
+  accepted_prices: MarketPrice[]
+}
+
 interface SelectedItem {
   productId: number
   quantity: number
@@ -51,12 +63,12 @@ interface RouteStop {
 }
 
 const APPLICATION_URLS: Record<string, string> = {
-  '森森買取': 'https://www.morimori-kaitori.jp/user/login',
-  '買取商店': 'https://www.kaitorishouten-co.jp/mailingflow',
-  '買取一丁目': 'https://www.1-chome.com/cart',
-  '買取ルデヤ': 'https://kaitori-rudeya.com/auth',
-  '買取ホムラ': 'https://kaitori-homura.com/cart',
-  'PANDA買取': 'https://panda-kaitori.com/post/',
+  '森森買取': 'https://www.morimori-kaitori.jp/flow/store',
+  '買取商店': 'https://www.kaitorishouten-co.jp/shopflow?id=4',
+  '買取一丁目': 'https://www.1-chome.com/purchaseInStore',
+  '買取ルデヤ': 'https://kaitori-rudeya.com/guide/order/shopcounter',
+  '買取ホムラ': 'https://kaitori-homura.com/how-to-sell?tab=store',
+  'PANDA買取': 'https://panda-kaitori.co.jp/flow.html',
 }
 
 const COPY: Record<Language, {
@@ -101,7 +113,7 @@ const COPY: Record<Language, {
     bestRouteLead: 'Split the phones between stores to maximize the reference total.',
     oneStore: 'Sell everything to one store',
     oneStoreLead: 'Stores that currently list every selected phone.',
-    sell: 'Apply to sell',
+    sell: 'Store buyback guide',
     items: 'phones',
     noOffers: 'No store currently lists every selected phone. Check the split route instead.',
     notice: 'Reference totals use the latest local listed prices. Final value depends on condition and each store’s rules.',
@@ -125,7 +137,7 @@ const COPY: Record<Language, {
     bestRouteLead: '按照当前价格分开卖出，获得更高的参考总价。',
     oneStore: '全部卖给同一家店',
     oneStoreLead: '以下商家目前都有您选择的全部机型。',
-    sell: '去商家申请卖出',
+    sell: '查看店头收购',
     items: '台',
     noOffers: '暂时没有一家商家覆盖全部机型，请参考上面的分开卖出路线。',
     notice: '总价根据最新本地公开价格计算，仅供参考。最终价格以手机状态和商家査定规则为准。',
@@ -149,7 +161,7 @@ const COPY: Record<Language, {
     bestRouteLead: '現在の価格をもとに店舗を分け、参考合計額を高くします。',
     oneStore: 'すべて同じ店舗へ売る',
     oneStoreLead: '選択した全機種の価格がある店舗です。',
-    sell: 'この店舗で売る',
+    sell: '店頭買取へ',
     items: '台',
     noOffers: '全機種を扱う店舗が現在ありません。上の分割ルートをご確認ください。',
     notice: '最新のローカル掲載価格による参考額です。端末状態や店舗条件により最終査定額は変わります。',
@@ -178,17 +190,31 @@ export default function Assessment() {
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([])
   const [confirmed, setConfirmed] = useState(false)
 
-  const { data: prices, isLoading } = useQuery<Price[]>({
+  const { data, isLoading } = useQuery<{ prices: Price[]; market: MarketSummary[] }>({
     queryKey: ['assessment-prices'],
-    queryFn: () => apiGet<Price[]>('/api/v1/prices', { params: { limit: 2000 } }),
+    queryFn: async () => {
+      const [prices, market] = await Promise.all([
+        apiGet<Price[]>('/api/v1/prices', { params: { limit: 2000 } }),
+        apiGet<MarketSummary[]>('/api/v1/prices/market-average', { params: { limit: 300 } }),
+      ])
+      return { prices, market }
+    },
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
   })
 
-  const usablePrices = useMemo(
-    () => (prices ?? []).filter((price) => price.price >= 10000 && Boolean(APPLICATION_URLS[price.store.name])),
-    [prices],
-  )
+  const usablePrices = useMemo(() => {
+    const accepted = new Set(
+      (data?.market ?? []).flatMap((summary) => summary.accepted_prices.map(
+        (price) => `${summary.product_id}:${price.store_id}:${price.price}`,
+      )),
+    )
+    return (data?.prices ?? []).filter((price) => (
+      price.price >= 10000
+      && Boolean(APPLICATION_URLS[price.store.name])
+      && accepted.has(`${price.product.id}:${price.store.id}:${price.price}`)
+    ))
+  }, [data])
 
   const products = useMemo(() => {
     const byId = new Map<number, Product>()
