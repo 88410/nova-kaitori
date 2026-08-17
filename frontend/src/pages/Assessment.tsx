@@ -15,14 +15,36 @@ interface Product {
   id: number
   model: string
   capacity: string
+  colors: ColorVariant[]
 }
 
-interface Price {
-  id: number
+interface ColorVariant {
+  variant_id: number
+  code: string
+  name_ja: string
+  name_en: string
+  name_zh: string
+  jan_code?: string | null
+}
+
+interface AssessmentOffer {
   price: number
-  scraped_at: string | null
+  store_id: number
+  product_id: number
+  variant_id: number
+  source_type: 'official' | 'sheet'
+  is_default_color_price: boolean
+  collected_at: string
+}
+
+interface UsableOffer extends AssessmentOffer {
   store: Store
-  product: Product
+}
+
+interface AssessmentData {
+  products: Product[]
+  stores: Store[]
+  offers: AssessmentOffer[]
 }
 
 interface MarketPrice {
@@ -39,11 +61,13 @@ interface MarketSummary {
 
 interface SelectedItem {
   productId: number
+  variantId: number
   quantity: number
 }
 
 interface OfferLine {
   product: Product
+  color: ColorVariant
   quantity: number
   unitPrice: number
 }
@@ -78,6 +102,8 @@ const COPY: Record<Language, {
   testBadge: string
   selectPhone: string
   phonePlaceholder: string
+  color: string
+  colorPlaceholder: string
   quantity: string
   quantityPreset: string
   quantityManual: string
@@ -105,6 +131,8 @@ const COPY: Record<Language, {
     testBadge: 'TEST',
     selectPhone: 'Add a phone',
     phonePlaceholder: 'Select model and capacity',
+    color: 'Color',
+    colorPlaceholder: 'Select color',
     quantity: 'Qty',
     quantityPreset: '1–9',
     quantityManual: 'Type',
@@ -132,6 +160,8 @@ const COPY: Record<Language, {
     testBadge: '测试功能',
     selectPhone: '添加手机',
     phonePlaceholder: '选择型号和容量',
+    color: '颜色',
+    colorPlaceholder: '选择颜色',
     quantity: '数量',
     quantityPreset: '选择1–9',
     quantityManual: '输入',
@@ -159,6 +189,8 @@ const COPY: Record<Language, {
     testBadge: 'テスト機能',
     selectPhone: '端末を追加',
     phonePlaceholder: '機種・容量を選択',
+    color: 'カラー',
+    colorPlaceholder: 'カラーを選択',
     quantity: '台数',
     quantityPreset: '1～9から選択',
     quantityManual: '直接入力',
@@ -185,9 +217,15 @@ function formatPrice(value: number) {
   return `¥${value.toLocaleString('ja-JP')}`
 }
 
-function productLabel(product: Product) {
+function colorLabel(color: ColorVariant, language: Language) {
+  if (language === 'zh') return color.name_zh
+  if (language === 'en') return color.name_en
+  return color.name_ja
+}
+
+function productLabel(product: Product, color?: ColorVariant, language: Language = 'ja') {
   const capacity = /^\d+$/.test(product.capacity) ? `${product.capacity}GB` : product.capacity
-  return `${product.model} · ${capacity}`
+  return `${product.model} · ${capacity}${color ? ` · ${colorLabel(color, language)}` : ''}`
 }
 
 function sortProducts(a: Product, b: Product) {
@@ -198,89 +236,106 @@ export default function Assessment() {
   const { language } = useI18n()
   const copy = COPY[language]
   const [productId, setProductId] = useState<number | ''>('')
+  const [variantId, setVariantId] = useState<number | ''>('')
   const [addQuantity, setAddQuantity] = useState(1)
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([])
   const [confirmed, setConfirmed] = useState(false)
 
-  const { data, isLoading } = useQuery<{ prices: Price[]; market: MarketSummary[] }>({
+  const { data, isLoading } = useQuery<{ assessment: AssessmentData; market: MarketSummary[] }>({
     queryKey: ['assessment-prices'],
     queryFn: async () => {
-      const [prices, market] = await Promise.all([
-        apiGet<Price[]>('/api/v1/prices', { params: { limit: 2000 } }),
+      const [assessment, market] = await Promise.all([
+        apiGet<AssessmentData>('/api/v1/prices/assessment'),
         apiGet<MarketSummary[]>('/api/v1/prices/market-average', { params: { limit: 300 } }),
       ])
-      return { prices, market }
+      return { assessment, market }
     },
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
   })
 
-  const usablePrices = useMemo(() => {
+  const usableOffers = useMemo(() => {
     const accepted = new Set(
       (data?.market ?? []).flatMap((summary) => summary.accepted_prices.map(
-        (price) => `${summary.product_id}:${price.store_id}:${price.price}`,
+        (price) => `${summary.product_id}:${price.store_id}`,
       )),
     )
-    return (data?.prices ?? []).filter((price) => (
-      price.price >= 10000
-      && Boolean(APPLICATION_URLS[price.store.name])
-      && accepted.has(`${price.product.id}:${price.store.id}:${price.price}`)
-    ))
+    const stores = new Map((data?.assessment.stores ?? []).map((store) => [store.id, store]))
+    return (data?.assessment.offers ?? []).flatMap((offer): UsableOffer[] => {
+      const store = stores.get(offer.store_id)
+      if (!store || offer.price < 10000 || !accepted.has(`${offer.product_id}:${offer.store_id}`)) return []
+      return [{ ...offer, store }]
+    })
   }, [data])
 
   const products = useMemo(() => {
-    const byId = new Map<number, Product>()
-    usablePrices.forEach((price) => {
-      if (/^iPhone/i.test(price.product.model) && price.product.capacity && price.product.capacity !== 'GB') {
-        byId.set(price.product.id, price.product)
-      }
-    })
-    return [...byId.values()].sort(sortProducts)
-  }, [usablePrices])
+    const availableVariants = new Set(usableOffers.map((offer) => offer.variant_id))
+    return (data?.assessment.products ?? [])
+      .map((product) => ({
+        ...product,
+        colors: product.colors.filter((color) => availableVariants.has(color.variant_id)),
+      }))
+      .filter((product) => /^iPhone/i.test(product.model) && product.colors.length > 0)
+      .sort(sortProducts)
+  }, [data, usableOffers])
 
   useEffect(() => {
     if (productId === '' && products.length > 0) setProductId(products[0].id)
   }, [productId, products])
 
   const productById = useMemo(() => new Map(products.map((product) => [product.id, product])), [products])
+  const selectedProduct = productId === '' ? undefined : productById.get(productId)
+  const variantById = useMemo(() => new Map(products.flatMap((product) => (
+    product.colors.map((color) => [color.variant_id, { product, color }] as const)
+  ))), [products])
+
+  useEffect(() => {
+    if (!selectedProduct) {
+      setVariantId('')
+      return
+    }
+    if (!selectedProduct.colors.some((color) => color.variant_id === variantId)) {
+      setVariantId(selectedProduct.colors[0]?.variant_id ?? '')
+    }
+  }, [selectedProduct, variantId])
 
   const addItem = () => {
-    if (productId === '') return
+    if (productId === '' || variantId === '') return
     setSelectedItems((items) => {
-      const existing = items.find((item) => item.productId === productId)
+      const existing = items.find((item) => item.variantId === variantId)
       if (existing) {
-        return items.map((item) => item.productId === productId
+        return items.map((item) => item.variantId === variantId
           ? { ...item, quantity: Math.min(99, item.quantity + addQuantity) }
           : item)
       }
-      return [...items, { productId, quantity: addQuantity }]
+      return [...items, { productId, variantId, quantity: addQuantity }]
     })
     setAddQuantity(1)
     setConfirmed(false)
   }
 
-  const changeQuantity = (selectedProductId: number, amount: number) => {
-    setSelectedItems((items) => items.map((item) => item.productId === selectedProductId
+  const changeQuantity = (selectedVariantId: number, amount: number) => {
+    setSelectedItems((items) => items.map((item) => item.variantId === selectedVariantId
       ? { ...item, quantity: Math.max(1, Math.min(99, item.quantity + amount)) }
       : item))
     setConfirmed(false)
   }
 
-  const removeItem = (selectedProductId: number) => {
-    setSelectedItems((items) => items.filter((item) => item.productId !== selectedProductId))
+  const removeItem = (selectedVariantId: number) => {
+    setSelectedItems((items) => items.filter((item) => item.variantId !== selectedVariantId))
     setConfirmed(false)
   }
 
   const { storeOffers, routeStops, routeTotal } = useMemo(() => {
     const selected = selectedItems
-      .map((item) => ({ ...item, product: productById.get(item.productId) }))
-      .filter((item): item is SelectedItem & { product: Product } => Boolean(item.product))
+      .map((item) => ({ ...item, ...variantById.get(item.variantId) }))
+      .filter((item): item is SelectedItem & { product: Product; color: ColorVariant } => Boolean(item.product && item.color))
 
     const stores = new Map<number, Store>()
-    const priceMap = new Map<string, Price>()
-    usablePrices.forEach((price) => {
+    const priceMap = new Map<string, UsableOffer>()
+    usableOffers.forEach((price) => {
       stores.set(price.store.id, price.store)
-      const key = `${price.product.id}:${price.store.id}`
+      const key = `${price.variant_id}:${price.store.id}`
       const current = priceMap.get(key)
       if (!current || price.price > current.price) priceMap.set(key, price)
     })
@@ -289,13 +344,13 @@ export default function Assessment() {
     stores.forEach((store) => {
       const lines: OfferLine[] = []
       for (const item of selected) {
-        const price = priceMap.get(`${item.productId}:${store.id}`)
+        const price = priceMap.get(`${item.variantId}:${store.id}`)
         if (!price) return
-        lines.push({ product: item.product, quantity: item.quantity, unitPrice: price.price })
+        lines.push({ product: item.product, color: item.color, quantity: item.quantity, unitPrice: price.price })
       }
       completeOffers.push({
         store,
-        applicationUrl: APPLICATION_URLS[store.name],
+        applicationUrl: APPLICATION_URLS[store.name] || store.website_url || '#',
         total: lines.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0),
         lines,
       })
@@ -303,17 +358,17 @@ export default function Assessment() {
 
     const stops = new Map<number, RouteStop>()
     selected.forEach((item) => {
-      const best = usablePrices
-        .filter((price) => price.product.id === item.productId)
+      const best = usableOffers
+        .filter((price) => price.variant_id === item.variantId)
         .sort((a, b) => b.price - a.price)[0]
       if (!best) return
       const existing = stops.get(best.store.id) ?? {
         store: best.store,
-        applicationUrl: APPLICATION_URLS[best.store.name],
+        applicationUrl: APPLICATION_URLS[best.store.name] || best.store.website_url || '#',
         total: 0,
         lines: [],
       }
-      existing.lines.push({ product: item.product, quantity: item.quantity, unitPrice: best.price })
+      existing.lines.push({ product: item.product, color: item.color, quantity: item.quantity, unitPrice: best.price })
       existing.total += best.price * item.quantity
       stops.set(best.store.id, existing)
     })
@@ -324,7 +379,7 @@ export default function Assessment() {
       routeStops: sortedStops,
       routeTotal: sortedStops.reduce((sum, stop) => sum + stop.total, 0),
     }
-  }, [productById, selectedItems, usablePrices])
+  }, [selectedItems, usableOffers, variantById])
 
   const selectedCount = selectedItems.reduce((sum, item) => sum + item.quantity, 0)
 
@@ -347,14 +402,28 @@ export default function Assessment() {
             {isLoading ? (
               <p className="mt-4 text-sm text-slate-500">{copy.loading}</p>
             ) : (
-              <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(180px,240px)_100px]">
+              <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1.25fr)_minmax(140px,0.8fr)_minmax(170px,0.7fr)_96px]">
                 <select
                   value={productId}
-                  onChange={(event) => setProductId(Number(event.target.value))}
+                  onChange={(event) => {
+                    setProductId(Number(event.target.value))
+                    setVariantId('')
+                  }}
                   className="min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none focus:border-violet-400"
                 >
                   <option value="">{copy.phonePlaceholder}</option>
                   {products.map((product) => <option key={product.id} value={product.id}>{productLabel(product)}</option>)}
+                </select>
+                <select
+                  value={variantId}
+                  onChange={(event) => setVariantId(Number(event.target.value))}
+                  aria-label={copy.color}
+                  className="min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none focus:border-violet-400"
+                >
+                  <option value="">{copy.colorPlaceholder}</option>
+                  {selectedProduct?.colors.map((color) => (
+                    <option key={color.variant_id} value={color.variant_id}>{colorLabel(color, language)}</option>
+                  ))}
                 </select>
                 <div className="grid grid-cols-[72px_minmax(0,1fr)] overflow-hidden rounded-xl border border-slate-200 bg-white">
                   <select
@@ -386,7 +455,7 @@ export default function Assessment() {
                 <button
                   type="button"
                   onClick={addItem}
-                  disabled={productId === ''}
+                  disabled={productId === '' || variantId === ''}
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white hover:bg-violet-700 disabled:bg-slate-300"
                 >
                   <Plus className="h-4 w-4" />
@@ -406,21 +475,22 @@ export default function Assessment() {
             ) : (
               <div className="mt-3 grid gap-2">
                 {selectedItems.map((item) => {
-                  const product = productById.get(item.productId)
-                  if (!product) return null
+                  const selectedVariant = variantById.get(item.variantId)
+                  if (!selectedVariant) return null
+                  const { product, color } = selectedVariant
                   return (
-                    <div key={item.productId} className="grid grid-cols-[40px_minmax(0,1fr)_40px] items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-[40px_minmax(0,1fr)_auto_40px]">
+                    <div key={item.variantId} className="grid grid-cols-[40px_minmax(0,1fr)_40px] items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-[40px_minmax(0,1fr)_auto_40px]">
                       <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet-50 text-lg">📱</div>
-                      <p className="min-w-0 truncate text-sm font-semibold text-slate-900">{productLabel(product)}</p>
-                      <button type="button" onClick={() => removeItem(item.productId)} className="col-start-3 row-start-1 grid h-10 w-10 shrink-0 place-items-center rounded-full text-slate-400 hover:bg-rose-50 hover:text-rose-600 sm:col-start-4" aria-label={`${copy.remove} ${productLabel(product)}`}>
+                      <p className="min-w-0 truncate text-sm font-semibold text-slate-900">{productLabel(product, color, language)}</p>
+                      <button type="button" onClick={() => removeItem(item.variantId)} className="col-start-3 row-start-1 grid h-10 w-10 shrink-0 place-items-center rounded-full text-slate-400 hover:bg-rose-50 hover:text-rose-600 sm:col-start-4" aria-label={`${copy.remove} ${productLabel(product, color, language)}`}>
                         <Trash2 className="h-4 w-4" />
                       </button>
                       <div className="col-span-2 col-start-2 row-start-2 flex w-fit shrink-0 items-center rounded-full border border-slate-200 bg-slate-50 sm:col-span-1 sm:col-start-3 sm:row-start-1">
-                        <button type="button" onClick={() => changeQuantity(item.productId, -1)} className="grid h-9 w-9 place-items-center text-slate-500" aria-label="-1">
+                        <button type="button" onClick={() => changeQuantity(item.variantId, -1)} className="grid h-9 w-9 place-items-center text-slate-500" aria-label="-1">
                           <Minus className="h-3.5 w-3.5" />
                         </button>
                         <span className="w-7 text-center text-sm font-semibold text-slate-900">{item.quantity}</span>
-                        <button type="button" onClick={() => changeQuantity(item.productId, 1)} className="grid h-9 w-9 place-items-center text-slate-500" aria-label="+1">
+                        <button type="button" onClick={() => changeQuantity(item.variantId, 1)} className="grid h-9 w-9 place-items-center text-slate-500" aria-label="+1">
                           <Plus className="h-3.5 w-3.5" />
                         </button>
                       </div>
@@ -474,7 +544,7 @@ export default function Assessment() {
                         <p className="min-w-0 truncate text-sm font-semibold">{index + 1}. {stop.store.name}</p>
                         <p className="shrink-0 font-semibold text-violet-200">{formatPrice(stop.total)}</p>
                       </div>
-                      <p className="mt-2 text-xs leading-6 text-white/50">{stop.lines.map((line) => `${productLabel(line.product)} × ${line.quantity}`).join(' / ')}</p>
+                      <p className="mt-2 text-xs leading-6 text-white/50">{stop.lines.map((line) => `${productLabel(line.product, line.color, language)} × ${line.quantity}`).join(' / ')}</p>
                       <a href={stop.applicationUrl} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold text-slate-950">
                         {copy.sell}<ExternalLink className="h-3.5 w-3.5" />
                       </a>
@@ -504,8 +574,8 @@ export default function Assessment() {
                       </div>
                       <div className="mt-4 space-y-2 border-t border-slate-100 pt-4">
                         {offer.lines.map((line) => (
-                          <div key={line.product.id} className="flex items-center justify-between gap-3 text-xs">
-                            <span className="min-w-0 truncate text-slate-500">{productLabel(line.product)} × {line.quantity}</span>
+                          <div key={line.color.variant_id} className="flex items-center justify-between gap-3 text-xs">
+                            <span className="min-w-0 truncate text-slate-500">{productLabel(line.product, line.color, language)} × {line.quantity}</span>
                             <span className="shrink-0 font-medium text-slate-700">{formatPrice(line.unitPrice * line.quantity)}</span>
                           </div>
                         ))}
