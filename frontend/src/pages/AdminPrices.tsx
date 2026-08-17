@@ -9,6 +9,7 @@ interface StoreRecord {
   name: string
   website_url?: string | null
   product_count: number
+  official_catalog_count: number
   latest_at?: string | null
 }
 
@@ -33,6 +34,7 @@ export default function AdminPrices() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-2"><h2 className="font-semibold">{store.name}</h2><ChevronRight className="mt-1 h-4 w-4 shrink-0 text-slate-300 group-hover:text-violet-600" /></div>
                 <p className="mt-3 text-2xl font-semibold">{store.product_count}<span className="ml-1 text-xs font-normal text-slate-500">商品</span></p>
+                <p className="mt-1 text-xs text-slate-500">公式サイト一覧：{store.official_catalog_count}件</p>
                 <p className="mt-1 text-xs text-slate-400">最終更新：{dateTime(store.latest_at)}</p>
               </div>
             </div>

@@ -79,7 +79,10 @@ const COPY: Record<Language, {
   selectPhone: string
   phonePlaceholder: string
   quantity: string
+  quantityPreset: string
+  quantityManual: string
   add: string
+  remove: string
   selected: string
   empty: string
   confirm: string
@@ -103,7 +106,10 @@ const COPY: Record<Language, {
     selectPhone: 'Add a phone',
     phonePlaceholder: 'Select model and capacity',
     quantity: 'Qty',
+    quantityPreset: '1–9',
+    quantityManual: 'Type',
     add: 'Add',
+    remove: 'Remove',
     selected: 'Selected phones',
     empty: 'No phones added yet.',
     confirm: 'Compare totals',
@@ -127,7 +133,10 @@ const COPY: Record<Language, {
     selectPhone: '添加手机',
     phonePlaceholder: '选择型号和容量',
     quantity: '数量',
+    quantityPreset: '选择1–9',
+    quantityManual: '输入',
     add: '添加',
+    remove: '删除',
     selected: '已选择手机',
     empty: '还没有添加手机。',
     confirm: '确认并计算',
@@ -151,7 +160,10 @@ const COPY: Record<Language, {
     selectPhone: '端末を追加',
     phonePlaceholder: '機種・容量を選択',
     quantity: '台数',
+    quantityPreset: '1～9から選択',
+    quantityManual: '直接入力',
     add: '追加',
+    remove: '削除',
     selected: '選択した端末',
     empty: '端末がまだ追加されていません。',
     confirm: '合計を比較',
@@ -335,7 +347,7 @@ export default function Assessment() {
             {isLoading ? (
               <p className="mt-4 text-sm text-slate-500">{copy.loading}</p>
             ) : (
-              <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_100px_100px]">
+              <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(180px,240px)_100px]">
                 <select
                   value={productId}
                   onChange={(event) => setProductId(Number(event.target.value))}
@@ -344,18 +356,33 @@ export default function Assessment() {
                   <option value="">{copy.phonePlaceholder}</option>
                   {products.map((product) => <option key={product.id} value={product.id}>{productLabel(product)}</option>)}
                 </select>
-                <label className="grid grid-cols-[1fr_54px] items-center rounded-xl border border-slate-200 bg-white pl-3 text-xs text-slate-500 sm:grid-cols-1 sm:pl-0">
-                  <span className="sm:hidden">{copy.quantity}</span>
+                <div className="grid grid-cols-[72px_minmax(0,1fr)] overflow-hidden rounded-xl border border-slate-200 bg-white">
+                  <select
+                    value={addQuantity >= 1 && addQuantity <= 9 ? addQuantity : ''}
+                    onChange={(event) => {
+                      if (event.target.value) setAddQuantity(Number(event.target.value))
+                    }}
+                    aria-label={copy.quantityPreset}
+                    className="min-w-0 border-r border-slate-200 bg-slate-50 px-2 py-3 text-center text-sm font-semibold text-slate-900 outline-none focus:bg-violet-50"
+                  >
+                    <option value="">1–9</option>
+                    {Array.from({ length: 9 }, (_, index) => index + 1).map((quantity) => (
+                      <option key={quantity} value={quantity}>{quantity}</option>
+                    ))}
+                  </select>
                   <input
-                    type="number"
-                    min={1}
-                    max={99}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={addQuantity}
-                    onChange={(event) => setAddQuantity(Math.max(1, Math.min(99, Number(event.target.value) || 1)))}
-                    aria-label={copy.quantity}
-                    className="w-full bg-transparent px-2 py-3 text-center text-sm font-semibold text-slate-900 outline-none"
+                    onChange={(event) => {
+                      const digits = event.target.value.replace(/\D/g, '').slice(0, 2)
+                      setAddQuantity(Math.max(1, Math.min(99, Number(digits) || 1)))
+                    }}
+                    aria-label={`${copy.quantity}・${copy.quantityManual}`}
+                    className="min-w-0 w-full bg-transparent px-3 py-3 text-center text-sm font-semibold text-slate-900 outline-none"
                   />
-                </label>
+                </div>
                 <button
                   type="button"
                   onClick={addItem}
@@ -382,10 +409,13 @@ export default function Assessment() {
                   const product = productById.get(item.productId)
                   if (!product) return null
                   return (
-                    <div key={item.productId} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3">
+                    <div key={item.productId} className="grid grid-cols-[40px_minmax(0,1fr)_40px] items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-[40px_minmax(0,1fr)_auto_40px]">
                       <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet-50 text-lg">📱</div>
-                      <p className="min-w-0 flex-1 truncate text-sm font-semibold text-slate-900">{productLabel(product)}</p>
-                      <div className="flex shrink-0 items-center rounded-full border border-slate-200 bg-slate-50">
+                      <p className="min-w-0 truncate text-sm font-semibold text-slate-900">{productLabel(product)}</p>
+                      <button type="button" onClick={() => removeItem(item.productId)} className="col-start-3 row-start-1 grid h-10 w-10 shrink-0 place-items-center rounded-full text-slate-400 hover:bg-rose-50 hover:text-rose-600 sm:col-start-4" aria-label={`${copy.remove} ${productLabel(product)}`}>
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                      <div className="col-span-2 col-start-2 row-start-2 flex w-fit shrink-0 items-center rounded-full border border-slate-200 bg-slate-50 sm:col-span-1 sm:col-start-3 sm:row-start-1">
                         <button type="button" onClick={() => changeQuantity(item.productId, -1)} className="grid h-9 w-9 place-items-center text-slate-500" aria-label="-1">
                           <Minus className="h-3.5 w-3.5" />
                         </button>
@@ -394,9 +424,6 @@ export default function Assessment() {
                           <Plus className="h-3.5 w-3.5" />
                         </button>
                       </div>
-                      <button type="button" onClick={() => removeItem(item.productId)} className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-slate-400 hover:bg-rose-50 hover:text-rose-600" aria-label="Remove">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
                     </div>
                   )
                 })}
