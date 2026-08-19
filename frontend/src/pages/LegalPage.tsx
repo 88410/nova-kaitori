@@ -40,6 +40,15 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
           body: [],
           links: [
             { label: 'info@novatekku.com', href: 'mailto:info@novatekku.com' },
+          ],
+        },
+        {
+          heading: 'Open Source',
+          body: [
+            "We publish part of NOVA AI's source code on GitHub to share knowledge and contribute to technical progress.",
+            'Code reviews, improvement suggestions, and technical questions are welcome.',
+          ],
+          links: [
             { label: 'GitHub', href: 'https://github.com/jp-lzq/nova-kaitori' },
           ],
         },
@@ -133,6 +142,15 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
           body: [],
           links: [
             { label: 'info@novatekku.com', href: 'mailto:info@novatekku.com' },
+          ],
+        },
+        {
+          heading: '开源与交流',
+          body: [
+            '我们在 GitHub 公开 NOVA AI 的部分源代码，希望通过技术共享推动行业进步。',
+            '欢迎检查代码、提出改进建议和技术问题。',
+          ],
+          links: [
             { label: 'GitHub', href: 'https://github.com/jp-lzq/nova-kaitori' },
           ],
         },
@@ -226,6 +244,15 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
           body: [],
           links: [
             { label: 'info@novatekku.com', href: 'mailto:info@novatekku.com' },
+          ],
+        },
+        {
+          heading: 'オープンソース',
+          body: [
+            'NOVA AIの一部ソースコードをGitHubで公開し、技術の共有と発展に貢献しています。',
+            'コードの確認、改善提案、技術的なご質問を歓迎しています。',
+          ],
+          links: [
             { label: 'GitHub', href: 'https://github.com/jp-lzq/nova-kaitori' },
           ],
         },
