@@ -104,6 +104,9 @@ const translations: Record<Language, TranslationMap> = {
     memberLoginErrorPasswordNotSet: 'Login failed. Please check your username/email and password.',
     memberLoginErrorGeneric: 'Login failed. Please check your username/email and password.',
     memberAuthRateLimited: 'Too many attempts. Please wait before trying again.',
+    memberAuthPausedTitle: 'Member login is temporarily paused',
+    memberAuthPausedDescription:
+      'We are investigating an issue. Member login and new registration will remain unavailable until the fix is complete.',
     memberLoginNoAccount: 'Need a member profile?',
     memberForgotPassword: 'Forgot your password?',
     memberResetPasswordNav: 'Reset Password',
@@ -279,6 +282,8 @@ const translations: Record<Language, TranslationMap> = {
     memberLoginErrorPasswordNotSet: '登录失败，请检查用户名或邮箱和密码。',
     memberLoginErrorGeneric: '登录失败，请检查用户名或邮箱和密码。',
     memberAuthRateLimited: '尝试次数过多，请稍后再试。',
+    memberAuthPausedTitle: '会员登录暂时停止',
+    memberAuthPausedDescription: '目前正在排查问题，普通会员登录和新注册暂停开放，请等待修复。',
     memberLoginNoAccount: '还没有会员资料？',
     memberForgotPassword: '忘记密码？',
     memberResetPasswordNav: '重置密码',
@@ -456,6 +461,9 @@ const translations: Record<Language, TranslationMap> = {
     memberLoginErrorPasswordNotSet: 'ログインに失敗しました。ユーザー名またはメールアドレスとパスワードをご確認ください。',
     memberLoginErrorGeneric: 'ログインに失敗しました。ユーザー名またはメールアドレスとパスワードをご確認ください。',
     memberAuthRateLimited: '試行回数が多すぎます。時間をおいてからもう一度お試しください。',
+    memberAuthPausedTitle: '会員ログインを一時停止しています',
+    memberAuthPausedDescription:
+      '不具合を確認しているため、一般会員のログインと新規登録を停止しています。復旧までしばらくお待ちください。',
     memberLoginNoAccount: '会員登録がまだですか？',
     memberForgotPassword: 'パスワードを忘れた方',
     memberResetPasswordNav: 'パスワード再設定',

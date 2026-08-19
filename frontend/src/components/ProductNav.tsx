@@ -3,6 +3,7 @@ import { ClipboardCheck, LogIn, Store, Tags, UserPlus } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { useI18n, type Language } from '../i18n'
 import { getCurrentMember } from '../lib/member'
+import { publicMemberAuthEnabled } from '../lib/memberAuth'
 
 const COPY: Record<Language, {
   assessment: string
@@ -94,10 +95,12 @@ export default function ProductNav() {
                 <LogIn className="hidden h-4 w-4 sm:block" />
                 {copy.login}
               </Link>
-              <Link to="/members/register" className="inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-slate-950 px-2.5 text-[11px] font-semibold text-white transition-colors hover:bg-slate-800 sm:px-4 sm:text-sm">
-                <UserPlus className="hidden h-4 w-4 sm:block" />
-                {copy.register}
-              </Link>
+              {publicMemberAuthEnabled && (
+                <Link to="/members/register" className="inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-slate-950 px-2.5 text-[11px] font-semibold text-white transition-colors hover:bg-slate-800 sm:px-4 sm:text-sm">
+                  <UserPlus className="hidden h-4 w-4 sm:block" />
+                  {copy.register}
+                </Link>
+              )}
             </>
           )}
         </div>

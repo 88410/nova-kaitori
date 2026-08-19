@@ -1,8 +1,9 @@
 import { FormEvent, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { CheckCircle2, KeyRound, Mail, UserRound } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, KeyRound, Mail, UserRound } from 'lucide-react'
 import { apiPost } from '../lib/api'
+import { publicMemberAuthEnabled } from '../lib/memberAuth'
 import { type MemberProfile } from '../lib/member'
 import { useI18n } from '../i18n'
 import { LightPage, PageHeader, lightPanelClass } from '../components/PageChrome'
@@ -15,6 +16,7 @@ function getErrorKey(error: unknown) {
   if (response?.status === 409 && detail.includes('Username')) return 'memberRegisterErrorUsername'
   if (response?.status === 422) return 'memberRegisterErrorValidation'
   if (response?.status === 429) return 'memberAuthRateLimited'
+  if (response?.status === 503) return 'memberAuthPausedDescription'
   return 'memberRegisterErrorGeneric'
 }
 
@@ -28,6 +30,21 @@ export default function MemberRegister() {
   const [member, setMember] = useState<MemberProfile | null>(null)
   const [errorKey, setErrorKey] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  if (!publicMemberAuthEnabled) {
+    return (
+      <LightPage>
+        <PageHeader title={t('memberRegisterNav')} />
+        <main className="mx-auto max-w-3xl px-3 py-4 sm:px-4 sm:py-10">
+          <section className={`border-t-2 border-t-amber-500 p-5 sm:p-9 ${lightPanelClass}`}>
+            <AlertTriangle className="h-7 w-7 text-amber-600" />
+            <h2 className="mt-4 text-2xl font-semibold text-slate-950">{t('memberAuthPausedTitle')}</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">{t('memberAuthPausedDescription')}</p>
+          </section>
+        </main>
+      </LightPage>
+    )
+  }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()

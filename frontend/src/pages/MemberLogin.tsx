@@ -1,14 +1,16 @@
 import { FormEvent, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router-dom'
-import { KeyRound, LogIn, Mail } from 'lucide-react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { AlertTriangle, KeyRound, LogIn, Mail } from 'lucide-react'
 import { apiPost } from '../lib/api'
+import { publicMemberAuthEnabled } from '../lib/memberAuth'
 import type { MemberProfile } from '../lib/member'
 import { useI18n } from '../i18n'
 import { LightPage, PageHeader, lightPanelClass } from '../components/PageChrome'
 
 function getErrorKey(error: unknown) {
   const response = (error as { response?: { status?: number } }).response
+  if (response?.status === 503) return 'memberAuthPausedDescription'
   if (response?.status === 401) return 'memberLoginErrorGeneric'
   if (response?.status === 429) return 'memberAuthRateLimited'
   if (response?.status === 422) return 'memberRegisterErrorValidation'
@@ -18,11 +20,28 @@ function getErrorKey(error: unknown) {
 export default function MemberLogin() {
   const { t } = useI18n()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const queryClient = useQueryClient()
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [errorKey, setErrorKey] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const showLoginForm = publicMemberAuthEnabled || searchParams.get('admin') === '1'
+
+  if (!showLoginForm) {
+    return (
+      <LightPage>
+        <PageHeader title={t('memberLoginNav')} />
+        <main className="mx-auto max-w-3xl px-3 py-4 sm:px-4 sm:py-10">
+          <section className={`border-t-2 border-t-amber-500 p-5 sm:p-9 ${lightPanelClass}`}>
+            <AlertTriangle className="h-7 w-7 text-amber-600" />
+            <h2 className="mt-4 text-2xl font-semibold text-slate-950">{t('memberAuthPausedTitle')}</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">{t('memberAuthPausedDescription')}</p>
+          </section>
+        </main>
+      </LightPage>
+    )
+  }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
