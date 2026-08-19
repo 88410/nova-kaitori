@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { ArrowRight, ArrowUpRight, Database, LineChart, Sparkles } from 'lucide-react'
 import { type Language, useI18n } from '../i18n'
 
@@ -12,8 +11,10 @@ type CompanyCopy = {
   productTitle: string
   productLead: string
   signalLabel: string
-  recordsLabel: string
-  storesLabel: string
+  latestRecordsLabel: string
+  historyRecordsLabel: string
+  latestRecordsValue: string
+  historyRecordsValue: string
   capabilities: Array<{ number: string; title: string; body: string }>
 }
 
@@ -28,8 +29,10 @@ const COMPANY_COPY: Record<Language, CompanyCopy> = {
     productTitle: 'NOVA AI',
     productLead: 'Live iPhone buyback intelligence, powered by local price data and natural conversation.',
     signalLabel: 'LIVE PRICE SIGNAL',
-    recordsLabel: 'PRICE RECORDS',
-    storesLabel: 'PARTNER STORES',
+    latestRecordsLabel: 'LATEST PRICE DATA',
+    historyRecordsLabel: 'PRICE HISTORY · 2020–2025',
+    latestRecordsValue: '10M+',
+    historyRecordsValue: '50M+',
     capabilities: [
       { number: '01', title: 'Price intelligence', body: 'Real market data, filtered and structured for faster decisions.' },
       { number: '02', title: 'Natural conversation', body: 'Ask about smartphones, prices, and the best time to sell.' },
@@ -46,8 +49,10 @@ const COMPANY_COPY: Record<Language, CompanyCopy> = {
     productTitle: 'NOVA AI',
     productLead: '结合本地价格数据与自然对话，实时分析 iPhone 回收市场。',
     signalLabel: '实时价格信号',
-    recordsLabel: '价格记录',
-    storesLabel: '合作店铺',
+    latestRecordsLabel: '最新价格数据',
+    historyRecordsLabel: '历史价格数据 · 2020–2025',
+    latestRecordsValue: '1000万+',
+    historyRecordsValue: '5000万+',
     capabilities: [
       { number: '01', title: '价格智能', body: '整理真实市场数据、排除异常值，让判断更直接。' },
       { number: '02', title: '自然对话', body: '可以询问手机、价格以及适合出售的时间。' },
@@ -64,8 +69,10 @@ const COMPANY_COPY: Record<Language, CompanyCopy> = {
     productTitle: 'NOVA AI',
     productLead: 'ローカル価格データと自然な対話を組み合わせた、iPhone買取市場のリアルタイムAIです。',
     signalLabel: 'リアルタイム価格シグナル',
-    recordsLabel: '価格データ',
-    storesLabel: '掲載店舗',
+    latestRecordsLabel: '最新価格データ',
+    historyRecordsLabel: '価格履歴 · 2020–2025',
+    latestRecordsValue: '1,000万+',
+    historyRecordsValue: '5,000万+',
     capabilities: [
       { number: '01', title: '価格インテリジェンス', body: '実市場データを整理し、異常値を除外して判断を明確にします。' },
       { number: '02', title: '自然な対話', body: 'スマートフォン、価格、売却タイミングを自然な言葉で相談できます。' },
@@ -79,31 +86,11 @@ const PRODUCT_URL = 'https://ai.novatekku.com/'
 export default function CompanyHome() {
   const { language } = useI18n()
   const copy = COMPANY_COPY[language]
-  const [priceRecords, setPriceRecords] = useState<number | null>(null)
   const capabilityStyles = [
     'border-t-violet-400/70 bg-[#121022]',
     'border-t-cyan-400/70 bg-[#0b161e]',
     'border-t-emerald-400/70 bg-[#0b1714]',
   ]
-
-  useEffect(() => {
-    const controller = new AbortController()
-
-    fetch('https://ai.novatekku.com/api/v1/homepage/summary', {
-      signal: controller.signal,
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error('Failed to load NOVA statistics')
-        return response.json()
-      })
-      .then((data) => setPriceRecords(data?.stats?.total_price_records ?? null))
-      .catch((error) => {
-        if (error instanceof DOMException && error.name === 'AbortError') return
-        setPriceRecords(null)
-      })
-
-    return () => controller.abort()
-  }, [])
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#07080b] text-white">
@@ -196,17 +183,15 @@ export default function CompanyHome() {
                     <div className="flex flex-col justify-between border-r border-white/15 bg-violet-500/[0.10] p-5 sm:p-7 lg:border-b lg:border-r-0">
                       <Database className="h-5 w-5 text-violet-200" />
                       <div className="mt-14">
-                        <p className="text-3xl font-medium tracking-tight sm:text-4xl">
-                          {priceRecords === null ? '—' : new Intl.NumberFormat(language === 'zh' ? 'zh-CN' : language === 'en' ? 'en-US' : 'ja-JP').format(priceRecords)}
-                        </p>
-                        <p className="mt-2 text-[10px] tracking-[0.2em] text-white/55">{copy.recordsLabel}</p>
+                        <p className="text-3xl font-medium tracking-tight sm:text-4xl">{copy.latestRecordsValue}</p>
+                        <p className="mt-2 text-[10px] tracking-[0.2em] text-white/55">{copy.latestRecordsLabel}</p>
                       </div>
                     </div>
                     <div className="flex flex-col justify-between bg-cyan-400/[0.08] p-5 sm:p-7">
                       <span className="h-2 w-2 rounded-full bg-emerald-400" />
                       <div className="mt-14">
-                        <p className="text-3xl font-medium tracking-tight sm:text-4xl">23</p>
-                        <p className="mt-2 text-[10px] tracking-[0.2em] text-white/55">{copy.storesLabel}</p>
+                        <p className="text-3xl font-medium tracking-tight sm:text-4xl">{copy.historyRecordsValue}</p>
+                        <p className="mt-2 text-[10px] tracking-[0.2em] text-white/55">{copy.historyRecordsLabel}</p>
                       </div>
                     </div>
                   </div>

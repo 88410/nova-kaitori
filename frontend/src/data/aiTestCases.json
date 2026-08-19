@@ -1,0 +1,373 @@
+{
+  "generatedAt": "2026-08-11T12:38:05.184932+00:00",
+  "model": "gpt-5.6-terra",
+  "reasoningEffort": "medium",
+  "cases": {
+    "zh": [
+      {
+        "id": 1,
+        "category": "本地价格",
+        "question": "iPhone 17 Pro Max 256GB 当前哪三家回收价格最高？也告诉我有效均价。",
+        "answer": "iPhone 17 Pro Max 256GB 当前回收价最高的三家是：\n\n1. 買取BASE：196,000 日元\n2. 森森買取：195,500 日元\n3. アキモバ：195,000 日元\n\n有效市场均价为 192,800 日元。"
+      },
+      {
+        "id": 2,
+        "category": "本地价格",
+        "question": "iPhone 17 Pro 256GB 现在最高回收价是哪家？前三家分别多少钱？",
+        "answer": "iPhone 17 Pro 256GB 目前最高回收价是森森買取，186,000 日元。\n\n前三家分别是：\n\n1. 森森買取：186,000 日元\n2. 買取BASE：185,000 日元\n3. モバイルミックス、アキモバ：均为 184,000 日元（并列第三）"
+      },
+      {
+        "id": 3,
+        "category": "本地价格",
+        "question": "iPhone 17 Pro Max 512GB 各店价格差距大吗？给我一个简单的卖出建议。",
+        "answer": "iPhone 17 Pro Max 512GB 各店报价差距不大：最高是買取BASE 224,500，最低为 222,500，差约 2,000。\n\n简单建议：如果机器成色好、配件齐全，优先考虑買取BASE；若附近或交易更方便，222,500 左右的几家也可以直接卖，没必要为这约 2,000 特意跑远。本站市场平均约 221,700，中位数 222,500。"
+      },
+      {
+        "id": 4,
+        "category": "本地价格",
+        "question": "iPhone 16 Pro 256GB 的本地回收价格和平均价怎么样？",
+        "answer": "iPhone 16 Pro 256GB 本地回收价中，最高是森森買取 179,300 日元，其次是ゲストモバイル 179,200 日元。\n\n市场平均价为 178,200 日元，中位数为 178,500 日元，数据可信度高。"
+      },
+      {
+        "id": 5,
+        "category": "批量计算",
+        "question": "按当前最高回收价计算，iPhone 17 Pro Max 256GB 两台一共多少钱？",
+        "answer": "iPhone 17 Pro Max 256GB 当前最高回收价为 196,000 日元/台，两台合计 392,000 日元。"
+      },
+      {
+        "id": 6,
+        "category": "数据迁移",
+        "question": "安卓手机换到 iPhone，微信、照片和通讯录应该按什么顺序迁移？",
+        "answer": "建议按这个顺序操作：先迁移通讯录和照片，再迁移微信，最后检查并补齐其他资料。\n\n1. 先做好安卓端备份\n给微信做聊天记录备份；照片、视频确认已同步到电脑或云盘；通讯录确认已同步到 Google/手机厂商账号或导出为 vCard 文件。迁移期间不要清理旧手机。\n\n2. 设置新 iPhone 时使用“转移到 iOS”\n在安卓安装“转移到 iOS”，在 iPhone 初始设置的“App 与数据”页面选择“从安卓设备转移数据”。它可迁移通讯录、相册内容、短信、部分文件等。两台手机保持充电、连接稳定 Wi‑Fi，完成前不要退出应用。\n\n3. 登录 iPhone 的 Apple 账户并检查通讯录、照片\n先确认联系人数量、照片视频是否完整；照片较多时耐心等待导入和缩略图生成。\n\n4. 再迁移微信聊天记录\n在新 iPhone 安装并登录微信，使用微信内的“迁移与备份”功能，从安卓旧手机迁移聊天记录到 iPhone。两台手机需在同一 Wi‑Fi 下，旧手机不要锁屏或中断迁移。\n注意：不要先在旧安卓机退出微信或卸载微信，确认 iPhone 上聊天记录完整后再处理旧机。\n\n5. 最后迁移其他应用资料并验收\n重新登录银行、支付、邮箱、网盘、验证码类应用；检查微信支付、相册、联系人、重要文件和双重验证方式。\n\n关键点：新 iPhone 如果已经完成设置，也可以抹掉后重新走“转移到 iOS”，或分别手动迁移；微信聊天记录通常仍需要通过微信自己的迁移功能处理。"
+      },
+      {
+        "id": 7,
+        "category": "电池",
+        "question": "安卓手机充满电半天就没电，应该先检查哪些地方？",
+        "answer": "先从这几项查起：\n\n1. 看耗电排行：进入“设置 → 电池 → 电量使用情况”，看看是不是某个 App、游戏、短视频、导航或后台服务异常耗电。先限制它后台运行或卸载测试。\n\n2. 检查信号与网络：信号差时手机会持续搜网，很费电。可暂时切换到 Wi‑Fi，或关闭 5G、双卡中不用的卡、蓝牙和定位，观察是否改善。\n\n3. 排除屏幕耗电：把亮度调为自动或较低，缩短自动锁屏时间，关闭高刷新率、常亮显示和动态壁纸测试。\n\n4. 重启并更新：重启手机，再检查系统和常用 App 更新。有时系统或应用异常会导致待机耗电。\n\n5. 查看电池健康：如果手机用了两三年以上，或出现发热、掉电很快、百分比跳变，可能是电池老化。部分品牌可在“电池健康/诊断”中查看；健康度明显偏低通常建议更换原装或可靠渠道的电池。\n\n6. 留意异常发热：不使用也发烫、待机半天就掉很多电，可能是 App 卡死、系统故障或电池问题。可尝试安全模式或备份后恢复出厂设置；仍无改善就送官方售后检测。\n\n如果是“满电放着不用半天也没电”，优先怀疑电池老化、弱信号和后台异常；如果只是在使用时掉得快，则先看屏幕、游戏/视频和网络。"
+      },
+      {
+        "id": 8,
+        "category": "存储",
+        "question": "iPhone 提示存储空间已满，但我不想删照片，应该怎么办？",
+        "answer": "可以先不删照片，按这个顺序腾空间最有效：\n\n1. 设置 → 通用 → iPhone 储存空间，看看占用最大的 App。优先处理视频 App、微信、抖音、小红书、浏览器和游戏。\n2. 微信里到「我 → 设置 → 通用 → 存储空间」清理缓存、已下载文件和不重要的聊天附件；先别直接清聊天记录。\n3. 删除或“卸载未使用的 App”。卸载会保留文稿和数据，之后重新安装还能继续用。\n4. 清理照片 App 的「最近删除」相簿；这不会删掉仍保留在照片库里的照片。\n5. 如果开通 iCloud，可以启用「设置 → 照片 → 优化 iPhone 储存空间」，原图放在 iCloud，本机保留较小版本。注意要确认 iCloud 空间够用且照片已同步完成。\n6. 把照片和视频备份到电脑、移动硬盘或可信云盘，确认备份可打开后，再从手机删除本地副本。\n\n如果连系统更新都装不了，先至少腾出 5–10GB 会舒服很多。不要轻易删除“照片”本体，通常先清 App 缓存和下载内容就能释放不少空间。"
+      },
+      {
+        "id": 9,
+        "category": "充电",
+        "question": "手机突然不能快充了，怎样判断是充电器、线还是手机接口的问题？",
+        "answer": "可以按“充电器 → 线 → 手机接口”的顺序排查：\n\n1. 先看提示与协议\n换回原装或可靠的快充充电器、线，观察手机是否显示“快充/超级快充”等提示。普通充电头或低功率接口本身就不会触发快充。\n\n2. 交叉测试充电器和线\n- 用这套充电器+线给另一台支持快充的手机充电。\n- 用另一套确定能快充的充电器+线给你的手机充电。\n\n结果判断：\n- 别的手机也不能快充：更像充电器或线的问题。\n- 换线后恢复：线材老化、断芯或不支持对应快充协议。\n- 换充电器后恢复：充电器故障或功率/协议不匹配。\n- 换了可靠的充电器和线仍不能快充：重点检查手机接口或系统。\n\n3. 检查接口\n关机后用手电照一下充电口。棉絮、灰尘压在底部时，插头看似插紧，实际接触不良，常会导致只能慢充。可用软毛刷或木/塑料挑棒轻轻清理；不要用针、金属镊子，也别往接口里滴液体。\n\n4. 排除手机状态影响\n手机过热、低温、边玩大型游戏边充、开启优化充电/电池保护、系统异常，都可能限制快充。取下厚手机壳、静置降温、重启后再试；Android 也检查设置里是否关闭了“快速充电”。\n\n5. 需要送修的信号\n接口松动、插线必须摆角度才充、反复断连、出现进水提示或充电发烫明显，通常是接口磨损、氧化或尾插排线问题，建议停止反复插拔并到正规维修点检测。\n\n最省事的判断方法：借一套“确认能快充”的同协议充电器和线测试。若仍不能快充，基本就该查手机接口或系统了。"
+      },
+      {
+        "id": 10,
+        "category": "发热",
+        "question": "手机看视频时很烫，需要马上停用吗？哪些发热情况比较危险？",
+        "answer": "看视频时发热不一定要马上停用。在线视频、高清/4K、边充电边看、信号差、环境闷热都会让手机明显升温。\n\n建议先暂停使用并降温，尤其是出现这些情况：\n\n- 烫到握不住，或机身温度持续升高。\n- 弹出“设备温度过高”提示、自动降亮度/卡顿/停止充电。\n- 电池鼓包、后盖翘起、异味、冒烟或异常滋滋声。\n- 发热同时耗电异常快、频繁重启，或充电时特别烫。\n- 放在被子、枕头、车内暴晒等不易散热环境中使用。\n\n处理时：停止播放和充电，取下厚手机壳，放在通风阴凉处自然冷却；不要放冰箱、贴冰袋或用冷水降温，避免冷凝损坏内部元件。\n\n如果不充电、只看普通视频也经常烫手，或出现电池鼓包，应尽快停止使用并送官方/可靠维修点检查。"
+      },
+      {
+        "id": 11,
+        "category": "二手机",
+        "question": "买二手 iPhone 时，现场最重要的十分钟应该检查什么？",
+        "answer": "现场十分钟优先查这几项，能避开大多数坑：\n\n1. 核对型号和序列号\n打开“设置 → 通用 → 关于本机”，确认型号、容量、序列号与机身/卖家描述一致。型号号码开头一般：M 为零售机、N 为官换机、F 为官翻机；不代表一定不能买，但价格应匹配。\n\n2. 确认没有激活锁\n让卖家当场退出 Apple ID，并完成“抹掉所有内容与设置”。重启后若出现要求原机主 Apple ID 密码，直接别买。进入设置时也确认“查找”已关闭。\n\n3. 看关键硬件是否正常\n快速测试：Face ID/Touch ID、前后摄像头、扬声器、听筒、麦克风、音量键、电源键、静音键、充电口、无线充电、Wi‑Fi、蓝牙和蜂窝网络。\n\n4. 查屏幕和外观\n白底、黑底各看一次：有无坏点、绿线、烧屏、明显色差或触控断触。检查边框、镜头、螺丝、屏幕缝隙，有明显拆修痕迹要谨慎。\n\n5. 查电池与维修记录\n在“设置 → 电池 → 电池健康与充电”看最大容量；再到“设置 → 通用 → 关于本机 → 部件和维修历史记录”，确认是否更换过屏幕、电池、摄像头，以及是否提示“未知部件”。\n\n6. 查网络锁与功能限制\n插自己的 SIM 卡，确认可通话、上网；检查“设置 → 通用 → VPN 与设备管理”，避免有企业监管配置。也可确认“设置 → 通用 → 关于本机”里的运营商锁为“无 SIM 卡限制”。\n\n最关键的底线：能正常抹机、无激活锁、Face ID 正常、自己的卡能用。 任一项有问题，除非你明确知道风险和维修成本，否则建议不买。"
+      },
+      {
+        "id": 12,
+        "category": "容量选择",
+        "question": "普通用户买手机选 256GB 还是 512GB？怎么根据使用习惯判断？",
+        "answer": "大多数普通用户选 256GB 就够了；只有经常拍大量照片视频、玩很多大型游戏或长期不清理文件的人，才更建议 512GB。\n\n可以这样判断：\n\n- 选 256GB：主要微信、短视频、网购、导航、轻度游戏；照片会定期备份到云端或电脑；平时手机已用空间通常不超过 100GB。\n- 选 512GB：经常拍 4K 视频、旅行/记录宝宝成长、不想频繁整理相册；常玩《原神》这类大型游戏；下载很多影视、音乐或离线地图；打算一台手机用 4 年以上。\n- 如果你现在的旧手机是 128GB 且经常提示空间不足，直接升到 256GB。\n- 如果旧手机已经是 256GB，并且常年用了 180GB 以上，或常常要删照片腾空间，就选 512GB。\n\n一个实用原则：买完后最好长期保留至少 15%–20% 空闲空间，系统更新、拍照缓存和应用运行都会更从容。"
+      },
+      {
+        "id": 13,
+        "category": "出售准备",
+        "question": "把旧手机卖掉前，需要备份、退出和删除哪些内容？",
+        "answer": "卖旧手机前，建议按这个顺序处理：\n\n1. 先备份数据\niPhone 可备份到 iCloud 或电脑；Android 可备份到 Google 账号、厂商云服务或电脑。别忘了照片、聊天记录、通讯录、备忘录、文件、验证码/认证器数据和银行卡相关信息。\n\n2. 转移重要账号与聊天\n确认微信、WhatsApp 等聊天记录已迁移或备份；把验证器 App 的动态验证码、eSIM、钱包交通卡等转移到新设备。\n\n3. 退出账号\niPhone：退出 Apple ID，并关闭“查找”。\nAndroid：退出 Google 账号以及小米、华为、三星等品牌账号。这样可避免激活锁或恢复出厂后仍被账号锁定。\n\n4. 移除支付与卡片\n删除 Apple Pay / Google Wallet 中的银行卡、交通卡；解绑银行卡、支付平台的设备授权，并拔出实体 SIM 卡。\n\n5. 恢复出厂设置\n确认备份无误后再执行。\niPhone：设置 → 通用 → 传输或还原 iPhone → 抹掉所有内容和设置。\nAndroid：设置中搜索“恢复出厂设置”或“清除所有数据”。\n\n6. 最后检查\n开机应进入初始欢迎界面，且不再要求你的账号密码。保留充电器、盒子、购买凭证等配件，通常也有助于出售。"
+      },
+      {
+        "id": 14,
+        "category": "电池健康",
+        "question": "iPhone 电池健康度只剩 79%，应该换电池还是直接换手机？",
+        "answer": "79% 已经属于明显老化，日常续航和性能稳定性通常都会受影响。\n\n如果手机本身还能满足你的需求、没有大问题，建议先换电池：成本远低于换新机，通常能再舒适使用 1～2 年。尤其是 iPhone 12、13、14 这类机型，换电池往往很划算。\n\n更适合直接换手机的情况是：除了电池差以外，还经常卡顿、存储空间不够、屏幕或摄像头有问题，或者你很想升级到 USB‑C、影像和高刷屏等新功能。\n\n简单说：只是不耐用就换电池；电池之外也有多项不满，就换手机。建议优先选择官方或可靠维修渠道，并在更换前备份数据。"
+      },
+      {
+        "id": 15,
+        "category": "隐私安全",
+        "question": "手机丢了以后，前十分钟最应该做哪几件事？",
+        "answer": "1. 立刻用另一台设备登录“查找”功能定位并开启丢失模式。\n- iPhone：通过“查找”App 或 iCloud“查找设备”。\n- Android：通过 Google“查找我的设备”。\n不要急着远程抹除，先锁定、显示联系方式，并保留定位线索。\n\n2. 马上冻结手机号码，联系运营商挂失/暂停 SIM 卡，防止验证码被拦截和短信验证被盗用。\n\n3. 立刻修改最关键账户密码：Apple ID 或 Google 账号、微信、支付宝、银行卡相关 App；同时检查是否有陌生登录。\n\n4. 如果定位显示在附近且安全可控，可以报警并提供定位；不要自行去和疑似捡到或盗走手机的人对峙。\n\n5. 通知家人朋友：你的号码可能暂时不可信，谨防有人冒充你借钱或索要验证码。\n\n如果手机没有锁屏密码，或存有银行卡、身份证照片，优先冻结号码和金融账户，并尽快考虑远程抹除。"
+      },
+      {
+        "id": 16,
+        "category": "拍照",
+        "question": "手机拍照一直对不上焦，镜头擦过也没用，怎么继续排查？",
+        "answer": "可以按这个顺序排查：\n\n1. 先取下手机壳、镜头保护膜或镜头贴。它们很容易造成对焦异常，尤其是微距和长焦镜头。\n2. 打开相机后，对准光线充足、边缘清晰的物体，点击屏幕目标位置对焦；离远一点再试。部分手机距离太近会无法对焦。\n3. 切换 0.5×、1×、2×/3× 等不同镜头测试。若只有某个倍率始终模糊，通常是对应镜头或对焦模组的问题。\n4. 重启手机，并更新系统；再试试微信、扫码等其他调用相机的应用，排除单个 App 异常。\n5. 在相机设置中恢复相机默认设置；Android 还可尝试清除“相机”应用缓存。\n6. 观察是否有摔过、进水、镜头内起雾、拍照时持续抖动或有异响。这些都更像硬件故障。\n\n如果后摄无论远近都无法对焦，或切换某一颗镜头就明显糊，大概率需要售后检测，常见是自动对焦马达、镜头组件或防抖模组异常。先备份重要数据，再安排检修。"
+      },
+      {
+        "id": 17,
+        "category": "网络",
+        "question": "手机在家里 Wi-Fi 很慢，但电脑正常，可能是什么原因？",
+        "answer": "常见原因是手机本身连到的 Wi‑Fi 状态不对，而不是宽带问题。可以依次试试：\n\n1. 关闭再打开手机 Wi‑Fi，或开启飞行模式 10 秒后关闭。\n2. 在 Wi‑Fi 设置里“忽略/忘记此网络”，重新输入密码连接。\n3. 靠近路由器测试；手机可能连到了较拥挤的 2.4GHz，改连 5GHz（名称通常带 `5G`）。\n4. 关闭 VPN、代理、加速器，以及可能限速的省电模式。\n5. 重启手机和路由器。\n6. 检查手机存储空间、系统更新；部分旧系统或网络设置异常也会影响速度。\n7. 仍然很慢时，重置网络设置（会清除已保存的 Wi‑Fi 和蓝牙配对）。\n\n如果只有某一个 App 慢，通常是该 App 的网络权限、缓存或服务器问题；如果所有 App 都慢而电脑正常，更像是手机网络设置、频段兼容或 Wi‑Fi 模块的问题。"
+      },
+      {
+        "id": 18,
+        "category": "防水",
+        "question": "手机换过屏幕后还能相信原来的防水等级吗？",
+        "answer": "一般不能再完全相信原来的防水等级。\n\n换屏时会拆开机身，原厂防水胶和密封结构容易被破坏。即使维修店重新贴胶，也很难保证恢复到出厂时的 IP67/IP68 水平；第三方屏幕或非规范安装的风险更高。\n\n建议把它当作“日常防泼溅”，避免泡水、淋雨、带进浴室或水边使用。若必须维修，优先官方或正规维修点，并询问是否更换防水胶、是否做过密封测试。"
+      },
+      {
+        "id": 19,
+        "category": "eSIM",
+        "question": "换新手机时 eSIM 一般怎么迁移？操作前要注意什么？",
+        "answer": "换新手机时，eSIM 通常有三种迁移方式：在新旧手机间直接转移、通过运营商 App/二维码重新开通，或联系运营商客服办理。\n\n以 iPhone 为例，设置新机时一般会出现“转移蜂窝号码”选项；旧机和新机靠近、蓝牙打开并按提示确认即可。Android 也常在设置 eSIM 时提供“从旧设备转移”或扫描运营商二维码的方式，但具体取决于品牌和运营商。\n\n操作前注意：\n\n- 先确认新手机支持 eSIM，且是对应地区版本；部分国行机型的 eSIM 支持情况不同。\n- 不要急着抹掉或出售旧手机。确认新机能正常打电话、收短信、上网后再清除旧机。\n- 保持两台手机有电、联网，最好连接稳定 Wi‑Fi，并打开蓝牙。\n- 准备好运营商账号、服务密码和身份证信息；有些运营商需要重新验证或发放新二维码。\n- 迁移后测试短信验证码、电话、移动数据和漫游；银行卡、微信等常依赖短信验证。\n- 若旧手机丢失、损坏或无法开机，一般只能通过运营商补发 eSIM，原二维码往往不能重复使用。\n\n如果你告诉我是 iPhone 换 iPhone、安卓换安卓，还是跨平台换机，我可以按具体情况给你步骤。"
+      },
+      {
+        "id": 20,
+        "category": "选购",
+        "question": "给长辈选手机，除了屏幕大和声音大，还应该重点看什么？",
+        "answer": "还应重点看这些：\n\n- 系统简单、广告少：图标清楚、设置别太复杂，最好支持简易模式/长辈模式。\n- 续航和充电：电池尽量大，充电别太慢；有条件可选支持无线充或充电保护的机型。\n- 屏幕素质：除了大，亮度要高、字体能调大，户外看得清；护眼和高刷新率也会更舒服。\n- 信号与通话：优先选信号稳定、支持双卡双待、通话降噪好的。\n- 耐用和售后：机身别太滑太脆，最好配壳膜；选线下售后网点多、保修方便的品牌。\n- 相机与存储：日常拍人、扫码、视频通话够清晰即可；存储建议至少 256GB，避免很快不够用。\n- 安全功能：指纹/人脸解锁、紧急呼叫、定位共享、反诈拦截和远程协助都很实用。\n- 重量和握持：屏幕大不等于越重越好，长辈单手拿着舒服更重要。\n\n如果长辈视力或操作不太方便，优先级通常是：系统易用 > 续航/信号 > 屏幕可读性 > 售后。"
+      }
+    ],
+    "ja": [
+      {
+        "id": 1,
+        "category": "ローカル価格",
+        "question": "iPhone 17 Pro Max 256GB の現在の買取上位3店舗と有効平均価格を教えてください。",
+        "answer": "iPhone 17 Pro Max 256GB の現在の買取上位3店舗は以下です。\n\n1. 買取BASE：196,000円\n2. 森森買取：195,500円\n3. アキモバ：195,000円\n\n有効平均価格は 192,800円 です。"
+      },
+      {
+        "id": 2,
+        "category": "ローカル価格",
+        "question": "iPhone 17 Pro 512GB は今どの店舗が高いですか。店舗差も簡単に説明してください。",
+        "answer": "iPhone 17 Pro 512GB は、買取BASEが213,500円で最高額です。\n\n次点は森森買取・モバイルミックスの212,500円で、最高額との差は1,000円です。買取楽園は212,000円、トゥインクルは211,500円なので、掲載店舗間の差は最大2,000円です。"
+      },
+      {
+        "id": 3,
+        "category": "ローカル価格",
+        "question": "iPhone 16 Pro Max 256GB を今日売るなら、NOVA の価格データではどこが候補ですか。",
+        "answer": "iPhone 16 Pro Max 256GBなら、候補は以下です。\n\nゲストモバイル：188,700円\n森森買取：188,200円\n買取商店／買取一丁目／モバイルミックス：各188,000円\n\nNOVAの市場平均は187,400円、中央値は188,000円です。最も高い候補はゲストモバイルの188,700円です。"
+      },
+      {
+        "id": 4,
+        "category": "一括計算",
+        "question": "iPhone 17 Pro 256GB を3台売る場合、現在の最高価格ベースの合計はいくらですか。",
+        "answer": "iPhone 17 Pro 256GBの現在の最高買取価格は森森買取の186,000円です。\n3台なら合計 558,000円 です。"
+      },
+      {
+        "id": 5,
+        "category": "LINE移行",
+        "question": "Android から iPhone へ変更するとき、LINE のトーク履歴を失わないための注意点は？",
+        "answer": "AndroidからiPhoneへ移行する前に、Android側のLINEを必ず最新バージョンへ更新し、電話番号・メールアドレス・パスワードを登録して引き継ぎ設定を確認してください。\n\n特に重要なのは、LINEの「かんたん引き継ぎQRコード」や「アカウント引き継ぎ」を使うことです。Android→iPhoneでは、条件を満たせば直近14日分のトーク履歴を移行できます。写真・動画・ファイル、14日より前のメッセージは完全には引き継げないため、残したい内容は事前に保存・転送しておくと安心です。\n\n注意点は以下です。\n\n- 古いAndroidのLINEを削除・初期化する前に、新しいiPhoneでログインと引き継ぎ完了を確認する\n- 同じ電話番号でSMS認証を受け取れる状態にする\n- iPhoneの「iOSに移行」アプリを使う場合も、LINEの案内画面に従って移行する\n- スタンプ、購入履歴、友だち・グループは通常アカウントとともに引き継げます\n- AndroidのGoogle Driveバックアップは、iPhoneへトーク履歴を丸ごと復元する用途には使えません\n\n機種変更当日は、旧端末を手元に残したまま、Wi‑Fiと充電を確保して作業するのがおすすめです。"
+      },
+      {
+        "id": 6,
+        "category": "交通系IC",
+        "question": "iPhoneを機種変更するとき、モバイルSuicaを安全に移す基本手順を教えてください。",
+        "answer": "機種変更前に、古いiPhoneのモバイルSuicaを「Walletから削除」しておくのが基本です。これによりカード情報がサーバーに退避され、新しいiPhoneへ安全に移せます。\n\n1. 古いiPhoneで「ウォレット」アプリを開く\n2. モバイルSuicaを選択し、「…」→「カードの詳細」→「このカードを削除」\n3. 新しいiPhoneで同じApple Accountにサインイン\n4. 「ウォレット」アプリの「＋」から「以前のカード」を選び、モバイルSuicaを追加\n5. 必要に応じて認証を完了し、残高・定期券情報を確認\n\n削除前に、Apple Accountへのサインイン状態とSuicaの残高を確認しておくと安心です。古いiPhoneが故障・紛失して操作できない場合は、モバイルSuicaの会員メニューやサポートで再発行・機種変更手続きを行ってください。"
+      },
+      {
+        "id": 7,
+        "category": "eSIM",
+        "question": "eSIMを使っているiPhoneを買い替える前に確認すべきことは何ですか。",
+        "answer": "買い替え前に、まず現在の通信会社でeSIMの移行方法を確認してください。iPhone同士なら設定中に「近くのiPhoneから転送」で移せる場合がありますが、通信会社によっては再発行や専用アプリ・QRコードが必要です。\n\n確認ポイントは次のとおりです。\n\n- 新しいiPhoneが利用中の通信会社・eSIMに対応しているか\n- 契約中のeSIMを旧iPhoneから削除する前に、移行手順を把握しているか\n- 回線の本人確認情報、通信会社アプリのログイン、SIM再発行時の認証手段を用意しているか\n- iCloudバックアップやクイックスタートでデータを移行できる状態か\n- Apple Pay、認証アプリ、LINEなどの引き継ぎ設定も済ませるか\n- 旧iPhoneを初期化・売却するのは、新しいiPhoneで通話・SMS・モバイル通信が正常に使えることを確認してからにすること\n\n特に重要なのは、eSIMを先に削除しないことです。新しいiPhoneで回線が開通するまで、旧端末はそのまま残しておくと安心です。"
+      },
+      {
+        "id": 8,
+        "category": "バッテリー",
+        "question": "iPhone のバッテリー最大容量が80%です。交換を考える目安を教えてください。",
+        "answer": "最大容量が80%なら、バッテリー交換を検討してよい目安です。特に次のような症状があれば、交換がおすすめです。\n\n- 1日充電がもたない\n- 急に残量が減る・電源が落ちる\n- 動作が重く感じる\n- 「バッテリーに関する重要なメッセージ」が表示される\n- 外出中のモバイルバッテリー利用が増えた\n\nAppleでは一般に最大容量80%前後を、劣化が進んだ状態の目安としています。まだ困っていなければ使い続けても問題ありませんが、快適さを戻したいなら今が交換を考えるタイミングです。"
+      },
+      {
+        "id": 9,
+        "category": "発熱",
+        "question": "充電しながらゲームをすると本体が熱くなります。故障を避ける使い方はありますか。",
+        "answer": "充電しながらのゲームは発熱しやすく、バッテリー劣化や性能低下につながるため、できれば避けるのが安心です。\n\nどうしても行う場合は、ケースを外す・風通しのよい場所で使う・画面の明るさやゲーム設定を少し下げる・急速充電を避ける、が効果的です。布団やクッションの上、車内、高温の部屋では使わないでください。\n\n本体が「熱い」と感じる、充電が止まる、動作が重くなる場合は、ゲームを中断して充電ケーブルを外し、自然に冷ましてから再開してください。冷蔵庫や保冷剤で急冷するのは結露の原因になるため避けましょう。"
+      },
+      {
+        "id": 10,
+        "category": "充電",
+        "question": "USB-Cケーブルを替えても充電が途切れます。自分でできる切り分け方法は？",
+        "answer": "USB-Cケーブルを替えても途切れるなら、次の順で切り分けるのが早いです。\n\n1. 充電器・コンセントを替える\n別のUSB-C充電器と、別の壁コンセントで試してください。モバイルバッテリーでも確認すると、充電器側か本体側か分かりやすいです。\n\n2. 端子口を確認・清掃する\nスマホのUSB-C端子にホコリや糸くずが詰まると、奥まで刺さっていても接触が不安定になります。電源を切り、明るい場所で確認して、木製または樹脂製の細いピックや柔らかいブラシで優しく取り除いてください。金属製の針はショートや端子破損の原因になるので避けましょう。\n\n3. 差し込み角度・本体の動きで再現するか確認\nケーブルや本体を少し動かしたときだけ切れるなら、USB-C端子の摩耗・変形・内部接触不良が疑わしいです。\n\n4. 発熱・水濡れの表示を確認\n本体や充電器が熱い場合は、保護機能で充電が断続的になることがあります。ケースを外して室温で冷ましてから試してください。水分検知の警告が出る場合は充電を止め、端子を十分に乾かしてください。\n\n5. 再起動・ソフト更新\n再起動後も同じか、OS更新後に改善するか確認します。特定の充電器だけで起きるなら、USB PDなど急速充電の相性もありえます。\n\n別の充電器・コンセントでも、端子清掃後も、スマホを動かさなくても途切れるなら、本体の充電端子やバッテリー回路の点検が必要です。特に端子がぐらつく、焦げ臭い、異常に熱い場合は使用を止めて修理店へ相談してください。"
+      },
+      {
+        "id": 11,
+        "category": "中古購入",
+        "question": "中古スマホを購入するとき、ネットワーク利用制限と赤ロムはどう確認しますか。",
+        "answer": "中古スマホでは、購入前に「ネットワーク利用制限」を必ず確認してください。これは端末代金の未払いなどにより、携帯回線が使えなくなる可能性を示す判定です。\n\nIMEI（製造番号）を端末の「設定」やダイヤル画面で確認し、各キャリアのネットワーク利用制限確認ページで照会します。判定の目安は以下です。\n\n- ○：問題なし。通常は安心して使えます。\n- △：現在は使えるものの、分割払いが残っている可能性があります。将来「×」になるリスクがあります。\n- ×：赤ロム。回線通信が制限されるため、基本的に購入は避けるべきです。\n- −：そのキャリアでは判定対象外です。SIMフリー端末や他社販売端末の可能性があります。\n\n確認時は、販売ページのIMEIと実機のIMEIが一致するかも見てください。IMEIを非公開にしている個人出品、または「△判定」で保証がない商品は慎重に選ぶのがおすすめです。\n\n中古店で買うなら、赤ロムになった場合の返金・交換保証があるかを確認すると安心です。"
+      },
+      {
+        "id": 12,
+        "category": "売却準備",
+        "question": "iPhoneを買取店へ出す前に、探す機能・Apple ID・初期化はどの順番で行いますか。",
+        "answer": "1. データのバックアップを取る\n2. 「探す」をオフにする\n- 「設定」→自分の名前→「探す」→「iPhoneを探す」をオフ\n- Apple IDのパスワード入力が必要です\n3. Apple IDからサインアウトする\n- 「設定」→自分の名前→一番下の「サインアウト」\n4. すべてのコンテンツと設定を消去して初期化する\n- 「設定」→「一般」→「転送またはiPhoneをリセット」→「すべてのコンテンツと設定を消去」\n\n「探す」をオフにするとアクティベーションロックを解除できます。初期化後、セットアップ画面のまま電源を切って買取店へ持ち込むのが安心です。SIMカードも忘れずに抜いてください。"
+      },
+      {
+        "id": 13,
+        "category": "写真",
+        "question": "iCloud写真を使っています。機種変更時に写真が消えないか確認する方法は？",
+        "answer": "機種変更前に、古いiPhoneで「設定」→自分の名前→「iCloud」→「写真」を開き、「このiPhoneを同期」がオンになっていることを確認してください。\n\nさらに、写真アプリのライブラリを一番下までスクロールし、「○○枚をiCloudに同期中」などの表示がなく、同期が完了していることを確認します。Wi‑Fi接続・充電中のまま待つと安心です。\n\n新しいiPhoneでは同じApple Accountでサインインし、「iCloud写真」をオンにします。写真が順次表示されれば引き継げています。古いiPhoneを初期化・売却するのは、新しいiPhoneで必要な写真を確認してからにしてください。"
+      },
+      {
+        "id": 14,
+        "category": "容量",
+        "question": "写真と動画をよく撮る場合、256GBと512GBのどちらを選ぶべきですか。",
+        "answer": "写真と動画をよく撮るなら、基本は512GBがおすすめです。特に4K動画、ProRes動画、RAW写真、長時間の旅行撮影をするなら、256GBは意外と早く埋まります。\n\n一方で、こまめにクラウドやPCへ移し、通常の写真・動画撮影が中心なら256GBでも十分です。\n\n迷った場合の目安は、動画を「残したまま」使いたいなら512GB、定期的に整理できるなら256GBです。"
+      },
+      {
+        "id": 15,
+        "category": "通信",
+        "question": "5G表示なのに通信が遅いとき、端末側で試せることを順番に教えてください。",
+        "answer": "まずはこの順で試してください。多くは端末側の設定や一時的な電波つかみ直しで改善します。\n\n1. 機内モードをオンにして10秒ほど待ち、オフにする\nモバイル回線へ再接続されます。\n\n2. 端末を再起動する\n通信処理の一時的な不具合に有効です。\n\n3. 場所を少し変える\n5G表示でも、建物内・地下・窓から離れた場所では電波品質が弱いことがあります。窓際や屋外で試してください。\n\n4. 5Gを一度オフにして4G/LTEで試す\n5Gの電波が弱い場所では、安定した4Gのほうが速い場合があります。\niPhoneは「設定」→「モバイル通信」→「通信のオプション」→「音声通話とデータ」、Androidは「設定」→「ネットワークとインターネット」→「SIM」付近から変更できます。\n\n5. VPN・省データモード・省電力モードを確認する\nVPN、データセーバー、低電力モードが速度やバックグラウンド通信を抑えることがあります。一時的にオフにして比較します。\n\n6. モバイルデータ通信が対象SIMになっているか確認する\nデュアルSIMなら、意図したSIMでモバイルデータ通信を使っているか確認してください。\n\n7. キャリア設定・OSを更新する\niPhoneは「設定」→「一般」→「情報」を開くと、キャリア設定更新が出ることがあります。Androidもシステム更新を確認します。\n\n8. ネットワーク設定をリセットする\n最後の手段です。保存済みWi‑Fi、Bluetooth接続、VPN設定などが消える点に注意してください。\niPhoneは「設定」→「一般」→「転送またはiPhoneをリセット」→「リセット」→「ネットワーク設定をリセット」です。\n\nそれでも特定の場所・時間帯だけ遅いなら、端末より回線の混雑やエリア状況の可能性が高いです。Wi‑Fiでも同様に遅いか、別の場所や時間で改善するかを比べると切り分けやすいです。"
+      },
+      {
+        "id": 16,
+        "category": "防水",
+        "question": "水没したスマホを乾かすために、米へ入れる方法は本当に有効ですか。",
+        "answer": "米に入れる方法は、あまり有効ではありません。むしろ米の粉やホコリが充電端子・スピーカーに入り、故障リスクを増やすことがあります。\n\n水没したら、まず電源を切り、充電やケーブル接続はしないでください。ケース・SIMトレイを外し、外側の水分を柔らかい布で拭き取って、端子を下に向けた状態で風通しのよい場所に置くのが安全です。扇風機の弱い風は使えますが、ドライヤーの熱風や電子レンジは厳禁です。\n\n海水・ジュース・お風呂の水などの場合は内部腐食の可能性があるため、できるだけ早く修理店やメーカーサポートに相談してください。"
+      },
+      {
+        "id": 17,
+        "category": "紛失",
+        "question": "iPhoneを紛失した直後に、別の端末から行うべき操作を教えてください。",
+        "answer": "まず、別の端末やPCから 「探す」アプリ／iCloud.com/find を開き、紛失したiPhoneを選んでください。\n\n行うべき順番は次の通りです。\n\n1. 現在地を確認し、「サウンドを再生」\n近くにある可能性があるなら、音を鳴らします。\n\n2. 「紛失としてマーク」を有効化\niPhoneをロックし、画面に連絡先とメッセージを表示できます。Apple Payも停止されます。見つかるまで解除しないでください。\n\n3. 位置情報が出ない場合も「紛失としてマーク」を設定\n次にオンラインになった時点で有効になります。「見つかったときに通知」もオンにします。\n\n4. 通信会社へ連絡して回線を停止\nSIM/eSIMの悪用を防ぐため、できるだけ早く利用停止を依頼してください。\n\n5. 盗難の可能性が高い場合は警察へ届け出\nIMEIやシリアル番号が分かれば控えて提出します。\n\n6. Apple IDから端末を削除しない\n先に削除すると「アクティベーションロック」が解除され、第三者が使える状態になるおそれがあります。完全に取り戻せないと判断した場合だけ、最後に遠隔消去を検討してください。\n\n「Appleから見つかりました」などと偽サイトへ誘導するSMS・メールも多いので、Apple IDやパスコードはリンク先に入力しないでください。"
+      },
+      {
+        "id": 18,
+        "category": "通知",
+        "question": "Androidで通知が遅れてまとめて届く原因と設定の確認場所を教えてください。",
+        "answer": "Androidで通知が遅れて一気に届く場合、主な原因は省電力によるアプリのバックグラウンド制限です。特に画面オフ中やWi‑Fi／モバイル通信の切替時に起こりやすいです。\n\n確認する場所は次のとおりです。\n\n- 設定 → アプリ → 対象アプリ → バッテリー\n「制限なし」「最適化しない」などを選びます。\n\n- 設定 → バッテリー → バッテリーの最適化\n対象アプリを「最適化しない」に変更します。機種によって名称は少し異なります。\n\n- 設定 → アプリ → 対象アプリ → モバイルデータとWi‑Fi\n「バックグラウンドデータ」を許可します。データセーバー使用中なら、アプリの「データ使用の制限なし」も許可してください。\n\n- 設定 → 通知 → アプリの通知 → 対象アプリ\n通知が許可されているか、通知カテゴリがオフになっていないか確認します。\n\n- 設定 → ネットワークとインターネット\n機内モード、VPN、省データモード、Wi‑Fiの省電力機能などが通信を止めていないか確認します。\n\nSamsungなら「バッテリーとデバイスケア → バッテリー → バックグラウンド使用制限」で、対象アプリを「スリープ状態にしないアプリ」に追加すると改善することがあります。\n\nそれでも改善しなければ、対象アプリの更新、端末の再起動、アプリのキャッシュ削除を試してください。特定のアプリだけ遅いなら、そのアプリ側の設定や障害の可能性もあります。"
+      },
+      {
+        "id": 19,
+        "category": "長期保管",
+        "question": "予備スマホを半年使わず保管するとき、電池を傷めない方法はありますか。",
+        "answer": "半年ほど保管するなら、充電残量を50%前後にして電源を切り、涼しく乾燥した場所に置くのが最適です。\n\n高温の車内・直射日光・湿気の多い場所は避けてください。0%のまま放置すると過放電で起動できなくなることがあるため、2〜3か月に一度は電源を入れて残量を確認し、20〜60%程度に戻すと安心です。\n\nケースを外し、端子や画面を軽く拭いてから保管すると劣化や汚れも抑えられます。"
+      },
+      {
+        "id": 20,
+        "category": "家族向け",
+        "question": "高齢の家族向けスマホを選ぶとき、操作性と安全面で重視する点は何ですか。",
+        "answer": "高齢のご家族向けなら、まず「迷わず使えること」と「困ったときに助けを呼べること」を重視すると安心です。\n\n操作性では、画面が見やすい大きさ・文字サイズ、物理ボタンや分かりやすいホーム画面、音量が十分に大きいことが大切です。実際に持ってもらい、重さや片手での操作しやすさも確認してください。指紋認証より、顔認証や簡単な暗証番号のほうが使いやすい場合もあります。\n\n安全面では、緊急SOS機能、現在地を家族と共有できる機能、迷惑電話・迷惑SMSの対策を確認しましょう。詐欺対策として、知らない番号からの着信を警告・拒否できる設定、アプリの勝手なインストールや高額課金を防ぐ設定も有効です。\n\n加えて、家族が遠隔でサポートしやすいかも重要です。連絡先をホーム画面に大きく置く、よく使うアプリだけに絞る、定期的なOS更新を有効にする、といった初期設定で使いやすさが大きく変わります。"
+      }
+    ],
+    "en": [
+      {
+        "id": 1,
+        "category": "Local prices",
+        "question": "What are the top three local buyback offers and valid average for iPhone 17 Pro Max 256GB?",
+        "answer": "For iPhone 17 Pro Max 256GB, the top three local buyback offers are:\n\n1. 買取BASE — ¥196,000\n2. 森森買取 — ¥195,500\n3. アキモバ — ¥195,000\n\nThe valid market average is ¥192,800 (high confidence)."
+      },
+      {
+        "id": 2,
+        "category": "Local prices",
+        "question": "Which store currently pays the most for iPhone 17 Pro 256GB, and how close are the next offers?",
+        "answer": "森森買取 pays the most: ¥186,000 for an iPhone 17 Pro 256GB.\n\nThe next offers are:\n\n- 買取BASE: ¥185,000 — ¥1,000 lower\n- モバイルミックス and アキモバ: ¥184,000 — ¥2,000 lower\n- 買取楽園: ¥183,500 — ¥2,500 lower"
+      },
+      {
+        "id": 3,
+        "category": "Local prices",
+        "question": "Compare the local buyback market for iPhone 16 Pro 512GB and give a short selling recommendation.",
+        "answer": "For an iPhone 16 Pro 512GB, the local buyback average is ¥201,300 and the median is ¥202,500 (high confidence).\n\nCurrent listed offers range from ¥202,500 to ¥202,800:\n- 森森買取: ¥202,800\n- ゲストモバイル: ¥202,700\n- 買取商店 / 買取一丁目 / モバイルミックス: ¥202,500\n\nRecommendation: sell to 森森買取 if the phone meets its condition requirements—the ¥300 premium is small, so choose a ¥202,500+ buyer with the most convenient inspection and payment terms if not."
+      },
+      {
+        "id": 4,
+        "category": "Batch total",
+        "question": "Using the current best local offer, what is the total for two iPhone 17 Pro Max 512GB phones?",
+        "answer": "We don’t currently have a local price for the iPhone 17 Pro Max 512GB, so I can’t calculate a total for two."
+      },
+      {
+        "id": 5,
+        "category": "Migration",
+        "question": "What is the safest order for moving contacts, photos, WhatsApp, and authenticator apps from Android to iPhone?",
+        "answer": "Move them in this order to avoid losing access:\n\n1. Authenticator apps first\nBefore resetting or trading in Android, transfer each account’s 2FA to the iPhone. Use each authenticator app’s transfer/export feature if available, and save backup codes. Keep the Android logged in until you confirm codes work on iPhone.\n\n2. WhatsApp second\nOn Android, use WhatsApp’s official Move Chats to iPhone process during iPhone setup, typically through Apple’s Move to iOS app. Confirm chats and media are present on iPhone before removing WhatsApp or wiping Android.\n\n3. Contacts third\nThe simplest method is to sync contacts to your Google account, then add that Google account on iPhone and enable Contacts. Alternatively, Move to iOS can transfer local contacts during setup.\n\n4. Photos last\nBack up photos first—Google Photos is convenient, or transfer them with Move to iOS / a computer. Check that your important albums and recent photos are visible on iPhone before deleting anything from Android.\n\nKeep the Android powered on, signed in, and unchanged for at least a few days after the switch. Don’t factory-reset it until you have tested logins, WhatsApp history, contacts, and photo access on the iPhone."
+      },
+      {
+        "id": 6,
+        "category": "Battery",
+        "question": "My Android phone loses half its battery overnight. What should I check first?",
+        "answer": "First, check Battery usage in Settings and look for an app using unusual power while the screen is off. Social, messaging, VPN, fitness-tracking, and poorly optimized apps are common causes.\n\nThen check these basics:\n\n- Restart the phone and install pending system/app updates.\n- Turn off Wi‑Fi, Bluetooth, mobile data, and location overnight once as a test. A weak cellular signal can drain a lot of battery.\n- Check whether Always-On Display, hotspot, or battery-heavy sync/backup is enabled.\n- Try Safe Mode overnight; if the drain largely stops, a downloaded app is likely responsible.\n- Review battery health if the phone is a few years old—aging batteries can lose charge faster even when idle.\n\nLosing half overnight is not normal. If it continues after testing apps and connectivity, the battery or a hardware issue may need service."
+      },
+      {
+        "id": 7,
+        "category": "Storage",
+        "question": "My iPhone storage is full, but most photos are already in iCloud. How can I free space safely?",
+        "answer": "First, make sure iCloud Photos has fully finished syncing: go to Settings → your name → iCloud → Photos and confirm Sync this iPhone is on. Connect to Wi‑Fi and power if it still shows syncing.\n\nThen enable Optimize iPhone Storage in that same Photos screen. Your iPhone will keep smaller local versions while originals stay in iCloud, freeing space automatically.\n\nFor immediate safe cleanup:\n\n- Settings → General → iPhone Storage: review the largest apps and enable Offload Unused Apps if helpful. This removes apps but keeps their documents and data.\n- Delete downloaded videos, podcasts, music, Netflix/YouTube downloads, and large Messages attachments.\n- In Photos, remove unwanted items, then empty Recently Deleted to reclaim space right away.\n- Check Files → Browse → On My iPhone and Downloads for offline files you no longer need.\n\nAvoid deleting photos just because they are in iCloud: with iCloud Photos enabled, deleting a photo on the iPhone also deletes it from iCloud and your other Apple devices."
+      },
+      {
+        "id": 8,
+        "category": "Charging",
+        "question": "My phone only charges at certain cable angles. How can I tell whether the port or cable is damaged?",
+        "answer": "Try a different known-good cable and charger first. If charging becomes stable, your original cable is likely damaged—especially if its connector feels loose, bent, frayed, or works only when flexed.\n\nIf multiple cables only work at certain angles, the phone’s port is more likely the issue. Common causes are:\n\n- Pocket lint packed into the port, preventing the plug from seating fully.\n- Bent or worn port contacts.\n- A loose internal charging-port connection.\n\nTurn the phone off, shine a light into the port, and gently remove visible lint with a dry wooden/plastic toothpick or a soft anti-static brush. Avoid metal tools and liquids. Then test again.\n\nIf the plug still feels loose or charging cuts in and out with several cables, stop forcing it at an angle and have the port inspected or repaired. Back up the phone soon, since intermittent charging can worsen."
+      },
+      {
+        "id": 9,
+        "category": "Heat",
+        "question": "When is smartphone heat normal, and what warning signs mean I should stop using it?",
+        "answer": "A phone getting mildly warm is normal during charging, gaming, video calls, navigation, camera use, software updates, or poor signal conditions. It should cool down after you stop the demanding task.\n\nStop using it and disconnect charging if it becomes too hot to hold comfortably, shows an overheating warning, suddenly shuts down, smells burnt, makes unusual noises, or the battery/back cover looks swollen. Also stop if it heats heavily while idle or during ordinary light use—especially after a drop, liquid exposure, or repair.\n\nLet it cool naturally in a ventilated place; remove the case and avoid charging or using intensive apps until it returns to normal. Don’t put it in a fridge/freezer or directly on ice. If repeated overheating continues, have the battery and charging accessories checked."
+      },
+      {
+        "id": 10,
+        "category": "Used phone",
+        "question": "What should I test during a ten-minute inspection before buying a used iPhone?",
+        "answer": "In ten minutes, prioritize the things that are expensive or hard to fix:\n\n- Check the model, storage, carrier status, and serial number in Settings > General > About. Make sure it matches the seller’s listing.\n- Confirm Activation Lock is off: the seller should sign out of their Apple Account and erase the phone. During setup, it must not request their Apple Account password.\n- Look at Settings > Battery > Battery Health. Around 85%+ is generally decent; much lower may mean a battery replacement soon.\n- Test the screen: brightness, touch across all edges, Face ID/Touch ID, True Tone, dead pixels, burn-in, and cracks.\n- Test cameras: front and rear, focus, flash, video, portrait mode, and lens switching if applicable.\n- Make a test call and check microphone, earpiece, loudspeaker, vibration, Wi‑Fi, Bluetooth, mobile data, and charging port.\n- Inspect the body for bent frame, loose buttons, camera-lens damage, water indicators, and signs of poor repair.\n- Check Settings > General > About > Parts & Service History. “Unknown Part” warnings can indicate non-genuine or improperly installed components.\n- Ensure the IMEI is clean and the phone is not financed, blacklisted, or carrier-locked if you need it unlocked.\n\nMost important: do not pay until Activation Lock is removed and the phone can begin setup under your own Apple Account."
+      },
+      {
+        "id": 11,
+        "category": "Security",
+        "question": "What are the first actions to take after a phone is lost or stolen?",
+        "answer": "First, try to locate and lock it remotely:\n\n- iPhone: Use the Find My app or iCloud’s Find Devices page. Mark it as Lost, display a contact message, and do not remove it from your Apple Account.\n- Android: Use Google Find My Device to locate, secure, or erase it. Keep the device associated with your Google Account.\n\nThen act quickly to protect your accounts:\n\n- Call your carrier to suspend the SIM/eSIM and block the phone’s IMEI if available.\n- Change passwords for your Apple/Google account, email, banking, payment, and social apps—starting with email.\n- Remove or suspend cards in Apple Pay / Google Wallet and contact your bank if needed.\n- File a police report, especially for insurance or IMEI blocking.\n- If recovery seems unlikely, remotely erase the phone—but only after attempting location and locking it."
+      },
+      {
+        "id": 12,
+        "category": "Selling",
+        "question": "What accounts, payment cards, and security features must be removed before selling a phone?",
+        "answer": "Before selling your phone, remove anything that could keep it linked to you:\n\n- Sign out of your main account: Apple Account/Apple ID on iPhone; Google account and any manufacturer account (Samsung, Xiaomi, etc.) on Android.\n- Turn off activation protection: disable Find My iPhone and sign out of iCloud; on Android, remove Google accounts so Factory Reset Protection won’t lock the buyer out.\n- Remove payment methods: Apple Pay, Google Wallet, Samsung Wallet, bank-card apps, transit cards, and any saved cards in shopping apps.\n- Sign out of sensitive apps: banking, email, password managers, messaging, social media, and authenticator apps.\n- Move or remove eSIMs, and take out the physical SIM and any microSD card.\n- Back up what you need, then erase the phone using its built-in Erase All Content and Settings / Factory data reset option.\n\nAlso unpair it from your smartwatch, earbuds, car system, and remove it from trusted-device lists where appropriate."
+      },
+      {
+        "id": 13,
+        "category": "Camera",
+        "question": "Why does my phone camera keep hunting for focus even after I clean the lens?",
+        "answer": "Focus hunting usually means the camera can’t find enough clear contrast to lock onto—not just a dirty lens.\n\nCommon causes:\n\n- Low light or a plain subject (blank wall, sky, dark surface): tap a high-contrast edge or add more light.\n- You’re too close: move back slightly, especially with the main camera; use macro mode if available.\n- A case, lens protector, or scratched camera cover is interfering: remove it and test again.\n- Camera app/software glitch: force-close the app, restart the phone, and install system updates.\n- Hardware issue: if it hunts in good daylight on detailed subjects with every camera app, the autofocus module or optical stabilization may need repair—often after a drop, impact, or moisture exposure.\n\nTry testing outdoors in daylight by focusing on text or a textured object about 1–2 meters away. If it still constantly pulses and never locks, it’s likely hardware-related."
+      },
+      {
+        "id": 14,
+        "category": "Wi-Fi",
+        "question": "My phone has slow Wi-Fi while my laptop is fast on the same network. How should I troubleshoot it?",
+        "answer": "Try these in order:\n\n1. Turn Wi‑Fi off and back on, then restart the phone.\n2. Forget the Wi‑Fi network and reconnect: enter the password again.\n3. Move close to the router and test both 2.4 GHz and 5 GHz networks if they are separate. 5 GHz is usually faster nearby; 2.4 GHz reaches farther.\n4. Disable VPN, Private Relay, proxy, or any network-filtering app temporarily.\n5. Check whether Low Power Mode, Battery Saver, or Data Saver is limiting background activity.\n6. Update the phone’s system software and restart the router.\n7. Reset network settings if it is still slow. This removes saved Wi‑Fi networks and Bluetooth pairings, so you’ll need to reconnect afterward.\n\nIf the issue happens only on one Wi‑Fi network, the router’s band, channel congestion, or compatibility settings may be the cause. If it happens on every network while other devices remain fast, it may be a phone software or Wi‑Fi hardware issue."
+      },
+      {
+        "id": 15,
+        "category": "Water resistance",
+        "question": "Is a phone still water resistant after a screen or battery replacement?",
+        "answer": "Usually, no—not to the original factory standard.\n\nOpening a phone for a screen or battery replacement breaks its original water-resistant seal. A high-quality repair can replace adhesive seals and improve protection, but it may not restore the device’s original IP rating, especially if parts or frame surfaces are worn.\n\nAfter repair, treat the phone as splash-resistant at best: avoid swimming, shower steam, heavy rain, and intentional water exposure."
+      },
+      {
+        "id": 16,
+        "category": "eSIM",
+        "question": "How should I prepare for transferring an eSIM to a new phone without losing service?",
+        "answer": "Before you start, make sure your current phone still has service and is connected to Wi‑Fi. Keep it powered on until the new phone is fully activated.\n\nCheck these first:\n\n- Confirm the new phone supports eSIM and is unlocked or compatible with your carrier.\n- Update both phones to the latest available software.\n- Back up the old phone, especially if you’re also moving data.\n- Have your carrier account login, password, account PIN, and any verification method ready.\n- Do not erase, reset, trade in, or remove the eSIM from the old phone yet.\n- Charge both phones well.\n\nMany carriers support an in-device eSIM transfer, but some require a QR code or activation through their app/site. Follow your carrier’s method, then test calls, SMS, and mobile data on the new phone before wiping the old one.\n\nIf the transfer fails, leave the old eSIM active and contact your carrier—they can usually reissue the eSIM."
+      },
+      {
+        "id": 17,
+        "category": "Capacity",
+        "question": "How do I choose between 256GB and 512GB for a phone I plan to keep for four years?",
+        "answer": "Choose 512GB if you take lots of photos/videos, download media for offline use, play large games, or prefer never managing storage. Over four years, media and app sizes will grow, and storage usually can’t be upgraded.\n\nChoose 256GB if you mostly stream content, use cloud photo backup, rarely record long 4K video, and don’t keep many large games or offline downloads. It’s generally enough for typical everyday use.\n\nA practical rule: check your current phone’s storage. If you already use more than about 150–180GB, go for 512GB. If you stay comfortably below 100GB, 256GB should remain workable with occasional cleanup."
+      },
+      {
+        "id": 18,
+        "category": "Backup",
+        "question": "How can I verify that a phone backup is complete before doing a factory reset?",
+        "answer": "Before resetting, verify the backup in the same service you used:\n\n- iPhone / iCloud: Go to Settings → your name → iCloud → iCloud Backup. Check that “Last Successful Backup” is recent. Then visit iCloud.com or use another Apple device to confirm essentials such as Photos, Contacts, Notes, and Files are present.\n- iPhone / computer backup: In Finder (Mac) or Apple Devices/iTunes (Windows), confirm the backup’s date and size. Make sure it’s encrypted if you need passwords, Health data, and Wi‑Fi settings preserved.\n- Android / Google backup: Go to Settings → Google → Backup and confirm the latest backup time. Check Google Photos, Contacts, Drive, and Messages independently where applicable.\n- Android / computer or manufacturer backup: Confirm the backup completed without errors, has a plausible size, and ideally restore or open a few files on another device.\n\nAlso check items that may not be fully covered: authenticator apps, eSIM details, WhatsApp/chat backups, downloaded files, banking apps, and any locally stored photos. Keep the phone powered on and connected to Wi‑Fi until you have confirmed everything, then perform the factory reset."
+      },
+      {
+        "id": 19,
+        "category": "Performance",
+        "question": "Why can a phone feel slow even when it still has plenty of free storage?",
+        "answer": "Free storage is only one factor. A phone can still feel slow because of:\n\n- Too many apps running in the background, using RAM and CPU.\n- An older or degraded battery, which can make the phone reduce performance to avoid shutdowns.\n- A system update or app update that is still indexing, syncing, or optimizing files.\n- Heavy apps, browser tabs, widgets, or animations consuming resources.\n- Overheating, which causes the processor to slow down temporarily.\n- A weak or unstable network, making online apps seem slow.\n- Aging hardware or software that is no longer well optimized for newer apps.\n\nTry restarting the phone, updating the system and apps, closing unused apps/tabs, checking battery health, and letting it cool down."
+      },
+      {
+        "id": 20,
+        "category": "Family phone",
+        "question": "What features matter most when choosing a safe, simple smartphone for an older parent?",
+        "answer": "Prioritize these features:\n\n- Large, bright display with adjustable text size and high contrast.\n- Simple interface: easy home screen, clear icons, minimal preinstalled clutter, and a reliable voice assistant.\n- Strong battery life and USB-C charging; wireless charging is a helpful bonus.\n- Emergency tools: SOS button/shortcut, fall detection if available, location sharing, and emergency contacts.\n- Good call quality and loud, clear speakers; compatibility with hearing aids is valuable.\n- Fingerprint or face unlock that works reliably, plus easy-to-set-up PIN backup.\n- Long software and security-update support.\n- A durable case and screen protector, ideally with water resistance.\n- Enough storage for photos and updates—128 GB is a comfortable starting point.\n- Remote help features, so you can assist with settings or troubleshooting from afar.\n\nFor most older parents, an iPhone is a strong choice if the family already uses Apple devices; otherwise, choose a well-supported Android phone with a clean interface, such as a Google Pixel or Samsung Galaxy."
+      }
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-import { DEVELOPMENT_LOGS } from './Home'
+import { DEVELOPMENT_LOGS } from '../data/developmentLogs'
 import { useI18n } from '../i18n'
 import { PageHeader } from '../components/PageChrome'
 

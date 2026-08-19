@@ -17,6 +17,7 @@ const AdminPrices = lazy(() => import('./pages/AdminPrices'))
 const AdminStorePrices = lazy(() => import('./pages/AdminStorePrices'))
 const AdminAIHistory = lazy(() => import('./pages/AdminAIHistory'))
 const AI = lazy(() => import('./pages/AI'))
+const AITest = lazy(() => import('./pages/AITest'))
 const ProductDetail = lazy(() => import('./pages/ProductDetail'))
 const LegalPage = lazy(() => import('./pages/LegalPage'))
 const CompanyHome = lazy(() => import('./pages/CompanyHome'))
@@ -73,6 +74,7 @@ function App() {
         <Routes>
           <Route path="/" element={<AI />} />
           <Route path="/ai" element={<AI />} />
+          <Route path="/test" element={<AITest />} />
           <Route path="/prices" element={<Prices />} />
           <Route path="/stores" element={<Stores />} />
           <Route path="/assessment" element={<Assessment />} />

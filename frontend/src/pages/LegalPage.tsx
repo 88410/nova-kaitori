@@ -5,7 +5,11 @@ import { LightPage, PageHeader, lightPanelClass } from '../components/PageChrome
 type LegalContent = {
   title: string
   lead: string
-  sections: Array<{ heading: string; body: string[] }>
+  sections: Array<{
+    heading: string
+    body: string[]
+    links?: Array<{ label: string; href: string }>
+  }>
 }
 
 const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
@@ -17,27 +21,26 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
         {
           heading: 'Company Profile',
           body: [
-            'Novatech Co., Ltd. develops and operates NOVA AI, an iPhone buyback price intelligence platform that integrates store-by-store pricing data, market movement, and product information to support faster and more precise selling, resale, and trading decisions.',
-            'Through real-time price comparison, multilingual product guidance, AI-assisted store recommendations, and structured store intelligence, NOVA AI aims to become a decision layer for the next generation of cross-border device circulation.',
+            'Novatech Co., Ltd. is a Tokyo-based AI company that transforms large, complex market datasets into clear and dependable information for real decisions.',
+            'With data quality, speed, and usability at the center, we develop and operate practical products beginning with NOVA AI.',
           ],
         },
         {
           heading: 'Basic Information',
           body: [
             'Address: Musashino Building, 2-13-10 Shinjuku, Shinjuku-ku, Tokyo',
-            'Business: AI business development',
+            'Business: Data and AI product development',
             'Corporate Number: 0111-01-110714',
             'Capital: JPY 6,000,000',
             'Founded: February 17, 2025',
           ],
         },
         {
-          heading: 'Operations & Technical Support Framework',
-          body: [
-            'Morita: Business operations and product planning',
-            'Sato: Customer experience and service guidance',
-            'Tanaka: System maintenance and operational stability',
-            'Liu: Merchant-side coordination and price-data acquisition',
+          heading: 'Contact',
+          body: [],
+          links: [
+            { label: 'info@novatekku.com', href: 'mailto:info@novatekku.com' },
+            { label: 'GitHub', href: 'https://github.com/jp-lzq/nova-kaitori' },
           ],
         },
       ],
@@ -111,27 +114,26 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
         {
           heading: '公司简介',
           body: [
-            '诺瓦科技株式会社正在开发并运营 NOVA AI iPhone 回收价格智能平台，整合各店铺价格数据、市场变化和商品信息，为出售、转售和贸易判断提供更快速、更精确的决策环境。',
-            '通过实时价格对比、多语言商品引导、AI 店铺推荐和结构化店铺情报，NOVA AI 希望成为下一代跨境电子设备流通的智能决策层。',
+            '诺瓦科技株式会社是一家位于东京的 AI 公司。我们把庞大、复杂的市场数据整理成清晰可靠的信息，让判断更简单。',
+            '我们重视数据质量、速度和实际使用体验，并以 NOVA AI 为起点，持续开发真正能够投入使用的产品。',
           ],
         },
         {
           heading: '基本信息',
           body: [
             '所在地：东京都新宿区新宿2丁目13番10号 武藏野大楼',
-            '事业内容：AI 业务开发',
+            '事业内容：数据与 AI 产品开发',
             '法人番号：０１１１－０１－１１０７１４',
             '资本金：金６００万円',
             '成立年月日：令和７年２月１７日',
           ],
         },
         {
-          heading: '运营与技术支持体系',
-          body: [
-            '森田：业务运营与产品规划',
-            '佐藤：客户体验与服务引导',
-            '田中：系统维护与运行稳定',
-            '劉：商家侧沟通与价格数据获取',
+          heading: '联系我们',
+          body: [],
+          links: [
+            { label: 'info@novatekku.com', href: 'mailto:info@novatekku.com' },
+            { label: 'GitHub', href: 'https://github.com/jp-lzq/nova-kaitori' },
           ],
         },
       ],
@@ -205,27 +207,26 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
         {
           heading: '会社概要',
           body: [
-            'ノーヴァテック株式会社は、iPhone買取価格インテリジェンスプラットフォーム「NOVA AI」を開発・運営し、店舗別の価格データ、市場変動、商品情報を統合することで、売却・再販・貿易判断をより速く、より精密に行える環境を提供しています。',
-            'リアルタイム価格比較、多言語の商品案内、AIによる店舗提案、構造化された店舗情報を組み合わせ、国境を越えるスマートデバイス流通の意思決定レイヤーとなることを目指しています。',
+            'ノーヴァテック株式会社は、東京を拠点に、大規模で複雑な市場データを明確で信頼できる情報へ変えるAI企業です。',
+            'データ品質、速度、使いやすさを重視し、NOVA AIをはじめ、実際の判断に使えるプロダクトを開発・運営しています。',
           ],
         },
         {
           heading: '基本情報',
           body: [
             '所在地：東京都新宿区新宿2丁目13番10号 武蔵野ビル',
-            '事業内容：AI事業開発',
+            '事業内容：データ・AIプロダクト開発',
             '法人番号：０１１１－０１－１１０７１４',
             '資本金：金６００万円',
             '成立年月日：令和７年２月１７日',
           ],
         },
         {
-          heading: '運営・技術支援体制',
-          body: [
-            '森田：事業運営・プロダクト企画',
-            '佐藤：顧客体験・サービス案内',
-            '田中：システム保守・運用安定化',
-            '劉：店舗側連携・価格データ取得',
+          heading: 'お問い合わせ',
+          body: [],
+          links: [
+            { label: 'info@novatekku.com', href: 'mailto:info@novatekku.com' },
+            { label: 'GitHub', href: 'https://github.com/jp-lzq/nova-kaitori' },
           ],
         },
       ],
@@ -335,6 +336,17 @@ export default function LegalPage() {
                         {paragraph}
                       </p>
                     ))}
+                    {section.links?.map((link) => (
+                      <a
+                        key={link.href}
+                        href={link.href}
+                        target={link.href.startsWith('http') ? '_blank' : undefined}
+                        rel={link.href.startsWith('http') ? 'noreferrer' : undefined}
+                        className="block w-fit text-sm font-medium text-white/80 underline decoration-white/25 underline-offset-4 transition-colors hover:text-white"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
                   </div>
                 </section>
               ))}
@@ -365,6 +377,17 @@ export default function LegalPage() {
                     <p key={paragraph} className="text-sm leading-7 text-slate-600">
                       {paragraph}
                     </p>
+                  ))}
+                  {section.links?.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      target={link.href.startsWith('http') ? '_blank' : undefined}
+                      rel={link.href.startsWith('http') ? 'noreferrer' : undefined}
+                      className="block w-fit text-sm font-medium text-violet-700 underline decoration-violet-200 underline-offset-4 transition-colors hover:text-violet-950"
+                    >
+                      {link.label}
+                    </a>
                   ))}
                 </div>
               </section>
