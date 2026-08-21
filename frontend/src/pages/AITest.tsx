@@ -1,13 +1,9 @@
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import ProductNav from '../components/ProductNav'
 import testData from '../data/aiTestCases.json'
+import { buildExpandedTestCases, type AITestCase as TestCase } from '../data/aiTestCatalog'
 import { useI18n, type Language } from '../i18n'
-
-interface TestCase {
-  id: number
-  category: string
-  question: string
-  answer: string
-}
 
 interface TestData {
   generatedAt: string
@@ -16,49 +12,97 @@ interface TestData {
   cases: Record<Language, TestCase[]>
 }
 
-const COPY: Record<Language, { title: string; subtitle: string; snapshot: string; question: string; answer: string; back: string; openChat: string }> = {
+const COPY: Record<Language, { title: string; subtitle: string; snapshot: string; question: string; answer: string; back: string; openChat: string; previous: string; next: string; page: string }> = {
   en: {
-    title: 'NOVA AI · 20 Q&A',
-    subtitle: 'A saved set of real Terra responses covering local prices and general smartphone questions.',
-    snapshot: 'Price answers use the local NOVA price snapshot from the generation time and may change later.',
+    title: 'NOVA AI · 200 Q&A',
+    subtitle: 'An iPhone question set covering prices, models, international variants, buyback and cross-border trade.',
+    snapshot: 'Live price questions should use the latest valid NOVA data. Historical examples are for reference only.',
     question: 'Question',
-    answer: 'Terra answer',
+    answer: 'Answer guide',
     back: 'Home',
     openChat: 'Open live chat',
+    previous: 'Previous',
+    next: 'Next',
+    page: 'Page',
   },
   zh: {
-    title: 'NOVA AI · 20 问答',
-    subtitle: '真实 Terra 回答结果，包含 NOVA 本地价格和手机知识问题。',
-    snapshot: '价格回答使用生成时的 NOVA 本地价格快照，之后可能随市场更新。',
+    title: 'NOVA AI · 200 问答',
+    subtitle: '覆盖 iPhone 价格、历代机型、各国版本、回收与跨境贸易的问题集。',
+    snapshot: '实时价格问题应使用 NOVA 最新有效数据，历史例子仅供参考。',
     question: '问题',
-    answer: 'Terra 回答',
+    answer: '回答要点',
     back: '返回首页',
     openChat: '打开实时聊天',
+    previous: '上一页',
+    next: '下一页',
+    page: '页码',
   },
   ja: {
-    title: 'NOVA AI・20問テスト',
-    subtitle: 'NOVA のローカル価格とスマホ相談に対する、実際の Terra 回答結果です。',
-    snapshot: '価格回答は生成時点の NOVA ローカル価格スナップショットです。現在価格は更新される場合があります。',
+    title: 'NOVA AI・200問',
+    subtitle: 'iPhone価格、歴代機種、各国・地域モデル、買取、越境取引をまとめた問題集です。',
+    snapshot: '現在価格の質問にはNOVAの最新有効データを使用します。過去の例は参考情報です。',
     question: '質問',
-    answer: 'Terra の回答',
+    answer: '回答ポイント',
     back: 'トップへ戻る',
     openChat: 'リアルタイムチャット',
+    previous: '前へ',
+    next: '次へ',
+    page: 'ページ',
   },
 }
 
 const data = testData as TestData
+const PAGE_SIZE = 20
 
 export default function AITest() {
   const { language } = useI18n()
   const copy = COPY[language]
-  const cases = data.cases[language]
+  const cases = useMemo(() => buildExpandedTestCases(language, data.cases[language]), [language])
+  const [page, setPage] = useState(1)
+  const pageCount = Math.ceil(cases.length / PAGE_SIZE)
+  const visibleCases = cases.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
   const generatedAt = new Intl.DateTimeFormat(
     language === 'zh' ? 'zh-CN' : language === 'en' ? 'en-US' : 'ja-JP',
     { dateStyle: 'medium', timeStyle: 'short' },
   ).format(new Date(data.generatedAt))
 
+  useEffect(() => {
+    setPage(1)
+  }, [language])
+
+  const changePage = (nextPage: number) => {
+    setPage(Math.min(Math.max(nextPage, 1), pageCount))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const pagination = (
+    <nav className="flex items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 p-3" aria-label={copy.page}>
+      <button
+        type="button"
+        onClick={() => changePage(page - 1)}
+        disabled={page === 1}
+        className="min-h-11 rounded-xl border border-slate-700 px-4 text-sm font-medium text-slate-200 transition-colors hover:border-violet-400 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+      >
+        ← {copy.previous}
+      </button>
+      <span className="text-center text-sm text-slate-400">
+        {copy.page} <strong className="text-white">{page}</strong> / {pageCount}
+      </span>
+      <button
+        type="button"
+        onClick={() => changePage(page + 1)}
+        disabled={page === pageCount}
+        className="min-h-11 rounded-xl border border-slate-700 px-4 text-sm font-medium text-slate-200 transition-colors hover:border-violet-400 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+      >
+        {copy.next} →
+      </button>
+    </nav>
+  )
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <>
+      <ProductNav />
+      <div className="min-h-screen bg-slate-950 text-slate-100">
       <header className="border-b border-slate-800 bg-slate-950/95">
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
           <div className="flex flex-wrap items-center gap-3 text-sm">
@@ -94,7 +138,8 @@ export default function AITest() {
       </header>
 
       <main className="mx-auto max-w-5xl space-y-5 px-4 py-8 sm:px-6 sm:py-10">
-        {cases.map((item) => (
+        {pagination}
+        {visibleCases.map((item) => (
           <article key={item.id} className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-xl shadow-black/10">
             <div className="border-b border-slate-800 bg-slate-900/80 px-4 py-4 sm:px-6">
               <div className="flex items-center gap-3">
@@ -112,7 +157,9 @@ export default function AITest() {
             </div>
           </article>
         ))}
+        {pagination}
       </main>
-    </div>
+      </div>
+    </>
   )
 }
