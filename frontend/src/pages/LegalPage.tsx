@@ -8,6 +8,7 @@ type LegalContent = {
   sections: Array<{
     heading: string
     body: string[]
+    details?: Array<{ label: string; value: string }>
     links?: Array<{ label: string; href: string }>
   }>
 }
@@ -363,6 +364,21 @@ export default function LegalPage() {
                         {paragraph}
                       </p>
                     ))}
+                    {section.details && (
+                      <dl className="overflow-hidden rounded-xl border border-white/10 bg-black/10">
+                        {section.details.map((detail, detailIndex) => (
+                          <div
+                            key={detail.label}
+                            className={`grid grid-cols-[104px_minmax(0,1fr)] gap-3 px-3.5 py-3.5 sm:grid-cols-[150px_minmax(0,1fr)] sm:px-4 ${
+                              detailIndex > 0 ? 'border-t border-white/10' : ''
+                            }`}
+                          >
+                            <dt className="text-[10px] font-semibold leading-6 tracking-[0.1em] text-cyan-200/55">{detail.label}</dt>
+                            <dd className="min-w-0 break-words text-sm leading-6 text-white/75">{detail.value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    )}
                     {section.links?.map((link) => (
                       <a
                         key={link.href}
@@ -405,6 +421,21 @@ export default function LegalPage() {
                       {paragraph}
                     </p>
                   ))}
+                  {section.details && (
+                    <dl className="overflow-hidden rounded-lg border border-slate-200 bg-white/75">
+                      {section.details.map((detail, detailIndex) => (
+                        <div
+                          key={detail.label}
+                          className={`grid grid-cols-[104px_minmax(0,1fr)] gap-3 px-3.5 py-3 sm:grid-cols-[145px_minmax(0,1fr)] sm:px-4 ${
+                            detailIndex > 0 ? 'border-t border-slate-200' : ''
+                          }`}
+                        >
+                          <dt className="text-[10px] font-semibold leading-6 tracking-[0.08em] text-slate-400">{detail.label}</dt>
+                          <dd className="min-w-0 break-words text-sm leading-6 text-slate-700">{detail.value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  )}
                   {section.links?.map((link) => (
                     <a
                       key={link.href}

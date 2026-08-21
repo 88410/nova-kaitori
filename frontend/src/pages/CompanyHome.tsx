@@ -184,14 +184,14 @@ export default function CompanyHome() {
                       <Database className="h-5 w-5 text-violet-200" />
                       <div className="mt-14">
                         <p className="text-3xl font-medium tracking-tight sm:text-4xl">{copy.latestRecordsValue}</p>
-                        <p className="mt-2 text-[10px] tracking-[0.2em] text-white/55">{copy.latestRecordsLabel}</p>
+                        <p className="mt-2 text-[10px] leading-4 tracking-[0.18em] text-white/55">{copy.latestRecordsLabel}</p>
                       </div>
                     </div>
                     <div className="flex flex-col justify-between bg-cyan-400/[0.08] p-5 sm:p-7">
                       <span className="h-2 w-2 rounded-full bg-emerald-400" />
                       <div className="mt-14">
                         <p className="text-3xl font-medium tracking-tight sm:text-4xl">{copy.historyRecordsValue}</p>
-                        <p className="mt-2 text-[10px] tracking-[0.2em] text-white/55">{copy.historyRecordsLabel}</p>
+                        <p className="mt-2 text-[10px] leading-4 tracking-[0.18em] text-white/55">{copy.historyRecordsLabel}</p>
                       </div>
                     </div>
                   </div>
