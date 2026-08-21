@@ -22,7 +22,7 @@ export default function SiteFooter() {
             <Link to="/development" className="hover:text-white">
               {t('developmentLogEyebrow')}
             </Link>
-            <a href="https://github.com/jp-lzq/nova-kaitori" target="_blank" rel="noreferrer" className="hover:text-white">
+            <a href="https://github.com/jp-lzq/novatekku" target="_blank" rel="noreferrer" className="hover:text-white">
               GitHub
             </a>
           </nav>
@@ -43,7 +43,7 @@ export default function SiteFooter() {
             <Link to="/terms" className="hover:text-slate-900">
               {t('footerTerms')}
             </Link>
-            <a href="https://github.com/jp-lzq/nova-kaitori" target="_blank" rel="noreferrer" className="hover:text-slate-900">
+            <a href="https://github.com/jp-lzq/novatekku" target="_blank" rel="noreferrer" className="hover:text-slate-900">
               GitHub
             </a>
           </nav>

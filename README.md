@@ -7,7 +7,7 @@ NOVA AIは、iPhone買取市場の価格比較とスマートフォン相談を�
 - NOVA AI: **https://ai.novatekku.com**
 - AI回答テスト: **https://ai.novatekku.com/test**
 - 会社サイト: **https://novatekku.com**
-- GitHub: **https://github.com/jp-lzq/nova-kaitori**
+- GitHub: **https://github.com/jp-lzq/novatekku**
 
 ## 主な機能
 

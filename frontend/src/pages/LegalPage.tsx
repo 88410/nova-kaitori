@@ -50,7 +50,7 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
             'Code reviews, improvement suggestions, and technical questions are welcome.',
           ],
           links: [
-            { label: 'GitHub', href: 'https://github.com/jp-lzq/nova-kaitori' },
+            { label: 'GitHub', href: 'https://github.com/jp-lzq/novatekku' },
           ],
         },
       ],
@@ -152,7 +152,7 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
             '欢迎检查代码、提出改进建议和技术问题。',
           ],
           links: [
-            { label: 'GitHub', href: 'https://github.com/jp-lzq/nova-kaitori' },
+            { label: 'GitHub', href: 'https://github.com/jp-lzq/novatekku' },
           ],
         },
       ],
@@ -254,7 +254,7 @@ const LEGAL_CONTENT: Record<Language, Record<string, LegalContent>> = {
             'コードの確認、改善提案、技術的なご質問を歓迎しています。',
           ],
           links: [
-            { label: 'GitHub', href: 'https://github.com/jp-lzq/nova-kaitori' },
+            { label: 'GitHub', href: 'https://github.com/jp-lzq/novatekku' },
           ],
         },
       ],
